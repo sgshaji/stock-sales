@@ -165,7 +165,7 @@ export const EnhancedInventoryManagement = ({ searchQuery }: EnhancedInventoryMa
         return (
           <div className="flex items-center gap-2">
             <span className="font-medium">{value}</span>
-            <StatusBadge variant={status.variant} size="sm">
+            <StatusBadge variant={status.variant}>
               {status.label}
             </StatusBadge>
           </div>
