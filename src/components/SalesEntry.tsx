@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Minus, ShoppingCart } from "lucide-react";
+import { Plus, Minus, ShoppingCart, Calendar, Receipt } from "lucide-react";
 
 interface SaleItem {
   id: string;
@@ -19,14 +19,18 @@ interface SaleItem {
 interface Sale {
   id: string;
   date: string;
+  time: string;
   items: SaleItem[];
   subtotal: number;
   totalDiscount: number;
   finalTotal: number;
+  customerName?: string;
 }
 
 const SalesEntry = () => {
   const [currentSale, setCurrentSale] = useState<SaleItem[]>([]);
+  const [dailySales, setDailySales] = useState<Sale[]>([]);
+  const [customerName, setCustomerName] = useState("");
   const [newItem, setNewItem] = useState({
     itemName: "",
     quantity: 1,
@@ -38,8 +42,14 @@ const SalesEntry = () => {
     { name: "Bluetooth Speaker", price: 79.99 },
     { name: "Wireless Mouse", price: 29.99 },
     { name: "Phone Case", price: 19.99 },
-    { name: "USB Cable", price: 12.99 }
+    { name: "USB Cable", price: 12.99 },
+    { name: "Power Bank", price: 45.99 },
+    { name: "Phone Charger", price: 15.99 }
   ];
+
+  const today = new Date().toLocaleDateString();
+  const todaysSales = dailySales.filter(sale => sale.date === today);
+  const todaysTotal = todaysSales.reduce((sum, sale) => sum + sale.finalTotal, 0);
 
   const handleItemSelect = (itemName: string) => {
     const selectedItem = inventoryItems.find(item => item.name === itemName);
@@ -92,9 +102,22 @@ const SalesEntry = () => {
 
   const completeSale = () => {
     if (currentSale.length > 0) {
-      // Here you would typically save the sale to your database
-      alert("Sale completed successfully!");
+      const { subtotal, totalDiscount, finalTotal } = calculateSaleTotal();
+      const newSale: Sale = {
+        id: Date.now().toString(),
+        date: today,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        items: [...currentSale],
+        subtotal,
+        totalDiscount,
+        finalTotal,
+        customerName: customerName || undefined
+      };
+      
+      setDailySales([newSale, ...dailySales]);
       setCurrentSale([]);
+      setCustomerName("");
+      alert("Sale completed successfully!");
     }
   };
 
@@ -102,24 +125,47 @@ const SalesEntry = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold">New Sale</h2>
-        <Button 
-          onClick={completeSale} 
-          disabled={currentSale.length === 0}
-          className="gap-2"
-        >
-          <ShoppingCart className="h-4 w-4" />
-          Complete Sale
-        </Button>
-      </div>
+      {/* Today's Summary */}
+      <Card className="bg-blue-50 border-blue-200">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-blue-600" />
+            Today's Sales Summary - {today}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span className="text-gray-600">Total Sales:</span>
+              <p className="font-semibold text-lg">{todaysSales.length}</p>
+            </div>
+            <div>
+              <span className="text-gray-600">Revenue:</span>
+              <p className="font-semibold text-lg text-green-600">${todaysTotal.toFixed(2)}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Add Item Section */}
+      {/* New Sale Form */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm">Add Item to Sale</CardTitle>
+          <CardTitle className="text-sm flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            New Sale - {today}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
+          <div>
+            <Label htmlFor="customer-name">Customer Name (Optional)</Label>
+            <Input
+              id="customer-name"
+              placeholder="Enter customer name"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+            />
+          </div>
+
           <div>
             <Label htmlFor="item-select">Select Item</Label>
             <Select value={newItem.itemName} onValueChange={handleItemSelect}>
@@ -177,20 +223,29 @@ const SalesEntry = () => {
 
           <Button onClick={addItemToSale} className="w-full gap-2">
             <Plus className="h-4 w-4" />
-            Add to Sale
+            Add to Current Sale
           </Button>
         </CardContent>
       </Card>
 
       {/* Current Sale Items */}
       {currentSale.length > 0 && (
-        <Card>
+        <Card className="border-green-200 bg-green-50">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm">Current Sale Items</CardTitle>
+            <div className="flex justify-between items-center">
+              <CardTitle className="text-sm">Current Sale Items</CardTitle>
+              <Button 
+                onClick={completeSale} 
+                className="gap-2 bg-green-600 hover:bg-green-700"
+              >
+                <ShoppingCart className="h-4 w-4" />
+                Complete Sale
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-3">
             {currentSale.map((item) => (
-              <div key={item.id} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+              <div key={item.id} className="flex justify-between items-center p-2 bg-white rounded border">
                 <div className="flex-1">
                   <p className="font-medium text-sm">{item.itemName}</p>
                   <p className="text-xs text-gray-600">
@@ -204,7 +259,7 @@ const SalesEntry = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => removeItemFromSale(item.id)}
-                    className="p-1 h-auto"
+                    className="p-1 h-auto text-red-600 hover:text-red-800"
                   >
                     <Minus className="h-3 w-3" />
                   </Button>
@@ -212,7 +267,7 @@ const SalesEntry = () => {
               </div>
             ))}
 
-            <div className="border-t pt-3 space-y-1">
+            <div className="border-t pt-3 space-y-1 bg-white p-3 rounded">
               <div className="flex justify-between text-sm">
                 <span>Subtotal:</span>
                 <span>${subtotal.toFixed(2)}</span>
@@ -223,11 +278,47 @@ const SalesEntry = () => {
                   <span>-${totalDiscount.toFixed(2)}</span>
                 </div>
               )}
-              <div className="flex justify-between font-semibold">
+              <div className="flex justify-between font-semibold text-lg">
                 <span>Total:</span>
                 <span>${finalTotal.toFixed(2)}</span>
               </div>
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Today's Completed Sales */}
+      {todaysSales.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Receipt className="h-4 w-4" />
+              Today's Completed Sales ({todaysSales.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 max-h-64 overflow-y-auto">
+            {todaysSales.map((sale) => (
+              <div key={sale.id} className="p-3 bg-gray-50 rounded border">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <p className="font-medium text-sm">Sale #{sale.id.slice(-4)}</p>
+                    <p className="text-xs text-gray-600">{sale.time}</p>
+                    {sale.customerName && (
+                      <p className="text-xs text-blue-600">Customer: {sale.customerName}</p>
+                    )}
+                  </div>
+                  <p className="font-semibold text-green-600">${sale.finalTotal.toFixed(2)}</p>
+                </div>
+                <div className="text-xs text-gray-600">
+                  {sale.items.map((item, index) => (
+                    <span key={item.id}>
+                      {item.quantity}x {item.itemName}
+                      {index < sale.items.length - 1 && ", "}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
           </CardContent>
         </Card>
       )}
