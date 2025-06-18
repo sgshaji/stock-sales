@@ -9,7 +9,104 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      inventory_items: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          price: number
+          stock_quantity: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          price: number
+          stock_quantity?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          price?: number
+          stock_quantity?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sale_items: {
+        Row: {
+          created_at: string
+          discount_percent: number
+          id: string
+          item_name: string
+          quantity: number
+          sale_id: string
+          total: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          discount_percent?: number
+          id?: string
+          item_name: string
+          quantity: number
+          sale_id: string
+          total: number
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          discount_percent?: number
+          id?: string
+          item_name?: string
+          quantity?: number
+          sale_id?: string
+          total?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sale_items_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales: {
+        Row: {
+          created_at: string
+          final_total: number
+          id: string
+          sale_date: string
+          sale_time: string
+          subtotal: number
+          total_discount: number
+        }
+        Insert: {
+          created_at?: string
+          final_total: number
+          id?: string
+          sale_date?: string
+          sale_time?: string
+          subtotal: number
+          total_discount?: number
+        }
+        Update: {
+          created_at?: string
+          final_total?: number
+          id?: string
+          sale_date?: string
+          sale_time?: string
+          subtotal?: number
+          total_discount?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

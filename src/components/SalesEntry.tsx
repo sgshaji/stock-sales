@@ -1,10 +1,13 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Minus, ShoppingCart, Calendar, Receipt } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface SaleItem {
   id: string;
@@ -25,9 +28,19 @@ interface Sale {
   finalTotal: number;
 }
 
+interface InventoryItem {
+  id: string;
+  name: string;
+  price: number;
+  stock_quantity: number;
+}
+
 const SalesEntry = () => {
   const [currentSale, setCurrentSale] = useState<SaleItem[]>([]);
   const [dailySales, setDailySales] = useState<Sale[]>([]);
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
   const [newItem, setNewItem] = useState({
     itemName: "",
     quantity: 1,
@@ -35,18 +48,75 @@ const SalesEntry = () => {
     discount: 0
   });
 
-  const inventoryItems = [
-    { name: "Bluetooth Speaker", price: 79.99 },
-    { name: "Wireless Mouse", price: 29.99 },
-    { name: "Phone Case", price: 19.99 },
-    { name: "USB Cable", price: 12.99 },
-    { name: "Power Bank", price: 45.99 },
-    { name: "Phone Charger", price: 15.99 }
-  ];
-
   const today = new Date().toLocaleDateString();
   const todaysSales = dailySales.filter(sale => sale.date === today);
   const todaysTotal = todaysSales.reduce((sum, sale) => sum + sale.finalTotal, 0);
+
+  // Load inventory items and today's sales on component mount
+  useEffect(() => {
+    loadInventoryItems();
+    loadTodaysSales();
+  }, []);
+
+  const loadInventoryItems = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('inventory_items')
+        .select('*')
+        .order('name');
+      
+      if (error) throw error;
+      setInventoryItems(data || []);
+    } catch (error) {
+      console.error('Error loading inventory:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load inventory items",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const loadTodaysSales = async () => {
+    try {
+      const { data: salesData, error: salesError } = await supabase
+        .from('sales')
+        .select(`
+          *,
+          sale_items (*)
+        `)
+        .eq('sale_date', new Date().toISOString().split('T')[0])
+        .order('created_at', { ascending: false });
+
+      if (salesError) throw salesError;
+
+      const formattedSales = salesData?.map(sale => ({
+        id: sale.id,
+        date: new Date(sale.sale_date).toLocaleDateString(),
+        time: sale.sale_time,
+        items: sale.sale_items.map((item: any) => ({
+          id: item.id,
+          itemName: item.item_name,
+          quantity: item.quantity,
+          unitPrice: item.unit_price,
+          discount: item.discount_percent,
+          total: item.total
+        })),
+        subtotal: sale.subtotal,
+        totalDiscount: sale.total_discount,
+        finalTotal: sale.final_total
+      })) || [];
+
+      setDailySales(formattedSales);
+    } catch (error) {
+      console.error('Error loading sales:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load today's sales",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleItemSelect = (itemName: string) => {
     const selectedItem = inventoryItems.find(item => item.name === itemName);
@@ -97,22 +167,75 @@ const SalesEntry = () => {
     return { subtotal, totalDiscount, finalTotal };
   };
 
-  const completeSale = () => {
-    if (currentSale.length > 0) {
+  const completeSale = async () => {
+    if (currentSale.length === 0) return;
+
+    setLoading(true);
+    try {
       const { subtotal, totalDiscount, finalTotal } = calculateSaleTotal();
-      const newSale: Sale = {
-        id: Date.now().toString(),
-        date: today,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        items: [...currentSale],
-        subtotal,
-        totalDiscount,
-        finalTotal
-      };
       
-      setDailySales([newSale, ...dailySales]);
+      // Insert the sale record
+      const { data: saleData, error: saleError } = await supabase
+        .from('sales')
+        .insert({
+          subtotal,
+          total_discount: totalDiscount,
+          final_total: finalTotal
+        })
+        .select()
+        .single();
+
+      if (saleError) throw saleError;
+
+      // Insert sale items
+      const saleItems = currentSale.map(item => ({
+        sale_id: saleData.id,
+        item_name: item.itemName,
+        quantity: item.quantity,
+        unit_price: item.unitPrice,
+        discount_percent: item.discount,
+        total: item.total
+      }));
+
+      const { error: itemsError } = await supabase
+        .from('sale_items')
+        .insert(saleItems);
+
+      if (itemsError) throw itemsError;
+
+      // Update inventory stock quantities
+      for (const item of currentSale) {
+        const inventoryItem = inventoryItems.find(inv => inv.name === item.itemName);
+        if (inventoryItem) {
+          const { error: updateError } = await supabase
+            .from('inventory_items')
+            .update({ 
+              stock_quantity: Math.max(0, inventoryItem.stock_quantity - item.quantity),
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', inventoryItem.id);
+
+          if (updateError) throw updateError;
+        }
+      }
+
       setCurrentSale([]);
-      alert("Sale completed successfully!");
+      await loadTodaysSales();
+      await loadInventoryItems();
+      
+      toast({
+        title: "Success",
+        description: "Sale completed successfully!",
+      });
+    } catch (error) {
+      console.error('Error completing sale:', error);
+      toast({
+        title: "Error",
+        description: "Failed to complete sale",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -159,8 +282,8 @@ const SalesEntry = () => {
               </SelectTrigger>
               <SelectContent>
                 {inventoryItems.map((item) => (
-                  <SelectItem key={item.name} value={item.name}>
-                    {item.name} - ${item.price}
+                  <SelectItem key={item.id} value={item.name}>
+                    {item.name} - ${item.price} (Stock: {item.stock_quantity})
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -221,10 +344,11 @@ const SalesEntry = () => {
               <CardTitle className="text-sm">Current Sale Items</CardTitle>
               <Button 
                 onClick={completeSale} 
+                disabled={loading}
                 className="gap-2 bg-green-600 hover:bg-green-700"
               >
                 <ShoppingCart className="h-4 w-4" />
-                Complete Sale
+                {loading ? "Processing..." : "Complete Sale"}
               </Button>
             </div>
           </CardHeader>
@@ -286,7 +410,7 @@ const SalesEntry = () => {
               <div key={sale.id} className="p-3 bg-gray-50 rounded border">
                 <div className="flex justify-between items-start mb-2">
                   <div>
-                    <p className="font-medium text-sm">Sale #{sale.id.slice(-4)}</p>
+                    <p className="font-medium text-sm">Sale #{sale.id.slice(-8)}</p>
                     <p className="text-xs text-gray-600">{sale.time}</p>
                   </div>
                   <p className="font-semibold text-green-600">${sale.finalTotal.toFixed(2)}</p>
