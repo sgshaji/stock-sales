@@ -16,10 +16,16 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const { user, signOut } = useAuth();
 
   const handleSignOut = async () => {
-    await signOut();
+    setIsSigningOut(true);
+    try {
+      await signOut();
+    } finally {
+      setIsSigningOut(false);
+    }
   };
 
   const handleSearch = (query: string) => {
@@ -29,7 +35,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary-50/30 to-primary-100/40 dark:from-background dark:via-primary-950/30 dark:to-primary-900/40">
       <div className="container-content">
-        {/* Enhanced Header */}
+        {/* Enhanced Header with Better Button Hierarchy */}
         <div className="bg-background/95 backdrop-blur-md shadow-sm border-b border-border/40 sticky top-0 z-20 rounded-b-2xl">
           <div className="p-6">
             <div className="flex justify-between items-center mb-4">
@@ -41,36 +47,44 @@ const Index = () => {
                   {user?.user_metadata?.full_name || user?.email?.split('@')[0]}'s workspace
                 </p>
               </div>
-              <div className="flex gap-2">
-                <Button 
-                  variant="ghost" 
-                  size="icon-sm" 
-                  onClick={() => setShowSearch(!showSearch)}
-                  className={`animate-quick ${
-                    showSearch 
-                      ? "bg-primary-50 text-primary-600 shadow-sm dark:bg-primary-950/50 dark:text-primary-400" 
-                      : ""
-                  }`}
-                >
-                  <Search className="h-4 w-4" />
-                </Button>
-                <ThemeToggle />
-                <Button 
-                  variant="ghost" 
-                  size="icon-sm"
-                  onClick={() => setActiveTab("profile")}
-                  className={`animate-quick ${
-                    activeTab === "profile" 
-                      ? "bg-primary-50 text-primary-600 shadow-sm dark:bg-primary-950/50 dark:text-primary-400" 
-                      : ""
-                  }`}
-                >
-                  <Settings className="h-4 w-4" />
-                </Button>
+              
+              {/* Clear Button Hierarchy: Secondary actions grouped, primary logout separate */}
+              <div className="flex items-center gap-2">
+                {/* Secondary action group */}
+                <div className="flex items-center gap-1 bg-background/60 rounded-xl p-1 border border-border/40">
+                  <Button 
+                    variant="ghost" 
+                    size="icon-sm" 
+                    onClick={() => setShowSearch(!showSearch)}
+                    className={`animate-quick ${
+                      showSearch 
+                        ? "bg-primary-50 text-primary-600 shadow-sm dark:bg-primary-950/50 dark:text-primary-400" 
+                        : "hover:bg-accent/50"
+                    }`}
+                  >
+                    <Search className="h-4 w-4" />
+                  </Button>
+                  <ThemeToggle />
+                  <Button 
+                    variant="ghost" 
+                    size="icon-sm"
+                    onClick={() => setActiveTab("profile")}
+                    className={`animate-quick ${
+                      activeTab === "profile" 
+                        ? "bg-primary-50 text-primary-600 shadow-sm dark:bg-primary-950/50 dark:text-primary-400" 
+                        : "hover:bg-accent/50"
+                    }`}
+                  >
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                {/* Primary action - Sign out */}
                 <Button 
                   variant="ghost" 
                   size="icon-sm"
                   onClick={handleSignOut}
+                  loading={isSigningOut}
                   className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 animate-quick"
                 >
                   <LogOut className="h-4 w-4" />
@@ -78,7 +92,7 @@ const Index = () => {
               </div>
             </div>
             
-            {/* Enhanced Search bar */}
+            {/* Enhanced Search bar with better loading state */}
             {showSearch && (
               <div className="animate-slide-up">
                 <SearchInput
@@ -94,38 +108,39 @@ const Index = () => {
         {/* Main Content with improved spacing */}
         <div className="content-spacing-relaxed p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-8 bg-background/80 backdrop-blur-sm shadow-md border border-border/40 rounded-2xl p-1 h-auto">
+            {/* Enhanced Tab Navigation with Better Visual Hierarchy */}
+            <TabsList className="grid w-full grid-cols-5 mb-8 bg-background/95 backdrop-blur-sm shadow-lg border border-border/40 rounded-2xl p-2 h-auto">
               <TabsTrigger 
                 value="dashboard" 
-                className="flex flex-col gap-1.5 py-4 px-3 rounded-xl animate-quick data-[state=active]:bg-primary-50 data-[state=active]:text-primary-600 data-[state=active]:shadow-sm hover:bg-gray-50 dark:data-[state=active]:bg-primary-950/50 dark:data-[state=active]:text-primary-400 dark:hover:bg-gray-800"
+                className="flex flex-col gap-2 py-4 px-3 rounded-xl animate-quick data-[state=active]:bg-primary-600 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-primary-50 dark:data-[state=active]:bg-primary-600 dark:hover:bg-primary-950/20 font-medium"
               >
                 <BarChart3 className="h-5 w-5" />
                 <span className="text-label-medium">Dashboard</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="inventory" 
-                className="flex flex-col gap-1.5 py-4 px-3 rounded-xl animate-quick data-[state=active]:bg-primary-50 data-[state=active]:text-primary-600 data-[state=active]:shadow-sm hover:bg-gray-50 dark:data-[state=active]:bg-primary-950/50 dark:data-[state=active]:text-primary-400 dark:hover:bg-gray-800"
+                className="flex flex-col gap-2 py-4 px-3 rounded-xl animate-quick data-[state=active]:bg-primary-600 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-primary-50 dark:data-[state=active]:bg-primary-600 dark:hover:bg-primary-950/20 font-medium"
               >
                 <Package className="h-5 w-5" />
                 <span className="text-label-medium">Inventory</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="sales" 
-                className="flex flex-col gap-1.5 py-4 px-3 rounded-xl animate-quick data-[state=active]:bg-primary-50 data-[state=active]:text-primary-600 data-[state=active]:shadow-sm hover:bg-gray-50 dark:data-[state=active]:bg-primary-950/50 dark:data-[state=active]:text-primary-400 dark:hover:bg-gray-800"
+                className="flex flex-col gap-2 py-4 px-3 rounded-xl animate-quick data-[state=active]:bg-primary-600 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-primary-50 dark:data-[state=active]:bg-primary-600 dark:hover:bg-primary-950/20 font-medium"
               >
                 <ShoppingCart className="h-5 w-5" />
                 <span className="text-label-medium">Sales</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="vendors" 
-                className="flex flex-col gap-1.5 py-4 px-3 rounded-xl animate-quick data-[state=active]:bg-primary-50 data-[state=active]:text-primary-600 data-[state=active]:shadow-sm hover:bg-gray-50 dark:data-[state=active]:bg-primary-950/50 dark:data-[state=active]:text-primary-400 dark:hover:bg-gray-800"
+                className="flex flex-col gap-2 py-4 px-3 rounded-xl animate-quick data-[state=active]:bg-primary-600 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-primary-50 dark:data-[state=active]:bg-primary-600 dark:hover:bg-primary-950/20 font-medium"
               >
                 <Users className="h-5 w-5" />
                 <span className="text-label-medium">Vendors</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="profile" 
-                className="flex flex-col gap-1.5 py-4 px-3 rounded-xl animate-quick data-[state=active]:bg-primary-50 data-[state=active]:text-primary-600 data-[state=active]:shadow-sm hover:bg-gray-50 dark:data-[state=active]:bg-primary-950/50 dark:data-[state=active]:text-primary-400 dark:hover:bg-gray-800"
+                className="flex flex-col gap-2 py-4 px-3 rounded-xl animate-quick data-[state=active]:bg-primary-600 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-primary-50 dark:data-[state=active]:bg-primary-600 dark:hover:bg-primary-950/20 font-medium"
               >
                 <User className="h-5 w-5" />
                 <span className="text-label-medium">Profile</span>
