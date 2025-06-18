@@ -1,17 +1,15 @@
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { SearchInput } from "@/components/ui/search";
+import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { LoadingCard } from "@/components/ui/loading-skeleton";
-import { EnhancedTable, Column } from "@/components/ui/enhanced-table";
-import { StatusBadge } from "@/components/ui/status-badge";
-import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { CategoryTabs } from "./CategoryTabs";
-import { ViewToggle } from "./ViewToggle";
+import { SmartFilterBar } from "./SmartFilterBar";
+import { IntelligentSearch } from "./IntelligentSearch";
+import { FlatInventoryList } from "./FlatInventoryList";
 import { InventoryTileView } from "./InventoryTileView";
-import { Package, Plus, Download, Edit, Trash2 } from "lucide-react";
+import { FloatingActionButton } from "./FloatingActionButton";
+import { BatchActionBar } from "./BatchActionBar";
+import { Package } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -63,7 +61,6 @@ export const EnhancedInventoryManagement = ({ searchQuery }: EnhancedInventoryMa
     if (savedView) {
       setViewType(savedView);
     } else {
-      // Default to tile view on mobile for better touch experience
       setViewType(isMobile ? "tile" : "list");
     }
   }, [isMobile]);
@@ -109,19 +106,6 @@ export const EnhancedInventoryManagement = ({ searchQuery }: EnhancedInventoryMa
     });
   };
 
-  const handleExport = () => {
-    toast({
-      title: "Export started",
-      description: "Your inventory data is being exported...",
-    });
-  };
-
-  const getStockStatus = (stock: number) => {
-    if (stock <= 5) return { variant: "danger" as const, label: "Low Stock" };
-    if (stock <= 10) return { variant: "warning" as const, label: "Medium Stock" };
-    return { variant: "success" as const, label: "In Stock" };
-  };
-
   const handleRowSelect = (item: InventoryItem, selected: boolean) => {
     if (selected) {
       setSelectedItems(prev => [...prev, item]);
@@ -130,201 +114,115 @@ export const EnhancedInventoryManagement = ({ searchQuery }: EnhancedInventoryMa
     }
   };
 
-  // Table columns for list view
-  const columns: Column<InventoryItem>[] = [
-    {
-      key: "name",
-      label: "Product",
-      sortable: true,
-      render: (value, item) => (
-        <div>
-          <div className="font-medium">{value}</div>
-          <div className="text-sm text-muted-foreground">SKU: {item.sku}</div>
-        </div>
-      )
-    },
-    {
-      key: "category",
-      label: "Category",
-      sortable: true,
-      render: (value) => {
-        const category = predefinedCategories.find(cat => cat.id === value);
-        return (
-          <span className="text-sm text-muted-foreground">
-            {category?.name || "Uncategorized"}
-          </span>
-        );
-      }
-    },
-    {
-      key: "stock",
-      label: "Stock",
-      sortable: true,
-      render: (value) => {
-        const status = getStockStatus(value);
-        return (
-          <div className="flex items-center gap-2">
-            <span className="font-medium">{value}</span>
-            <StatusBadge variant={status.variant}>
-              {status.label}
-            </StatusBadge>
-          </div>
-        );
-      }
-    },
-    {
-      key: "price",
-      label: "Price",
-      sortable: true,
-      render: (value) => (
-        <span className="font-medium text-primary">${value.toFixed(2)}</span>
-      )
-    },
-    {
-      key: "id",
-      label: "Actions",
-      sortable: false,
-      render: (_, item) => (
-        <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-          <Button variant="outline" size="sm" onClick={() => handleEdit(item)} className="gap-2">
-            <Edit className="h-4 w-4" />
-            Edit
-          </Button>
-          <ConfirmationDialog
-            title="Delete Item"
-            description={`Are you sure you want to delete "${item.name}"?`}
-            confirmText="Delete"
-            variant="destructive"
-            onConfirm={() => handleDelete(item)}
-          >
-            <Button variant="outline" size="sm" className="gap-2 text-destructive hover:bg-destructive/10">
-              <Trash2 className="h-4 w-4" />
-              Delete
-            </Button>
-          </ConfirmationDialog>
-        </div>
-      )
-    }
-  ];
+  const handleClearSelection = () => {
+    setSelectedItems([]);
+  };
+
+  const handleBatchEdit = () => {
+    toast({
+      title: "Batch Edit",
+      description: `Editing ${selectedItems.length} items...`,
+    });
+  };
+
+  const handleBatchDelete = () => {
+    toast({
+      title: "Batch Delete",
+      description: `Deleting ${selectedItems.length} items...`,
+    });
+    setSelectedItems([]);
+  };
+
+  const handleBatchExport = () => {
+    toast({
+      title: "Export Started",
+      description: `Exporting ${selectedItems.length} items...`,
+    });
+  };
+
+  const handleClearSearch = () => {
+    setLocalSearch("");
+  };
 
   if (isLoading) {
     return <LoadingCard count={3} />;
   }
 
   return (
-    <div className={cn("space-y-6 animate-fade-in", isMobile && "space-y-4")}>
-      {/* Header */}
-      <div className={cn(
-        "flex justify-between items-start gap-4",
-        isMobile ? "flex-col space-y-3" : "flex-row items-center"
-      )}>
-        <div>
-          <h2 className={cn(
-            "font-bold text-foreground",
-            isMobile ? "text-xl" : "text-2xl"
-          )}>
-            Inventory Management
-          </h2>
-          <p className="text-muted-foreground mt-1">
-            Manage your product inventory and stock levels
-          </p>
-        </div>
-        
-        <div className={cn(
-          "flex gap-2",
-          isMobile ? "w-full" : ""
-        )}>
-          <Button 
-            variant="outline" 
-            onClick={handleExport} 
-            className={cn("gap-2", isMobile ? "flex-1" : "")}
-          >
-            <Download className="h-4 w-4" />
-            Export
-          </Button>
-          <Button 
-            onClick={handleAddItem} 
-            className={cn("gap-2", isMobile ? "flex-1" : "")}
-          >
-            <Plus className="h-4 w-4" />
-            Add Item
-          </Button>
-        </div>
-      </div>
-
-      {/* Search and Controls */}
-      <div className="space-y-4">
-        {!searchQuery && (
-          <SearchInput
-            placeholder="Search inventory items..."
+    <div className={cn("space-y-0 animate-fade-in pb-20", isMobile && "pb-24")}>
+      {/* Intelligent Search */}
+      {!searchQuery && (
+        <div className="mb-4">
+          <IntelligentSearch
+            placeholder="Search products, SKUs, categories..."
             onSearch={setLocalSearch}
           />
-        )}
-        
-        <div className={cn(
-          "flex justify-between items-center gap-4",
-          isMobile ? "flex-col space-y-3" : "flex-row"
-        )}>
-          <CategoryTabs
-            categories={categoriesWithCounts}
-            activeCategory={activeCategory}
-            onCategoryChange={setActiveCategory}
-            className={isMobile ? "w-full" : "flex-1"}
-          />
-          
-          <ViewToggle
-            view={viewType}
-            onViewChange={handleViewChange}
-          />
         </div>
-      </div>
+      )}
+      
+      {/* Smart Filter Bar */}
+      <SmartFilterBar
+        categories={categoriesWithCounts}
+        activeCategory={activeCategory}
+        onCategoryChange={setActiveCategory}
+        view={viewType}
+        onViewChange={handleViewChange}
+        totalItems={items.length}
+        filteredCount={filteredItems.length}
+        searchQuery={effectiveSearch}
+        onClearSearch={effectiveSearch ? handleClearSearch : undefined}
+      />
 
       {/* Content */}
-      {filteredItems.length === 0 ? (
-        <EmptyState
-          icon={Package}
-          title={effectiveSearch || activeCategory !== "all" ? "No items found" : "No inventory items"}
-          description={
-            effectiveSearch || activeCategory !== "all"
-              ? "No items match your current filters. Try adjusting your search or category selection."
-              : "Start by adding your first inventory item to track stock levels."
-          }
-          action={{
-            label: "Add First Item",
-            onClick: handleAddItem
-          }}
-        />
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center justify-between">
-              <span>
-                {activeCategory === "all" 
-                  ? `All Items (${filteredItems.length})`
-                  : `${categoriesWithCounts.find(cat => cat.id === activeCategory)?.name} (${filteredItems.length})`
-                }
-              </span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {viewType === "list" ? (
-              <EnhancedTable
-                data={filteredItems}
-                columns={columns}
-                pageSize={20}
-                selectedRows={selectedItems}
-                onRowSelect={handleRowSelect}
-              />
-            ) : (
-              <InventoryTileView
-                items={filteredItems}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
-            )}
-          </CardContent>
-        </Card>
-      )}
+      <div className="pt-4">
+        {filteredItems.length === 0 ? (
+          <EmptyState
+            icon={Package}
+            title={effectiveSearch || activeCategory !== "all" ? "No items found" : "No inventory items"}
+            description={
+              effectiveSearch || activeCategory !== "all"
+                ? "No items match your current filters. Try adjusting your search or category selection."
+                : "Start by adding your first inventory item to track stock levels."
+            }
+            action={{
+              label: "Add First Item",
+              onClick: handleAddItem
+            }}
+          />
+        ) : (
+          <Card className="border-0 shadow-none bg-transparent">
+            <CardContent className="p-0">
+              {viewType === "list" ? (
+                <FlatInventoryList
+                  items={filteredItems}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  selectedItems={selectedItems}
+                  onSelect={handleRowSelect}
+                />
+              ) : (
+                <InventoryTileView
+                  items={filteredItems}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
+              )}
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {/* Floating Action Button */}
+      <FloatingActionButton onClick={handleAddItem} />
+
+      {/* Batch Action Bar */}
+      <BatchActionBar
+        selectedItems={selectedItems}
+        onClearSelection={handleClearSelection}
+        onBatchEdit={handleBatchEdit}
+        onBatchDelete={handleBatchDelete}
+        onBatchExport={handleBatchExport}
+      />
     </div>
   );
 };
