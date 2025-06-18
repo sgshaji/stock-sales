@@ -17,6 +17,7 @@ export type Database = {
           price: number
           stock_quantity: number | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -25,6 +26,7 @@ export type Database = {
           price: number
           stock_quantity?: number | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -32,6 +34,52 @@ export type Database = {
           name?: string
           price?: number
           stock_quantity?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          address: string | null
+          business_name: string | null
+          created_at: string
+          currency: string | null
+          email: string
+          full_name: string | null
+          id: string
+          locale: string | null
+          onboarding_completed: boolean | null
+          phone: string | null
+          timezone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          business_name?: string | null
+          created_at?: string
+          currency?: string | null
+          email: string
+          full_name?: string | null
+          id: string
+          locale?: string | null
+          onboarding_completed?: boolean | null
+          phone?: string | null
+          timezone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          business_name?: string | null
+          created_at?: string
+          currency?: string | null
+          email?: string
+          full_name?: string | null
+          id?: string
+          locale?: string | null
+          onboarding_completed?: boolean | null
+          phone?: string | null
+          timezone?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -86,6 +134,7 @@ export type Database = {
           sale_time: string
           subtotal: number
           total_discount: number
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -95,6 +144,7 @@ export type Database = {
           sale_time?: string
           subtotal: number
           total_discount?: number
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -104,6 +154,7 @@ export type Database = {
           sale_time?: string
           subtotal?: number
           total_discount?: number
+          user_id?: string | null
         }
         Relationships: []
       }

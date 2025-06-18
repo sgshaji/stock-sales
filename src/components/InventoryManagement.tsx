@@ -1,61 +1,91 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Edit, Package } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface InventoryItem {
   id: string;
   name: string;
-  category: string;
-  currentQuantity: number;
-  purchasePrice: number;
-  sellingPrice: number;
-  lowStockThreshold: number;
+  price: number;
+  stock_quantity: number;
+  category?: string;
+  lowStockThreshold?: number;
 }
 
 const InventoryManagement = () => {
-  const [items, setItems] = useState<InventoryItem[]>([
-    {
-      id: "1",
-      name: "Bluetooth Speaker",
-      category: "Electronics",
-      currentQuantity: 25,
-      purchasePrice: 45.00,
-      sellingPrice: 79.99,
-      lowStockThreshold: 5
-    },
-    {
-      id: "2",
-      name: "Wireless Mouse",
-      category: "Electronics",
-      currentQuantity: 1,
-      purchasePrice: 15.00,
-      sellingPrice: 29.99,
-      lowStockThreshold: 3
-    }
-  ]);
-
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [items, setItems] = useState<InventoryItem[]>([]);
   const [newItem, setNewItem] = useState<Partial<InventoryItem>>({});
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleAddItem = () => {
-    if (newItem.name && newItem.purchasePrice && newItem.sellingPrice) {
-      const item: InventoryItem = {
-        id: Date.now().toString(),
-        name: newItem.name,
-        category: newItem.category || "General",
-        currentQuantity: newItem.currentQuantity || 0,
-        purchasePrice: newItem.purchasePrice,
-        sellingPrice: newItem.sellingPrice,
-        lowStockThreshold: newItem.lowStockThreshold || 5
-      };
-      setItems([...items, item]);
-      setNewItem({});
-      setIsAddDialogOpen(false);
+  // Load inventory items on component mount
+  useEffect(() => {
+    if (user) {
+      loadInventoryItems();
+    }
+  }, [user]);
+
+  const loadInventoryItems = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('inventory_items')
+        .select('*')
+        .order('name');
+      
+      if (error) throw error;
+      setItems(data || []);
+    } catch (error) {
+      console.error('Error loading inventory:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load inventory items",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAddItem = async () => {
+    if (newItem.name && newItem.price && user) {
+      setLoading(true);
+      try {
+        const { error } = await supabase
+          .from('inventory_items')
+          .insert({
+            user_id: user.id,
+            name: newItem.name,
+            price: newItem.price,
+            stock_quantity: newItem.stock_quantity || 0
+          });
+
+        if (error) throw error;
+
+        await loadInventoryItems();
+        setNewItem({});
+        setIsAddDialogOpen(false);
+        
+        toast({
+          title: "Success",
+          description: "Item added successfully!",
+        });
+      } catch (error) {
+        console.error('Error adding item:', error);
+        toast({
+          title: "Error",
+          description: "Failed to add item",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -84,63 +114,31 @@ const InventoryManagement = () => {
                   onChange={(e) => setNewItem({...newItem, name: e.target.value})}
                 />
               </div>
-              <div>
-                <Label htmlFor="category">Category</Label>
-                <Input
-                  id="category"
-                  placeholder="Enter category"
-                  value={newItem.category || ""}
-                  onChange={(e) => setNewItem({...newItem, category: e.target.value})}
-                />
-              </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label htmlFor="quantity">Current Quantity</Label>
+                  <Label htmlFor="quantity">Initial Stock</Label>
                   <Input
                     id="quantity"
                     type="number"
                     placeholder="0"
-                    value={newItem.currentQuantity || ""}
-                    onChange={(e) => setNewItem({...newItem, currentQuantity: parseInt(e.target.value) || 0})}
+                    value={newItem.stock_quantity || ""}
+                    onChange={(e) => setNewItem({...newItem, stock_quantity: parseInt(e.target.value) || 0})}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="threshold">Low Stock Alert</Label>
+                  <Label htmlFor="price">Price ($)</Label>
                   <Input
-                    id="threshold"
-                    type="number"
-                    placeholder="5"
-                    value={newItem.lowStockThreshold || ""}
-                    onChange={(e) => setNewItem({...newItem, lowStockThreshold: parseInt(e.target.value) || 5})}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <Label htmlFor="purchase">Purchase Price ($)</Label>
-                  <Input
-                    id="purchase"
+                    id="price"
                     type="number"
                     step="0.01"
                     placeholder="0.00"
-                    value={newItem.purchasePrice || ""}
-                    onChange={(e) => setNewItem({...newItem, purchasePrice: parseFloat(e.target.value) || 0})}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="selling">Selling Price ($)</Label>
-                  <Input
-                    id="selling"
-                    type="number"
-                    step="0.01"
-                    placeholder="0.00"
-                    value={newItem.sellingPrice || ""}
-                    onChange={(e) => setNewItem({...newItem, sellingPrice: parseFloat(e.target.value) || 0})}
+                    value={newItem.price || ""}
+                    onChange={(e) => setNewItem({...newItem, price: parseFloat(e.target.value) || 0})}
                   />
                 </div>
               </div>
-              <Button onClick={handleAddItem} className="w-full">
-                Add Item
+              <Button onClick={handleAddItem} className="w-full" disabled={loading}>
+                {loading ? "Adding..." : "Add Item"}
               </Button>
             </div>
           </DialogContent>
@@ -149,12 +147,11 @@ const InventoryManagement = () => {
 
       <div className="space-y-3">
         {items.map((item) => (
-          <Card key={item.id} className={item.currentQuantity <= item.lowStockThreshold ? "border-orange-200 bg-orange-50" : ""}>
+          <Card key={item.id} className={item.stock_quantity <= 5 ? "border-orange-200 bg-orange-50" : ""}>
             <CardContent className="p-4">
               <div className="flex justify-between items-start mb-2">
                 <div>
                   <h3 className="font-medium text-sm">{item.name}</h3>
-                  <p className="text-xs text-gray-600">{item.category}</p>
                 </div>
                 <Button variant="ghost" size="sm">
                   <Edit className="h-4 w-4" />
@@ -163,29 +160,33 @@ const InventoryManagement = () => {
               
               <div className="grid grid-cols-2 gap-4 text-xs">
                 <div>
-                  <p className="text-gray-600">Quantity</p>
-                  <p className={`font-medium ${item.currentQuantity <= item.lowStockThreshold ? "text-orange-600" : ""}`}>
-                    {item.currentQuantity} units
+                  <p className="text-gray-600">Stock Quantity</p>
+                  <p className={`font-medium ${item.stock_quantity <= 5 ? "text-orange-600" : ""}`}>
+                    {item.stock_quantity} units
                   </p>
                 </div>
                 <div>
-                  <p className="text-gray-600">Selling Price</p>
-                  <p className="font-medium">${item.sellingPrice.toFixed(2)}</p>
-                </div>
-                <div>
-                  <p className="text-gray-600">Purchase Price</p>
-                  <p className="font-medium">${item.purchasePrice.toFixed(2)}</p>
-                </div>
-                <div>
-                  <p className="text-gray-600">Profit Margin</p>
-                  <p className="font-medium text-green-600">
-                    {(((item.sellingPrice - item.purchasePrice) / item.purchasePrice) * 100).toFixed(1)}%
-                  </p>
+                  <p className="text-gray-600">Price</p>
+                  <p className="font-medium">${item.price.toFixed(2)}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
         ))}
+        
+        {items.length === 0 && (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No items yet</h3>
+              <p className="text-gray-600 mb-4">Get started by adding your first inventory item.</p>
+              <Button onClick={() => setIsAddDialogOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Your First Item
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

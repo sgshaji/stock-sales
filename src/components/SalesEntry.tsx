@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Minus, ShoppingCart, Calendar, Receipt } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SaleItem {
   id: string;
@@ -36,6 +36,8 @@ interface InventoryItem {
 }
 
 const SalesEntry = () => {
+  const { user } = useAuth();
+  
   const [currentSale, setCurrentSale] = useState<SaleItem[]>([]);
   const [dailySales, setDailySales] = useState<Sale[]>([]);
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
@@ -168,16 +170,17 @@ const SalesEntry = () => {
   };
 
   const completeSale = async () => {
-    if (currentSale.length === 0) return;
+    if (currentSale.length === 0 || !user) return;
 
     setLoading(true);
     try {
       const { subtotal, totalDiscount, finalTotal } = calculateSaleTotal();
       
-      // Insert the sale record
+      // Insert the sale record with user_id
       const { data: saleData, error: saleError } = await supabase
         .from('sales')
         .insert({
+          user_id: user.id,
           subtotal,
           total_discount: totalDiscount,
           final_total: finalTotal
