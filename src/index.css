@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -272,6 +271,28 @@
   .focus-ring {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
+
+  /* Mobile-first Touch Interactions */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+
+  .touch-feedback {
+    @apply transition-all duration-150 ease-out active:scale-95 active:bg-primary-50 dark:active:bg-primary-950/20;
+  }
+
+  .swipe-indicator {
+    @apply relative overflow-hidden;
+  }
+
+  .swipe-indicator::after {
+    content: '';
+    @apply absolute inset-y-0 right-0 w-1 bg-gradient-to-b from-transparent via-primary-300 to-transparent opacity-0 transition-opacity duration-200;
+  }
+
+  .swipe-indicator:hover::after {
+    @apply opacity-100;
+  }
 }
 
 @layer utilities {
@@ -300,6 +321,59 @@
 
   .grid-auto-fill {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+
+  /* Mobile-specific utilities */
+  .scroll-touch {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tap-highlight-none {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .select-none-mobile {
+    @media (max-width: 768px) {
+      user-select: none;
+    }
+  }
+
+  /* Safe area handling for mobile devices */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Mobile-specific keyframes */
+@keyframes mobile-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mobile-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 

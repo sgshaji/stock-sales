@@ -1,4 +1,5 @@
-import { useState } from "react"
+
+import React, { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -107,7 +108,7 @@ export function EnhancedInventoryForm({
   const productName = form.watch("name")
   const currentSku = form.watch("sku")
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (productName && !currentSku) {
       const suggestion = generateSkuSuggestion(productName)
       setSkuSuggestion(suggestion)

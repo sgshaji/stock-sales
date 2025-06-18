@@ -6,8 +6,11 @@ import { SearchInput } from "@/components/ui/search";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { LoadingCard, LoadingTable } from "@/components/ui/loading-skeleton";
+import { TouchTarget, SwipeableCard, MobileStack } from "@/components/ui/mobile-touch";
 import { Package, Plus, Trash2, Edit, ArrowUpDown, Filter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 interface InventoryManagementProps {
   searchQuery?: string;
@@ -24,11 +27,11 @@ const EnhancedInventoryManagement = ({ searchQuery }: InventoryManagementProps) 
     { id: 3, name: "Bluetooth Speaker", sku: "BS003", stock: 15, price: 45.99 },
   ]);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const handleDelete = async (itemId: number, itemName: string) => {
     setIsDeleting(itemId);
     try {
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
       toast({
         title: "Item deleted",
@@ -42,7 +45,6 @@ const EnhancedInventoryManagement = ({ searchQuery }: InventoryManagementProps) 
   const handleAddItem = async () => {
     setIsAdding(true);
     try {
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       toast({
         title: "Opening item form",
@@ -64,29 +66,52 @@ const EnhancedInventoryManagement = ({ searchQuery }: InventoryManagementProps) 
   }
 
   return (
-    <div className="content-spacing-relaxed animate-fade-in">
-      {/* Header with Clear Action Hierarchy */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className={cn(
+      "animate-fade-in",
+      isMobile ? "space-y-4" : "content-spacing-relaxed"
+    )}>
+      {/* Mobile-optimized Header */}
+      <div className={cn(
+        "flex justify-between gap-4",
+        isMobile ? "flex-col space-y-3" : "flex-row items-center"
+      )}>
         <div>
-          <h2 className="text-display-small text-foreground">Inventory Management</h2>
-          <p className="text-body-medium text-muted-foreground mt-1">Manage your product inventory and stock levels</p>
+          <h2 className={cn(
+            "text-foreground",
+            isMobile ? "text-xl font-bold" : "text-display-small"
+          )}>
+            Inventory Management
+          </h2>
+          <p className={cn(
+            "text-muted-foreground mt-1",
+            isMobile ? "text-sm" : "text-body-medium"
+          )}>
+            Manage your product inventory and stock levels
+          </p>
         </div>
         
-        {/* Primary Action - Most Important */}
-        <Button 
-          onClick={handleAddItem} 
-          loading={isAdding}
-          loadingText="Opening..."
-          className="gap-2 shadow-md hover:shadow-lg"
-          size="lg"
-        >
-          <Plus className="h-4 w-4" />
-          Add New Item
-        </Button>
+        <TouchTarget minHeight={isMobile ? 48 : 44}>
+          <Button 
+            onClick={handleAddItem} 
+            loading={isAdding}
+            loadingText="Opening..."
+            className={cn(
+              "gap-2 shadow-md hover:shadow-lg",
+              isMobile ? "w-full h-12" : ""
+            )}
+            size={isMobile ? "lg" : "lg"}
+          >
+            <Plus className="h-4 w-4" />
+            Add New Item
+          </Button>
+        </TouchTarget>
       </div>
 
-      {/* Secondary Actions Row */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      {/* Mobile-optimized Secondary Actions */}
+      <div className={cn(
+        "flex gap-4",
+        isMobile ? "flex-col space-y-3" : "flex-row"
+      )}>
         {!searchQuery && (
           <div className="flex-1">
             <SearchInput
@@ -96,17 +121,22 @@ const EnhancedInventoryManagement = ({ searchQuery }: InventoryManagementProps) 
           </div>
         )}
         
-        {/* Secondary action buttons */}
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="gap-2">
-            <Filter className="h-4 w-4" />
-            Filter
-          </Button>
-          <Button variant="outline" size="sm" className="gap-2">
-            <ArrowUpDown className="h-4 w-4" />
-            Sort
-          </Button>
-        </div>
+        <MobileStack className={cn(
+          isMobile ? "flex-row gap-2" : "flex gap-2"
+        )}>
+          <TouchTarget minHeight={44}>
+            <Button variant="outline" size="sm" className="gap-2 flex-1">
+              <Filter className="h-4 w-4" />
+              Filter
+            </Button>
+          </TouchTarget>
+          <TouchTarget minHeight={44}>
+            <Button variant="outline" size="sm" className="gap-2 flex-1">
+              <ArrowUpDown className="h-4 w-4" />
+              Sort
+            </Button>
+          </TouchTarget>
+        </MobileStack>
       </div>
 
       {/* Content Area */}
@@ -125,59 +155,105 @@ const EnhancedInventoryManagement = ({ searchQuery }: InventoryManagementProps) 
           }}
         />
       ) : (
-        <div className="content-spacing-normal">
+        <div className={cn(
+          isMobile ? "space-y-3" : "content-spacing-normal"
+        )}>
           {filteredItems.map((item) => (
-            <Card key={item.id} className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
-              <CardContent className="p-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-headline-medium text-foreground">{item.name}</h3>
-                    <p className="text-body-small text-muted-foreground mt-1">SKU: {item.sku}</p>
-                    <div className="mt-3 flex flex-wrap gap-4">
-                      <span className={`text-body-small font-medium px-3 py-1 rounded-full ${
-                        item.stock <= 5 
-                          ? 'bg-error-50 text-error-700 border border-error-200 dark:bg-error-950/20 dark:text-error-400' 
-                          : 'bg-success-50 text-success-700 border border-success-200 dark:bg-success-950/20 dark:text-success-400'
-                      }`}>
-                        Stock: {item.stock}
-                      </span>
-                      <span className="text-body-small font-medium text-primary-600 dark:text-primary-400 px-3 py-1 bg-primary-50 dark:bg-primary-950/20 rounded-full border border-primary-200 dark:border-primary-800">
-                        ${item.price.toFixed(2)}
-                      </span>
+            <SwipeableCard
+              key={item.id}
+              onSwipeLeft={() => handleDelete(item.id, item.name)}
+              className="group"
+            >
+              <Card className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
+                <CardContent className={cn(
+                  isMobile ? "p-4" : "p-6"
+                )}>
+                  <div className={cn(
+                    "flex gap-4",
+                    isMobile ? "flex-col space-y-3" : "flex-row items-center justify-between"
+                  )}>
+                    <div className="flex-1 min-w-0">
+                      <h3 className={cn(
+                        "text-foreground",
+                        isMobile ? "text-lg font-semibold" : "text-headline-medium"
+                      )}>
+                        {item.name}
+                      </h3>
+                      <p className={cn(
+                        "text-muted-foreground mt-1",
+                        isMobile ? "text-sm" : "text-body-small"
+                      )}>
+                        SKU: {item.sku}
+                      </p>
+                      <div className={cn(
+                        "mt-3 flex gap-4",
+                        isMobile ? "flex-wrap gap-2" : "flex-wrap"
+                      )}>
+                        <span className={cn(
+                          "font-medium px-3 py-1 rounded-full border",
+                          isMobile ? "text-xs" : "text-body-small",
+                          item.stock <= 5 
+                            ? 'bg-error-50 text-error-700 border-error-200 dark:bg-error-950/20 dark:text-error-400' 
+                            : 'bg-success-50 text-success-700 border-success-200 dark:bg-success-950/20 dark:text-success-400'
+                        )}>
+                          Stock: {item.stock}
+                        </span>
+                        <span className={cn(
+                          "font-medium text-primary-600 dark:text-primary-400 px-3 py-1 bg-primary-50 dark:bg-primary-950/20 rounded-full border border-primary-200 dark:border-primary-800",
+                          isMobile ? "text-xs" : "text-body-small"
+                        )}>
+                          ${item.price.toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Mobile-optimized Action Buttons */}
+                    <div className={cn(
+                      "flex gap-2 flex-shrink-0",
+                      isMobile ? "w-full" : ""
+                    )}>
+                      <TouchTarget minHeight={44} className="flex-1">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className={cn(
+                            "gap-2",
+                            isMobile ? "flex-1" : ""
+                          )}
+                        >
+                          <Edit className="h-4 w-4" />
+                          {isMobile ? "Edit" : "Edit"}
+                        </Button>
+                      </TouchTarget>
+                      
+                      <TouchTarget minHeight={44} className="flex-1">
+                        <ConfirmationDialog
+                          title="Delete Item"
+                          description={`Are you sure you want to delete "${item.name}"? This action cannot be undone.`}
+                          confirmText="Delete"
+                          variant="destructive"
+                          onConfirm={() => handleDelete(item.id, item.name)}
+                        >
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className={cn(
+                              "gap-2 text-destructive hover:bg-destructive/10 hover:border-destructive/20",
+                              isMobile ? "flex-1" : ""
+                            )}
+                            loading={isDeleting === item.id}
+                            loadingText="Deleting..."
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            {isMobile ? "Delete" : "Delete"}
+                          </Button>
+                        </ConfirmationDialog>
+                      </TouchTarget>
                     </div>
                   </div>
-                  
-                  {/* Action Buttons with Clear Hierarchy */}
-                  <div className="flex gap-2 flex-shrink-0">
-                    {/* Secondary action */}
-                    <Button variant="outline" size="sm" className="gap-2">
-                      <Edit className="h-4 w-4" />
-                      Edit
-                    </Button>
-                    
-                    {/* Destructive action */}
-                    <ConfirmationDialog
-                      title="Delete Item"
-                      description={`Are you sure you want to delete "${item.name}"? This action cannot be undone.`}
-                      confirmText="Delete"
-                      variant="destructive"
-                      onConfirm={() => handleDelete(item.id, item.name)}
-                    >
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="gap-2 text-destructive hover:bg-destructive/10 hover:border-destructive/20"
-                        loading={isDeleting === item.id}
-                        loadingText="Deleting..."
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        Delete
-                      </Button>
-                    </ConfirmationDialog>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </SwipeableCard>
           ))}
         </div>
       )}
