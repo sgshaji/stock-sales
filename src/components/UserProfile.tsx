@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,21 +43,21 @@ const UserProfile = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Profile Header */}
-      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+    <div className="space-system-lg animate-fade-in">
+      {/* Enhanced Profile Header */}
+      <Card className="bg-gradient-to-r from-primary-50 via-indigo-50 to-primary-50 border-primary-200 card-hover">
         <CardContent className="p-6">
           <div className="flex items-center space-x-4">
             <div className="relative">
               <Avatar className="h-20 w-20 border-4 border-white shadow-lg">
                 <AvatarImage src={user?.user_metadata?.avatar_url} />
-                <AvatarFallback className="bg-blue-500 text-white text-xl">
+                <AvatarFallback className="bg-primary-500 text-white text-xl">
                   {getInitials(formData.fullName)}
                 </AvatarFallback>
               </Avatar>
               <Button 
                 size="sm" 
-                className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-blue-600 hover:bg-blue-700"
+                className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-primary-600 hover:bg-primary-700 shadow-md"
                 onClick={() => {}}
               >
                 <Camera className="h-4 w-4" />
@@ -70,7 +69,7 @@ const UserProfile = () => {
                 <Mail className="h-4 w-4" />
                 {formData.email}
               </p>
-              <p className="text-sm text-blue-600 mt-1">Inventory Manager</p>
+              <p className="text-sm text-primary-600 mt-1 font-medium">Inventory Manager</p>
             </div>
             <Button 
               variant={isEditing ? "default" : "outline"}
@@ -84,15 +83,17 @@ const UserProfile = () => {
         </CardContent>
       </Card>
 
-      {/* Profile Information */}
-      <Card>
+      {/* Enhanced Profile Information */}
+      <Card className="card-hover">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-primary-100 rounded-lg">
+              <User className="h-5 w-5 text-primary-600" />
+            </div>
             Profile Information
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-system-md">
           <div className="grid grid-cols-1 gap-4">
             <div>
               <Label htmlFor="fullName">Full Name</Label>
@@ -166,15 +167,17 @@ const UserProfile = () => {
         </CardContent>
       </Card>
 
-      {/* Notification Preferences */}
-      <Card>
+      {/* Enhanced Notification Preferences */}
+      <Card className="card-hover">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Bell className="h-5 w-5 text-orange-600" />
+            <div className="p-2 bg-warning-100 rounded-lg">
+              <Bell className="h-5 w-5 text-warning-600" />
+            </div>
             Notification Preferences
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-system-md">
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">Email Notifications</p>
@@ -210,20 +213,22 @@ const UserProfile = () => {
         </CardContent>
       </Card>
 
-      {/* Security Settings */}
-      <Card>
+      {/* Enhanced Security Settings */}
+      <Card className="card-hover">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-success-100 rounded-lg">
+              <Shield className="h-5 w-5 text-success-600" />
+            </div>
             Security Settings
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Button variant="outline" className="w-full justify-start gap-2">
+        <CardContent className="space-system-md">
+          <Button variant="outline" className="w-full justify-start gap-2 interactive-hover">
             <Shield className="h-4 w-4" />
             Change Password
           </Button>
-          <Button variant="outline" className="w-full justify-start gap-2">
+          <Button variant="outline" className="w-full justify-start gap-2 interactive-hover">
             <Mail className="h-4 w-4" />
             Update Email Address
           </Button>

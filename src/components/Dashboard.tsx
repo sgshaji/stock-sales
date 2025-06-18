@@ -5,25 +5,25 @@ import { Progress } from "@/components/ui/progress";
 
 const Dashboard = () => {
   return (
-    <div className="space-y-6">
-      {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
+    <div className="space-system-lg animate-fade-in">
+      {/* Enhanced Welcome Section */}
+      <div className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl p-6 text-white shadow-lg card-hover">
         <h2 className="text-2xl font-bold mb-2">Welcome back!</h2>
-        <p className="text-blue-100">Here's what's happening with your inventory today</p>
+        <p className="text-primary-100 text-sm">Here's what's happening with your inventory today</p>
       </div>
 
-      {/* Key Metrics Grid */}
+      {/* Enhanced Key Metrics Grid */}
       <div className="grid grid-cols-2 gap-4">
-        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 hover:shadow-lg transition-shadow">
+        <Card className="bg-gradient-to-br from-success-50 to-success-100/50 border-success-200 card-hover">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <DollarSign className="h-4 w-4 text-green-600" />
+                <div className="p-2 bg-success-100 rounded-lg shadow-sm">
+                  <DollarSign className="h-4 w-4 text-success-600" />
                 </div>
-                <span className="text-gray-700">Today's Sales</span>
+                <span className="text-gray-700 font-medium">Today's Sales</span>
               </div>
-              <div className="flex items-center gap-1 text-green-600 text-xs">
+              <div className="flex items-center gap-1 text-success-600 text-xs font-medium status-success px-2 py-1 rounded-full border">
                 <ArrowUp className="h-3 w-3" />
                 12%
               </div>
@@ -31,21 +31,21 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-gray-900">$1,247</div>
-            <p className="text-xs text-gray-600">+$134 from yesterday</p>
-            <Progress value={75} className="mt-2 h-2" />
+            <p className="text-xs text-gray-600 mt-1">+$134 from yesterday</p>
+            <Progress value={75} className="mt-3 h-2" />
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200 hover:shadow-lg transition-shadow">
+        <Card className="bg-gradient-to-br from-info-50 to-info-100/50 border-info-200 card-hover">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Package className="h-4 w-4 text-blue-600" />
+                <div className="p-2 bg-info-100 rounded-lg shadow-sm">
+                  <Package className="h-4 w-4 text-info-600" />
                 </div>
-                <span className="text-gray-700">Total Items</span>
+                <span className="text-gray-700 font-medium">Total Items</span>
               </div>
-              <div className="flex items-center gap-1 text-blue-600 text-xs">
+              <div className="flex items-center gap-1 text-info-600 text-xs font-medium status-info px-2 py-1 rounded-full border">
                 <ArrowUp className="h-3 w-3" />
                 5%
               </div>
@@ -53,21 +53,21 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-gray-900">156</div>
-            <p className="text-xs text-gray-600">Across 12 categories</p>
-            <Progress value={62} className="mt-2 h-2" />
+            <p className="text-xs text-gray-600 mt-1">Across 12 categories</p>
+            <Progress value={62} className="mt-3 h-2" />
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200 hover:shadow-lg transition-shadow">
+        <Card className="bg-gradient-to-br from-primary-50 to-primary-100/50 border-primary-200 card-hover">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <ShoppingCart className="h-4 w-4 text-purple-600" />
+                <div className="p-2 bg-primary-100 rounded-lg shadow-sm">
+                  <ShoppingCart className="h-4 w-4 text-primary-600" />
                 </div>
-                <span className="text-gray-700">Orders</span>
+                <span className="text-gray-700 font-medium">Orders</span>
               </div>
-              <div className="flex items-center gap-1 text-purple-600 text-xs">
+              <div className="flex items-center gap-1 text-primary-600 text-xs font-medium bg-primary-50 text-primary-700 border-primary-200 px-2 py-1 rounded-full border">
                 <ArrowUp className="h-3 w-3" />
                 8%
               </div>
@@ -75,21 +75,21 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-gray-900">23</div>
-            <p className="text-xs text-gray-600">Today's transactions</p>
-            <Progress value={85} className="mt-2 h-2" />
+            <p className="text-xs text-gray-600 mt-1">Today's transactions</p>
+            <Progress value={85} className="mt-3 h-2" />
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200 hover:shadow-lg transition-shadow">
+        <Card className="bg-gradient-to-br from-warning-50 to-warning-100/50 border-warning-200 card-hover">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-amber-100 rounded-lg">
-                  <Users className="h-4 w-4 text-amber-600" />
+                <div className="p-2 bg-warning-100 rounded-lg shadow-sm">
+                  <Users className="h-4 w-4 text-warning-600" />
                 </div>
-                <span className="text-gray-700">Customers</span>
+                <span className="text-gray-700 font-medium">Customers</span>
               </div>
-              <div className="flex items-center gap-1 text-amber-600 text-xs">
+              <div className="flex items-center gap-1 text-warning-600 text-xs font-medium status-warning px-2 py-1 rounded-full border">
                 <ArrowUp className="h-3 w-3" />
                 3%
               </div>
@@ -97,44 +97,44 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-gray-900">42</div>
-            <p className="text-xs text-gray-600">Active this month</p>
-            <Progress value={45} className="mt-2 h-2" />
+            <p className="text-xs text-gray-600 mt-1">Active this month</p>
+            <Progress value={45} className="mt-3 h-2" />
           </CardContent>
         </Card>
       </div>
 
-      {/* Low Stock Alerts */}
-      <Card className="bg-gradient-to-br from-orange-50 to-red-50 border-orange-200">
+      {/* Enhanced Low Stock Alerts */}
+      <Card className="bg-gradient-to-br from-error-50 to-warning-50 border-error-200 card-hover">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
-            <div className="p-2 bg-orange-100 rounded-lg">
-              <AlertTriangle className="h-4 w-4 text-orange-600" />
+            <div className="p-2 bg-error-100 rounded-lg shadow-sm">
+              <AlertTriangle className="h-4 w-4 text-error-600" />
             </div>
-            <span>Low Stock Alerts</span>
-            <div className="ml-auto bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">
-              2 items
+            <span className="font-medium">Low Stock Alerts</span>
+            <div className="ml-auto status-error px-3 py-1 rounded-full text-xs font-medium border">
+              2 items need attention
             </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-orange-100">
+          <div className="space-system-sm">
+            <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-error-100 interactive-hover">
               <div>
                 <span className="font-medium text-sm">Premium Headphones</span>
                 <p className="text-xs text-gray-500">SKU: HD001</p>
               </div>
               <div className="text-right">
-                <span className="text-orange-600 font-bold">3 left</span>
+                <span className="text-error-600 font-bold">3 left</span>
                 <p className="text-xs text-gray-500">Reorder: 20</p>
               </div>
             </div>
-            <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-red-100">
+            <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-error-100 interactive-hover">
               <div>
                 <span className="font-medium text-sm">Wireless Mouse</span>
                 <p className="text-xs text-gray-500">SKU: MS002</p>
               </div>
               <div className="text-right">
-                <span className="text-red-600 font-bold">1 left</span>
+                <span className="text-error-600 font-bold">1 left</span>
                 <p className="text-xs text-gray-500">Reorder: 15</p>
               </div>
             </div>
@@ -142,24 +142,24 @@ const Dashboard = () => {
         </CardContent>
       </Card>
 
-      {/* Top Selling Items */}
-      <Card className="bg-gradient-to-br from-violet-50 to-purple-50 border-violet-200">
+      {/* Enhanced Top Selling Items */}
+      <Card className="bg-gradient-to-br from-primary-50 to-indigo-50 border-primary-200 card-hover">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
-            <div className="p-2 bg-violet-100 rounded-lg">
-              <TrendingUp className="h-4 w-4 text-violet-600" />
+            <div className="p-2 bg-primary-100 rounded-lg shadow-sm">
+              <TrendingUp className="h-4 w-4 text-primary-600" />
             </div>
-            <span>Top Selling Items</span>
-            <div className="ml-auto bg-violet-100 text-violet-700 px-2 py-1 rounded-full text-xs font-medium">
+            <span className="font-medium">Top Selling Items</span>
+            <div className="ml-auto bg-primary-50 text-primary-700 border-primary-200 px-3 py-1 rounded-full text-xs font-medium border">
               This week
             </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-violet-100">
+          <div className="space-system-sm">
+            <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-primary-100 interactive-hover">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center text-white text-xs font-bold">
+                <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-primary-600 rounded-lg flex items-center justify-center text-white text-xs font-bold shadow-sm">
                   1
                 </div>
                 <div>
@@ -168,13 +168,13 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="text-right">
-                <span className="font-bold text-green-600">15 sold</span>
+                <span className="font-bold text-success-600">15 sold</span>
                 <p className="text-xs text-gray-500">+$689.85</p>
               </div>
             </div>
-            <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-violet-100">
+            <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-primary-100 interactive-hover">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center justify-center text-white text-xs font-bold">
+                <div className="w-8 h-8 bg-gradient-to-r from-success-500 to-info-500 rounded-lg flex items-center justify-center text-white text-xs font-bold shadow-sm">
                   2
                 </div>
                 <div>
@@ -183,13 +183,13 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="text-right">
-                <span className="font-bold text-green-600">12 sold</span>
+                <span className="font-bold text-success-600">12 sold</span>
                 <p className="text-xs text-gray-500">+$155.88</p>
               </div>
             </div>
-            <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-violet-100">
+            <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-primary-100 interactive-hover">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg flex items-center justify-center text-white text-xs font-bold">
+                <div className="w-8 h-8 bg-gradient-to-r from-warning-500 to-warning-600 rounded-lg flex items-center justify-center text-white text-xs font-bold shadow-sm">
                   3
                 </div>
                 <div>
@@ -198,7 +198,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="text-right">
-                <span className="font-bold text-green-600">8 sold</span>
+                <span className="font-bold text-success-600">8 sold</span>
                 <p className="text-xs text-gray-500">+$71.92</p>
               </div>
             </div>

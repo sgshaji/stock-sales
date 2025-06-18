@@ -1,8 +1,9 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
+/* Design System Foundation - All colors, gradients, fonts, etc should be defined here */
 
 @layer base {
   :root {
@@ -15,7 +16,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 213.3 93.9% 67.8%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -32,24 +33,17 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 213.3 93.9% 67.8%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -63,7 +57,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 213.3 93.9% 67.8%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -98,6 +92,94 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* Typography Scale */
+  h1 {
+    @apply text-3xl font-bold tracking-tight;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold tracking-tight;
+  }
+
+  h3 {
+    @apply text-xl font-semibold;
+  }
+
+  h4 {
+    @apply text-lg font-medium;
+  }
+
+  h5 {
+    @apply text-base font-medium;
+  }
+
+  h6 {
+    @apply text-sm font-medium;
+  }
+}
+
+@layer components {
+  /* Micro-interactions and hover effects */
+  .interactive-hover {
+    @apply transition-all duration-200 ease-out hover:scale-[1.02] hover:shadow-md;
+  }
+
+  .card-hover {
+    @apply transition-all duration-200 ease-out hover:shadow-lg hover:-translate-y-0.5;
+  }
+
+  .button-press {
+    @apply transition-all duration-100 ease-out active:scale-[0.98];
+  }
+
+  /* Status indicators with semantic colors */
+  .status-success {
+    @apply bg-success-50 text-success-700 border-success-200;
+  }
+
+  .status-warning {
+    @apply bg-warning-50 text-warning-700 border-warning-200;
+  }
+
+  .status-error {
+    @apply bg-error-50 text-error-700 border-error-200;
+  }
+
+  .status-info {
+    @apply bg-info-50 text-info-700 border-info-200;
+  }
+
+  /* Consistent spacing system */
+  .space-system-xs {
+    @apply space-y-1;
+  }
+
+  .space-system-sm {
+    @apply space-y-2;
+  }
+
+  .space-system-md {
+    @apply space-y-4;
+  }
+
+  .space-system-lg {
+    @apply space-y-6;
+  }
+
+  .space-system-xl {
+    @apply space-y-8;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fade-in 0.2s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.15s ease-out;
   }
 }
