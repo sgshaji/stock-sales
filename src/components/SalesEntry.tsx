@@ -1,13 +1,10 @@
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { SearchInput } from "@/components/ui/search";
-import { EmptyState } from "@/components/ui/empty-state";
-import { EnhancedTable, Column } from "@/components/ui/enhanced-table";
-import { StatusBadge } from "@/components/ui/status-badge";
-import { ShoppingCart, Plus, Eye, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { SalesHeader } from "./sales/SalesHeader";
+import { SalesFilters } from "./sales/SalesFilters";
+import { SalesSelectionSummary } from "./sales/SalesSelectionSummary";
+import { SalesTableView } from "./sales/SalesTableView";
 
 interface Sale {
   id: number;
@@ -56,21 +53,6 @@ const SalesEntry = ({ searchQuery }: SalesEntryProps) => {
     });
   };
 
-  const effectiveSearch = searchQuery || localSearch;
-  const filteredSales = sales.filter(sale => 
-    sale.item.toLowerCase().includes(effectiveSearch.toLowerCase()) ||
-    (sale.customer && sale.customer.toLowerCase().includes(effectiveSearch.toLowerCase()))
-  );
-
-  const getStatusVariant = (status: Sale["status"]) => {
-    switch (status) {
-      case "completed": return "success";
-      case "pending": return "warning";
-      case "cancelled": return "danger";
-      default: return "default";
-    }
-  };
-
   const handleRowSelect = (sale: Sale, selected: boolean) => {
     if (selected) {
       setSelectedSales(prev => [...prev, sale]);
@@ -79,170 +61,31 @@ const SalesEntry = ({ searchQuery }: SalesEntryProps) => {
     }
   };
 
-  const columns: Column<Sale>[] = [
-    {
-      key: "id",
-      label: "Sale ID",
-      sortable: true,
-      render: (value) => (
-        <span className="font-mono text-sm">#{value}</span>
-      )
-    },
-    {
-      key: "item",
-      label: "Item",
-      sortable: true,
-      render: (value, sale) => (
-        <div>
-          <div className="font-medium">{value}</div>
-          {sale.customer && (
-            <div className="text-sm text-muted-foreground">Customer: {sale.customer}</div>
-          )}
-        </div>
-      )
-    },
-    {
-      key: "quantity",
-      label: "Qty",
-      sortable: true,
-      render: (value) => (
-        <span className="font-medium">{value}</span>
-      )
-    },
-    {
-      key: "price",
-      label: "Total",
-      sortable: true,
-      render: (value) => (
-        <span className="font-bold text-primary">${value.toFixed(2)}</span>
-      )
-    },
-    {
-      key: "date",
-      label: "Date",
-      sortable: true,
-      render: (value) => (
-        <span className="text-sm">{new Date(value).toLocaleDateString()}</span>
-      )
-    },
-    {
-      key: "status",
-      label: "Status",
-      sortable: true,
-      render: (value) => (
-        <StatusBadge variant={getStatusVariant(value)}>
-          {value.charAt(0).toUpperCase() + value.slice(1)}
-        </StatusBadge>
-      )
-    },
-    {
-      key: "id",
-      label: "Actions",
-      sortable: false,
-      render: (_, sale) => (
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="gap-2"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleViewSale(sale);
-          }}
-        >
-          <Eye className="h-4 w-4" />
-          View
-        </Button>
-      )
-    }
-  ];
-
-  const bulkActions = (
-    <div className="flex gap-2">
-      <Button variant="outline" size="sm" className="gap-2" onClick={handleExport}>
-        <Download className="h-4 w-4" />
-        Export Selected
-      </Button>
-    </div>
-  );
-
-  // Calculate totals for selected sales
-  const selectedTotal = selectedSales.reduce((sum, sale) => sum + sale.price, 0);
+  const effectiveSearch = searchQuery || localSearch;
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold">Sales Entry</h2>
-          <p className="text-muted-foreground">Record and track your sales</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={handleExport} className="gap-2">
-            <Download className="h-4 w-4" />
-            Export
-          </Button>
-          <Button onClick={handleAddSale} className="gap-2">
-            <Plus className="h-4 w-4" />
-            Add Sale
-          </Button>
-        </div>
-      </div>
+      <SalesHeader 
+        onAddSale={handleAddSale}
+        onExport={handleExport}
+      />
 
-      {!searchQuery && (
-        <SearchInput
-          placeholder="Search sales..."
-          onSearch={setLocalSearch}
-        />
-      )}
+      <SalesFilters 
+        searchQuery={searchQuery}
+        onSearch={setLocalSearch}
+      />
 
-      {selectedSales.length > 0 && (
-        <Card className="bg-primary-50 border-primary-200">
-          <CardContent className="p-4">
-            <div className="flex justify-between items-center">
-              <span className="font-medium">
-                {selectedSales.length} sale{selectedSales.length !== 1 ? 's' : ''} selected
-              </span>
-              <span className="font-bold text-primary">
-                Total: ${selectedTotal.toFixed(2)}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <SalesSelectionSummary selectedSales={selectedSales} />
 
-      {filteredSales.length === 0 ? (
-        <EmptyState
-          icon={ShoppingCart}
-          title={effectiveSearch ? "No sales found" : "No sales recorded"}
-          description={
-            effectiveSearch 
-              ? `No sales match "${effectiveSearch}". Try a different search term.`
-              : "Start recording your first sale to track revenue."
-          }
-          action={{
-            label: "Record First Sale",
-            onClick: handleAddSale
-          }}
-        />
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">
-              Sales Records ({filteredSales.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <EnhancedTable
-              data={filteredSales}
-              columns={columns}
-              pageSize={10}
-              selectedRows={selectedSales}
-              onRowSelect={handleRowSelect}
-              bulkActions={bulkActions}
-              onRowClick={handleViewSale}
-            />
-          </CardContent>
-        </Card>
-      )}
+      <SalesTableView
+        sales={sales}
+        selectedSales={selectedSales}
+        effectiveSearch={effectiveSearch}
+        onRowSelect={handleRowSelect}
+        onViewSale={handleViewSale}
+        onExport={handleExport}
+        onAddSale={handleAddSale}
+      />
     </div>
   );
 };
