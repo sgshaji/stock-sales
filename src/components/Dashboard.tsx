@@ -1,18 +1,56 @@
-
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, Package, DollarSign, AlertTriangle, ArrowUp, ArrowDown, ShoppingCart, Users } from "lucide-react";
+import { LoadingGrid, LoadingCard } from "@/components/ui/loading-skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
+import { TrendingUp, Package, DollarSign, AlertTriangle, ArrowUp, ArrowDown, ShoppingCart, Users, Plus } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
-const Dashboard = () => {
+interface DashboardProps {
+  searchQuery?: string;
+}
+
+const Dashboard = ({ searchQuery }: DashboardProps) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasData, setHasData] = useState(true);
+
+  // Simulate loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <LoadingCard count={1} />
+        <LoadingGrid count={4} />
+        <LoadingCard count={2} />
+      </div>
+    );
+  }
+
+  // Show empty state if no data and searching
+  if (searchQuery && searchQuery.length > 0 && !hasData) {
+    return (
+      <EmptyState
+        icon={TrendingUp}
+        title="No results found"
+        description={`No dashboard data matches "${searchQuery}". Try a different search term.`}
+      />
+    );
+  }
+
   return (
-    <div className="space-system-lg animate-fade-in">
-      {/* Enhanced Welcome Section */}
-      <div className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl p-6 text-white shadow-lg card-hover">
+    <div className="space-y-6 animate-fade-in">
+      {/* Welcome Section */}
+      <div className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow duration-200">
         <h2 className="text-2xl font-bold mb-2">Welcome back!</h2>
         <p className="text-primary-100 text-sm">Here's what's happening with your inventory today</p>
       </div>
 
-      {/* Enhanced Key Metrics Grid */}
+      {/* Key Metrics Grid */}
       <div className="grid grid-cols-2 gap-4">
         <Card className="bg-gradient-to-br from-success-50 to-success-100/50 border-success-200 card-hover">
           <CardHeader className="pb-2">
@@ -103,47 +141,47 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      {/* Enhanced Low Stock Alerts */}
-      <Card className="bg-gradient-to-br from-error-50 to-warning-50 border-error-200 card-hover">
+      {/* Low Stock Alerts */}
+      <Card className="bg-gradient-to-br from-destructive/5 to-warning/5 border-destructive/20 hover:shadow-lg transition-shadow duration-200">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
-            <div className="p-2 bg-error-100 rounded-lg shadow-sm">
-              <AlertTriangle className="h-4 w-4 text-error-600" />
+            <div className="p-2 bg-destructive/10 rounded-lg shadow-sm">
+              <AlertTriangle className="h-4 w-4 text-destructive" />
             </div>
             <span className="font-medium">Low Stock Alerts</span>
-            <div className="ml-auto status-error px-3 py-1 rounded-full text-xs font-medium border">
+            <div className="ml-auto bg-destructive/10 text-destructive px-3 py-1 rounded-full text-xs font-medium border border-destructive/20">
               2 items need attention
             </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-system-sm">
-            <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-error-100 interactive-hover">
+          <div className="space-y-3">
+            <div className="flex justify-between items-center p-3 bg-background rounded-lg border border-destructive/10 hover:shadow-sm transition-shadow duration-200">
               <div>
                 <span className="font-medium text-sm">Premium Headphones</span>
-                <p className="text-xs text-gray-500">SKU: HD001</p>
+                <p className="text-xs text-muted-foreground">SKU: HD001</p>
               </div>
               <div className="text-right">
-                <span className="text-error-600 font-bold">3 left</span>
-                <p className="text-xs text-gray-500">Reorder: 20</p>
+                <span className="text-destructive font-bold">3 left</span>
+                <p className="text-xs text-muted-foreground">Reorder: 20</p>
               </div>
             </div>
-            <div className="flex justify-between items-center p-3 bg-white rounded-lg border border-error-100 interactive-hover">
+            <div className="flex justify-between items-center p-3 bg-background rounded-lg border border-destructive/10 hover:shadow-sm transition-shadow duration-200">
               <div>
                 <span className="font-medium text-sm">Wireless Mouse</span>
-                <p className="text-xs text-gray-500">SKU: MS002</p>
+                <p className="text-xs text-muted-foreground">SKU: MS002</p>
               </div>
               <div className="text-right">
-                <span className="text-error-600 font-bold">1 left</span>
-                <p className="text-xs text-gray-500">Reorder: 15</p>
+                <span className="text-destructive font-bold">1 left</span>
+                <p className="text-xs text-muted-foreground">Reorder: 15</p>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Enhanced Top Selling Items */}
-      <Card className="bg-gradient-to-br from-primary-50 to-indigo-50 border-primary-200 card-hover">
+      {/* Top Selling Items */}
+      <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 hover:shadow-lg transition-shadow duration-200">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <div className="p-2 bg-primary-100 rounded-lg shadow-sm">
