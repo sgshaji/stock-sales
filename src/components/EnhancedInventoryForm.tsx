@@ -1,4 +1,3 @@
-
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -7,22 +6,31 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { SmartInput } from "@/components/ui/form-validation"
 import { ProgressiveFormSection } from "@/components/ui/progressive-form"
 import { ContextualHelp } from "@/components/ui/contextual-help"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Package, DollarSign, Info, Save, X } from "lucide-react"
+import { Package, DollarSign, Info, Save, X, Sparkles } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 const inventorySchema = z.object({
-  name: z.string().min(1, "Product name is required"),
-  sku: z.string().min(1, "SKU is required"),
-  price: z.number().min(0, "Price must be positive"),
-  stock: z.number().min(0, "Stock must be positive"),
-  description: z.string().optional(),
-  category: z.string().optional(),
-  supplier: z.string().optional(),
-  minStockLevel: z.number().min(0).optional(),
-  maxStockLevel: z.number().min(0).optional(),
+  name: z.string().min(1, "Product name is required").max(100, "Name too long"),
+  sku: z.string().min(1, "SKU is required").regex(/^[A-Z0-9-]+$/, "SKU must contain only uppercase letters, numbers, and hyphens"),
+  price: z.number().min(0, "Price must be positive").max(999999, "Price too high"),
+  stock: z.number().min(0, "Stock must be positive").max(999999, "Stock too high"),
+  description: z.string().max(500, "Description too long").optional(),
+  category: z.string().max(50, "Category name too long").optional(),
+  supplier: z.string().max(100, "Supplier name too long").optional(),
+  minStockLevel: z.number().min(0).max(999999).optional(),
+  maxStockLevel: z.number().min(0).max(999999).optional(),
+}).refine((data) => {
+  if (data.minStockLevel && data.maxStockLevel) {
+    return data.maxStockLevel >= data.minStockLevel
+  }
+  return true
+}, {
+  message: "Maximum stock level must be greater than minimum",
+  path: ["maxStockLevel"]
 })
 
 type InventoryFormData = z.infer<typeof inventorySchema>
@@ -40,9 +48,11 @@ export function EnhancedInventoryForm({
 }: EnhancedInventoryFormProps) {
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [skuSuggestion, setSkuSuggestion] = useState("")
 
   const form = useForm<InventoryFormData>({
     resolver: zodResolver(inventorySchema),
+    mode: "onChange",
     defaultValues: {
       name: "",
       sku: "",
@@ -57,18 +67,35 @@ export function EnhancedInventoryForm({
     },
   })
 
+  // Smart SKU generation based on product name
+  const generateSkuSuggestion = (name: string) => {
+    if (!name) return ""
+    
+    const cleanName = name
+      .toUpperCase()
+      .replace(/[^A-Z0-9\s]/g, "")
+      .split(" ")
+      .filter(word => word.length > 0)
+      .slice(0, 3)
+      .map(word => word.substring(0, 3))
+      .join("-")
+    
+    const randomSuffix = Math.floor(Math.random() * 100).toString().padStart(2, "0")
+    return `${cleanName}-${randomSuffix}`
+  }
+
   const handleSubmit = async (data: InventoryFormData) => {
     setIsSubmitting(true)
     try {
       await onSubmit(data)
       toast({
         title: "Success",
-        description: "Product saved successfully",
+        description: `Product ${initialData ? 'updated' : 'created'} successfully`,
       })
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to save product",
+        description: `Failed to ${initialData ? 'update' : 'create'} product`,
         variant: "destructive",
       })
     } finally {
@@ -76,32 +103,48 @@ export function EnhancedInventoryForm({
     }
   }
 
+  // Watch product name for SKU suggestions
+  const productName = form.watch("name")
+  const currentSku = form.watch("sku")
+
+  React.useEffect(() => {
+    if (productName && !currentSku) {
+      const suggestion = generateSkuSuggestion(productName)
+      setSkuSuggestion(suggestion)
+    } else {
+      setSkuSuggestion("")
+    }
+  }, [productName, currentSku])
+
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Package className="h-5 w-5" />
+    <Card className="w-full max-w-2xl mx-auto shadow-xl border-0 bg-card/95 backdrop-blur-sm">
+      <CardHeader className="pb-6">
+        <CardTitle className="flex items-center gap-3 text-display-small">
+          <div className="p-2 bg-primary-100 dark:bg-primary-900/30 rounded-xl">
+            <Package className="h-6 w-6 text-primary-600 dark:text-primary-400" />
+          </div>
           {initialData ? "Edit Product" : "Add New Product"}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             {/* Basic Information - Always expanded */}
             <ProgressiveFormSection
               title="Basic Information"
               description="Essential product details"
               defaultExpanded={true}
               required={true}
+              className="bg-gradient-to-br from-primary-50/50 to-transparent dark:from-primary-950/20"
             >
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <FormField
                     control={form.control}
                     name="name"
-                    render={({ field }) => (
+                    render={({ field, fieldState }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center gap-2">
+                        <FormLabel className="flex items-center gap-2 text-sm font-semibold">
                           Product Name
                           <ContextualHelp
                             title="Product Name"
@@ -109,7 +152,15 @@ export function EnhancedInventoryForm({
                           />
                         </FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter product name" {...field} />
+                          <SmartInput
+                            placeholder="Enter product name"
+                            validationState={
+                              fieldState.error ? "invalid" : 
+                              field.value && !fieldState.error ? "valid" : "idle"
+                            }
+                            validationMessage={fieldState.error?.message}
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -119,17 +170,37 @@ export function EnhancedInventoryForm({
                   <FormField
                     control={form.control}
                     name="sku"
-                    render={({ field }) => (
+                    render={({ field, fieldState }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center gap-2">
+                        <FormLabel className="flex items-center gap-2 text-sm font-semibold">
                           SKU
                           <ContextualHelp
                             title="Stock Keeping Unit (SKU)"
-                            content="A unique identifier for this product. Use letters, numbers, and hyphens. Example: HD-001 or MOUSE-WL-001"
+                            content="A unique identifier for this product. Use uppercase letters, numbers, and hyphens. Example: HD-001 or MOUSE-WL-001"
                           />
                         </FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g., HD-001" {...field} />
+                          <div className="space-y-2">
+                            <SmartInput
+                              placeholder="e.g., HD-001"
+                              validationState={
+                                fieldState.error ? "invalid" : 
+                                field.value && !fieldState.error ? "valid" : "idle"
+                              }
+                              validationMessage={fieldState.error?.message}
+                              {...field}
+                            />
+                            {skuSuggestion && !field.value && (
+                              <button
+                                type="button"
+                                onClick={() => field.onChange(skuSuggestion)}
+                                className="flex items-center gap-2 text-xs text-primary-600 hover:text-primary-700 transition-colors"
+                              >
+                                <Sparkles className="h-3 w-3" />
+                                Use suggestion: {skuSuggestion}
+                              </button>
+                            )}
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -137,21 +208,26 @@ export function EnhancedInventoryForm({
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <FormField
                     control={form.control}
                     name="price"
-                    render={({ field }) => (
+                    render={({ field, fieldState }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center gap-2">
+                        <FormLabel className="flex items-center gap-2 text-sm font-semibold">
                           <DollarSign className="h-4 w-4" />
                           Price
                         </FormLabel>
                         <FormControl>
-                          <Input
+                          <SmartInput
                             type="number"
                             step="0.01"
                             placeholder="0.00"
+                            validationState={
+                              fieldState.error ? "invalid" : 
+                              field.value > 0 && !fieldState.error ? "valid" : "idle"
+                            }
+                            validationMessage={fieldState.error?.message}
                             {...field}
                             onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
                           />
@@ -164,13 +240,18 @@ export function EnhancedInventoryForm({
                   <FormField
                     control={form.control}
                     name="stock"
-                    render={({ field }) => (
+                    render={({ field, fieldState }) => (
                       <FormItem>
-                        <FormLabel>Current Stock</FormLabel>
+                        <FormLabel className="text-sm font-semibold">Current Stock</FormLabel>
                         <FormControl>
-                          <Input
+                          <SmartInput
                             type="number"
                             placeholder="0"
+                            validationState={
+                              fieldState.error ? "invalid" : 
+                              field.value >= 0 && !fieldState.error ? "valid" : "idle"
+                            }
+                            validationMessage={fieldState.error?.message}
                             {...field}
                             onChange={e => field.onChange(parseInt(e.target.value) || 0)}
                           />
@@ -299,21 +380,23 @@ export function EnhancedInventoryForm({
               </div>
             </ProgressiveFormSection>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            {/* Enhanced Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 pt-6">
               <Button
                 type="submit"
-                disabled={isSubmitting}
-                className="flex-1 sm:flex-none gap-2"
+                loading={isSubmitting}
+                className="flex-1 sm:flex-none gap-2 h-12"
+                size="lg"
               >
                 <Save className="h-4 w-4" />
-                {isSubmitting ? "Saving..." : "Save Product"}
+                {isSubmitting ? "Saving..." : `${initialData ? 'Update' : 'Create'} Product`}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={onCancel}
-                className="flex-1 sm:flex-none gap-2"
+                className="flex-1 sm:flex-none gap-2 h-12"
+                size="lg"
               >
                 <X className="h-4 w-4" />
                 Cancel
