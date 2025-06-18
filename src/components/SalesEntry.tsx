@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,13 +23,11 @@ interface Sale {
   subtotal: number;
   totalDiscount: number;
   finalTotal: number;
-  customerName?: string;
 }
 
 const SalesEntry = () => {
   const [currentSale, setCurrentSale] = useState<SaleItem[]>([]);
   const [dailySales, setDailySales] = useState<Sale[]>([]);
-  const [customerName, setCustomerName] = useState("");
   const [newItem, setNewItem] = useState({
     itemName: "",
     quantity: 1,
@@ -110,13 +107,11 @@ const SalesEntry = () => {
         items: [...currentSale],
         subtotal,
         totalDiscount,
-        finalTotal,
-        customerName: customerName || undefined
+        finalTotal
       };
       
       setDailySales([newSale, ...dailySales]);
       setCurrentSale([]);
-      setCustomerName("");
       alert("Sale completed successfully!");
     }
   };
@@ -156,16 +151,6 @@ const SalesEntry = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div>
-            <Label htmlFor="customer-name">Customer Name (Optional)</Label>
-            <Input
-              id="customer-name"
-              placeholder="Enter customer name"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-            />
-          </div>
-
           <div>
             <Label htmlFor="item-select">Select Item</Label>
             <Select value={newItem.itemName} onValueChange={handleItemSelect}>
@@ -303,9 +288,6 @@ const SalesEntry = () => {
                   <div>
                     <p className="font-medium text-sm">Sale #{sale.id.slice(-4)}</p>
                     <p className="text-xs text-gray-600">{sale.time}</p>
-                    {sale.customerName && (
-                      <p className="text-xs text-blue-600">Customer: {sale.customerName}</p>
-                    )}
                   </div>
                   <p className="font-semibold text-green-600">${sale.finalTotal.toFixed(2)}</p>
                 </div>
