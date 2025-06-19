@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { SalesHeader } from "./sales/SalesHeader";
 import { SalesFilters } from "./sales/SalesFilters";
 import { SalesSelectionSummary } from "./sales/SalesSelectionSummary";
 import { SalesTableView } from "./sales/SalesTableView";
@@ -64,11 +63,6 @@ const SalesEntry = ({ searchQuery }: SalesEntryProps) => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <SalesHeader 
-        onAddSale={handleAddSale}
-        onExport={handleExport}
-      />
-
       <SalesFilters 
         searchQuery={searchQuery}
         onSearch={setLocalSearch}
