@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { EnhancedTable, Column } from "@/components/ui/enhanced-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Users, Plus, Trash2, Edit, Phone, Mail, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Vendor {
   id: number;
@@ -25,6 +25,7 @@ interface VendorManagementProps {
 }
 
 const VendorManagement = ({ searchQuery }: VendorManagementProps) => {
+  const isMobile = useIsMobile();
   const [localSearch, setLocalSearch] = useState("");
   const [selectedVendors, setSelectedVendors] = useState<Vendor[]>([]);
   const [vendors] = useState<Vendor[]>([
@@ -142,15 +143,15 @@ const VendorManagement = ({ searchQuery }: VendorManagementProps) => {
       label: "Actions",
       sortable: false,
       render: (_, vendor) => (
-        <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+        <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
           <Button 
             variant="outline" 
-            size="sm" 
-            className="gap-2"
+            size={isMobile ? "icon-sm" : "sm"}
+            className={isMobile ? "" : "gap-2"}
             onClick={() => handleEditVendor(vendor)}
           >
             <Edit className="h-4 w-4" />
-            Edit
+            {!isMobile && <span>Edit</span>}
           </Button>
           <ConfirmationDialog
             title="Delete Vendor"
@@ -159,9 +160,13 @@ const VendorManagement = ({ searchQuery }: VendorManagementProps) => {
             variant="destructive"
             onConfirm={() => handleDelete(vendor.name)}
           >
-            <Button variant="outline" size="sm" className="gap-2 text-destructive hover:bg-destructive/10">
+            <Button 
+              variant="outline" 
+              size={isMobile ? "icon-sm" : "sm"}
+              className={isMobile ? "text-destructive hover:bg-destructive/10" : "gap-2 text-destructive hover:bg-destructive/10"}
+            >
               <Trash2 className="h-4 w-4" />
-              Delete
+              {!isMobile && <span>Delete</span>}
             </Button>
           </ConfirmationDialog>
         </div>
@@ -170,10 +175,15 @@ const VendorManagement = ({ searchQuery }: VendorManagementProps) => {
   ];
 
   const bulkActions = (
-    <div className="flex gap-2">
-      <Button variant="outline" size="sm" className="gap-2" onClick={handleExport}>
+    <div className="flex gap-1">
+      <Button 
+        variant="outline" 
+        size={isMobile ? "icon-sm" : "sm"}
+        className={isMobile ? "" : "gap-2"}
+        onClick={handleExport}
+      >
         <Download className="h-4 w-4" />
-        Export Selected
+        {!isMobile && <span>Export Selected</span>}
       </Button>
       <ConfirmationDialog
         title="Delete Selected Vendors"
@@ -182,29 +192,42 @@ const VendorManagement = ({ searchQuery }: VendorManagementProps) => {
         variant="destructive"
         onConfirm={handleBulkDelete}
       >
-        <Button variant="destructive" size="sm" className="gap-2">
+        <Button 
+          variant="destructive" 
+          size={isMobile ? "icon-sm" : "sm"}
+          className={isMobile ? "" : "gap-2"}
+        >
           <Trash2 className="h-4 w-4" />
-          Delete Selected
+          {!isMobile && <span>Delete Selected</span>}
         </Button>
       </ConfirmationDialog>
     </div>
   );
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 animate-fade-in">
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Vendor Management</h2>
           <p className="text-muted-foreground">Manage your supplier relationships</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={handleExport} className="gap-2">
+        <div className="flex gap-1">
+          <Button 
+            variant="outline" 
+            onClick={handleExport} 
+            size={isMobile ? "icon" : "default"}
+            className={isMobile ? "" : "gap-2"}
+          >
             <Download className="h-4 w-4" />
-            Export
+            {!isMobile && <span>Export</span>}
           </Button>
-          <Button onClick={handleAddVendor} className="gap-2">
+          <Button 
+            onClick={handleAddVendor} 
+            size={isMobile ? "icon" : "default"}
+            className={isMobile ? "" : "gap-2"}
+          >
             <Plus className="h-4 w-4" />
-            Add Vendor
+            {!isMobile && <span>Add Vendor</span>}
           </Button>
         </div>
       </div>

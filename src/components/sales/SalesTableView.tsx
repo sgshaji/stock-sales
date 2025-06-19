@@ -1,10 +1,10 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { EnhancedTable, Column } from "@/components/ui/enhanced-table";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { ShoppingCart, Eye, Download } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Sale {
   id: number;
@@ -35,6 +35,8 @@ export const SalesTableView = ({
   onExport,
   onAddSale
 }: SalesTableViewProps) => {
+  const isMobile = useIsMobile();
+  
   const filteredSales = sales.filter(sale => 
     sale.item.toLowerCase().includes(effectiveSearch.toLowerCase()) ||
     (sale.customer && sale.customer.toLowerCase().includes(effectiveSearch.toLowerCase()))
@@ -112,25 +114,30 @@ export const SalesTableView = ({
       render: (_, sale) => (
         <Button 
           variant="outline" 
-          size="sm" 
-          className="gap-2"
+          size={isMobile ? "icon-sm" : "sm"}
+          className={isMobile ? "" : "gap-2"}
           onClick={(e) => {
             e.stopPropagation();
             onViewSale(sale);
           }}
         >
           <Eye className="h-4 w-4" />
-          View
+          {!isMobile && <span>View</span>}
         </Button>
       )
     }
   ];
 
   const bulkActions = (
-    <div className="flex gap-2">
-      <Button variant="outline" size="sm" className="gap-2" onClick={onExport}>
+    <div className="flex gap-1">
+      <Button 
+        variant="outline" 
+        size={isMobile ? "icon-sm" : "sm"}
+        className={isMobile ? "" : "gap-2"}
+        onClick={onExport}
+      >
         <Download className="h-4 w-4" />
-        Export Selected
+        {!isMobile && <span>Export Selected</span>}
       </Button>
     </div>
   );
