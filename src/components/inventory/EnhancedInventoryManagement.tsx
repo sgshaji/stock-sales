@@ -1,12 +1,10 @@
 
 import { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { LoadingCard } from "@/components/ui/loading-skeleton";
 import { SmartFilterBar } from "./SmartFilterBar";
 import { IntelligentSearch } from "./IntelligentSearch";
 import { FlatInventoryList } from "./FlatInventoryList";
-import { InventoryTileView } from "./InventoryTileView";
 import { FloatingActionButton } from "./FloatingActionButton";
 import { BatchActionBar } from "./BatchActionBar";
 import { Package } from "lucide-react";
@@ -22,8 +20,6 @@ interface InventoryItem {
   price: number;
   category?: string;
 }
-
-type ViewType = "list" | "tile";
 
 interface EnhancedInventoryManagementProps {
   searchQuery?: string;
@@ -41,7 +37,6 @@ export const EnhancedInventoryManagement = ({ searchQuery }: EnhancedInventoryMa
   const [isLoading, setIsLoading] = useState(false);
   const [localSearch, setLocalSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
-  const [viewType, setViewType] = useState<ViewType>("list");
   const [selectedItems, setSelectedItems] = useState<InventoryItem[]>([]);
   
   const [items] = useState<InventoryItem[]>([
@@ -54,22 +49,6 @@ export const EnhancedInventoryManagement = ({ searchQuery }: EnhancedInventoryMa
 
   const { toast } = useToast();
   const isMobile = useIsMobile();
-
-  // Load saved view preference
-  useEffect(() => {
-    const savedView = localStorage.getItem("inventory-view-preference") as ViewType;
-    if (savedView) {
-      setViewType(savedView);
-    } else {
-      setViewType(isMobile ? "tile" : "list");
-    }
-  }, [isMobile]);
-
-  // Save view preference
-  const handleViewChange = (view: ViewType) => {
-    setViewType(view);
-    localStorage.setItem("inventory-view-preference", view);
-  };
 
   // Calculate category counts
   const categoriesWithCounts = predefinedCategories.map(cat => ({
@@ -174,8 +153,6 @@ export const EnhancedInventoryManagement = ({ searchQuery }: EnhancedInventoryMa
           categories={categoriesWithCounts}
           activeCategory={activeCategory}
           onCategoryChange={setActiveCategory}
-          view={viewType}
-          onViewChange={handleViewChange}
           totalItems={items.length}
           filteredCount={filteredItems.length}
           searchQuery={effectiveSearch}
@@ -203,21 +180,13 @@ export const EnhancedInventoryManagement = ({ searchQuery }: EnhancedInventoryMa
           </div>
         ) : (
           <div className="space-y-0">
-            {viewType === "list" ? (
-              <FlatInventoryList
-                items={filteredItems}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                selectedItems={selectedItems}
-                onSelect={handleRowSelect}
-              />
-            ) : (
-              <InventoryTileView
-                items={filteredItems}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
-            )}
+            <FlatInventoryList
+              items={filteredItems}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              selectedItems={selectedItems}
+              onSelect={handleRowSelect}
+            />
           </div>
         )}
       </div>

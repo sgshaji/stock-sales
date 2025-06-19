@@ -2,8 +2,6 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { List, Grid3X3, Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Category {
@@ -13,14 +11,10 @@ interface Category {
   color?: string;
 }
 
-type ViewType = "list" | "tile";
-
 interface SmartFilterBarProps {
   categories: Category[];
   activeCategory: string;
   onCategoryChange: (categoryId: string) => void;
-  view: ViewType;
-  onViewChange: (view: ViewType) => void;
   totalItems: number;
   filteredCount: number;
   searchQuery?: string;
@@ -32,8 +26,6 @@ export const SmartFilterBar = ({
   categories,
   activeCategory,
   onCategoryChange,
-  view,
-  onViewChange,
   totalItems,
   filteredCount,
   searchQuery,
@@ -90,7 +82,7 @@ export const SmartFilterBar = ({
         <ScrollBar orientation="horizontal" className="invisible" />
       </ScrollArea>
 
-      {/* Results count and view toggle */}
+      {/* Results count */}
       <div className="flex items-center justify-between px-4 pt-2">
         <div className="text-sm text-muted-foreground">
           {filteredCount} {filteredCount === 1 ? 'item' : 'items'}
@@ -100,31 +92,6 @@ export const SmartFilterBar = ({
             </span>
           )}
         </div>
-        
-        {/* Compact View Toggle */}
-        <ToggleGroup 
-          type="single" 
-          value={view} 
-          onValueChange={(value) => value && onViewChange(value as ViewType)}
-          className="bg-background border border-border/40 rounded-lg h-8"
-        >
-          <ToggleGroupItem 
-            value="list" 
-            aria-label="List view" 
-            size="sm"
-            className="h-7 w-8 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-          >
-            <List className="h-3.5 w-3.5" />
-          </ToggleGroupItem>
-          <ToggleGroupItem 
-            value="tile" 
-            aria-label="Grid view" 
-            size="sm"
-            className="h-7 w-8 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-          >
-            <Grid3X3 className="h-3.5 w-3.5" />
-          </ToggleGroupItem>
-        </ToggleGroup>
       </div>
     </div>
   );
