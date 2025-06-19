@@ -11,31 +11,52 @@ export type Database = {
     Tables: {
       inventory_items: {
         Row: {
+          category: string | null
           created_at: string
           id: string
+          last_restocked: string | null
+          last_sold: string | null
           name: string
           price: number
+          purchase_price: number | null
+          reorder_point: number | null
+          sku: string | null
           stock_quantity: number | null
           updated_at: string
           user_id: string | null
+          velocity: string | null
         }
         Insert: {
+          category?: string | null
           created_at?: string
           id?: string
+          last_restocked?: string | null
+          last_sold?: string | null
           name: string
           price: number
+          purchase_price?: number | null
+          reorder_point?: number | null
+          sku?: string | null
           stock_quantity?: number | null
           updated_at?: string
           user_id?: string | null
+          velocity?: string | null
         }
         Update: {
+          category?: string | null
           created_at?: string
           id?: string
+          last_restocked?: string | null
+          last_sold?: string | null
           name?: string
           price?: number
+          purchase_price?: number | null
+          reorder_point?: number | null
+          sku?: string | null
           stock_quantity?: number | null
           updated_at?: string
           user_id?: string | null
+          velocity?: string | null
         }
         Relationships: []
       }
