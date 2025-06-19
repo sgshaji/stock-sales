@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { TouchTarget } from "@/components/ui/mobile-touch";
@@ -21,13 +20,6 @@ export const TodayHeader = memo<TodayHeaderProps>(({ onSearch, activeTab, onTabC
   const [isSigningOut, setIsSigningOut] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-
-  // Format today's date
-  const today = new Date().toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric'
-  });
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
@@ -80,107 +72,93 @@ export const TodayHeader = memo<TodayHeaderProps>(({ onSearch, activeTab, onTabC
   };
 
   return (
-    <div className="bg-background/95 backdrop-blur-md shadow-sm border-b border-border/30 sticky top-0 z-20">
-      <div className="px-4 py-3">
-        {/* Main Header Row */}
-        <div className="flex items-center justify-between mb-3">
-          {/* Left: Date, StockFlow Brand & Store Name */}
+    <div className="bg-background/95 backdrop-blur-md shadow-sm border-b border-border/20 sticky top-0 z-20">
+      <div className="px-4 py-4">
+        {/* Single Clean Header Row */}
+        <div className="flex items-center justify-between">
+          {/* Left: StockFlow + Store Name Combined */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span className="text-body-small font-medium text-muted-foreground">
-                  {today}
-                </span>
-                <span className="text-muted-foreground">•</span>
-                <h1 className="text-title-medium font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
-                  StockFlow
-                </h1>
-              </div>
-              <p className="text-body-small text-muted-foreground truncate">
+              <h1 className="text-title-large font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+                StockFlow
+              </h1>
+              <p className="text-body-small text-muted-foreground truncate -mt-0.5">
                 {getWorkspaceName()}
               </p>
             </div>
           </div>
 
-          {/* Right: User Profile & Actions (Removed Revenue Badge) */}
+          {/* Right: Essential Actions Only */}
           <div className="flex items-center gap-2 flex-shrink-0">
             {/* User Avatar */}
-            <TouchTarget minHeight={40}>
+            <TouchTarget minHeight={44}>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => onTabChange?.("profile")}
                 className={cn(
-                  "h-9 w-9 p-0 rounded-full",
+                  "h-10 w-10 p-0 rounded-full",
                   activeTab === "profile" 
                     ? "bg-primary-50 ring-2 ring-primary-200" 
                     : "hover:bg-accent/50"
                 )}
                 title="View profile"
               >
-                <Avatar className="h-8 w-8">
+                <Avatar className="h-9 w-9">
                   <AvatarImage src={user?.user_metadata?.avatar_url} />
-                  <AvatarFallback className="bg-primary-100 text-primary-700 text-xs font-semibold">
+                  <AvatarFallback className="bg-primary-100 text-primary-700 text-sm font-semibold">
                     {getUserInitials()}
                   </AvatarFallback>
                 </Avatar>
               </Button>
             </TouchTarget>
 
-            {/* Action Buttons */}
-            <div className="flex items-center bg-background/60 rounded-xl border border-border/30 backdrop-blur-sm p-0.5 gap-0.5">
-              <TouchTarget minHeight={36}>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => setShowSearch(!showSearch)}
-                  className={cn(
-                    "h-8 w-8 p-0 rounded-lg",
-                    showSearch 
-                      ? "bg-primary-50 text-primary-600 shadow-sm" 
-                      : "hover:bg-accent/50"
-                  )}
-                  title="Toggle search"
-                >
-                  <Search className="h-3.5 w-3.5" />
-                </Button>
-              </TouchTarget>
-              
-              <TouchTarget minHeight={36}>
-                <div className="h-8 w-8 flex items-center justify-center">
-                  <ThemeToggle />
-                </div>
-              </TouchTarget>
-              
-              <TouchTarget minHeight={36}>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={handleSettingsClick}
-                  className={cn(
-                    "h-8 w-8 p-0 rounded-lg",
-                    (activeTab === "profile" || window.location.pathname === '/settings')
-                      ? "bg-primary-50 text-primary-600 shadow-sm" 
-                      : "hover:bg-accent/50"
-                  )}
-                  title="Open settings"
-                >
-                  <Settings className="h-3.5 w-3.5" />
-                </Button>
-              </TouchTarget>
-            </div>
+            {/* Essential Actions - Search & Settings Only */}
+            <TouchTarget minHeight={44}>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setShowSearch(!showSearch)}
+                className={cn(
+                  "h-10 w-10 p-0 rounded-full",
+                  showSearch 
+                    ? "bg-primary-50 text-primary-600 shadow-sm" 
+                    : "hover:bg-accent/50"
+                )}
+                title="Toggle search"
+              >
+                <Search className="h-4 w-4" />
+              </Button>
+            </TouchTarget>
+            
+            <TouchTarget minHeight={44}>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={handleSettingsClick}
+                className={cn(
+                  "h-10 w-10 p-0 rounded-full",
+                  (activeTab === "profile" || window.location.pathname === '/settings')
+                    ? "bg-primary-50 text-primary-600 shadow-sm" 
+                    : "hover:bg-accent/50"
+                )}
+                title="Open settings"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+            </TouchTarget>
 
             {/* Logout Button */}
-            <TouchTarget minHeight={40}>
+            <TouchTarget minHeight={44}>
               <Button 
                 variant="ghost" 
                 size="sm"
                 onClick={handleSignOut}
                 loading={isSigningOut}
-                className="h-9 w-9 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl"
+                className="h-10 w-10 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full ml-1"
                 title="Sign out"
               >
-                <LogOut className="h-3.5 w-3.5" />
+                <LogOut className="h-4 w-4" />
               </Button>
             </TouchTarget>
           </div>
@@ -188,11 +166,11 @@ export const TodayHeader = memo<TodayHeaderProps>(({ onSearch, activeTab, onTabC
         
         {/* Search Bar - Collapsible */}
         {showSearch && (
-          <div className="animate-slide-down">
+          <div className="animate-slide-down mt-3">
             <SearchInput
               placeholder="Search across all modules..."
               onSearch={onSearch}
-              className="w-full bg-background/80 backdrop-blur-sm border-border/40 rounded-xl h-10"
+              className="w-full bg-background/80 backdrop-blur-sm border-border/30 rounded-xl h-11"
             />
           </div>
         )}
