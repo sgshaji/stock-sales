@@ -40,3 +40,22 @@ export const Skeleton = ({ className }: SkeletonProps) => {
     />
   );
 };
+
+interface LoadingCardProps {
+  count?: number;
+  className?: string;
+}
+
+export const LoadingCard = ({ count = 1, className }: LoadingCardProps) => {
+  return (
+    <div className={cn("space-y-4 p-4", className)}>
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="space-y-3">
+          <Skeleton className="h-4 w-3/4" />
+          <Skeleton className="h-4 w-1/2" />
+          <Skeleton className="h-8 w-full" />
+        </div>
+      ))}
+    </div>
+  );
+};
