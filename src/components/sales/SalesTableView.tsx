@@ -1,4 +1,5 @@
 
+import { memo, useMemo } from "react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { WhatsAppStyleSalesList } from "./WhatsAppStyleSalesList";
 import { ShoppingCart } from "lucide-react";
@@ -23,7 +24,7 @@ interface SalesTableViewProps {
   onAddSale: () => void;
 }
 
-export const SalesTableView = ({
+export const SalesTableView = memo<SalesTableViewProps>(({
   sales,
   selectedSales,
   effectiveSearch,
@@ -31,10 +32,12 @@ export const SalesTableView = ({
   onViewSale,
   onExport,
   onAddSale
-}: SalesTableViewProps) => {
-  const filteredSales = sales.filter(sale => 
-    sale.item.toLowerCase().includes(effectiveSearch.toLowerCase()) ||
-    (sale.customer && sale.customer.toLowerCase().includes(effectiveSearch.toLowerCase()))
+}) => {
+  const filteredSales = useMemo(() => 
+    sales.filter(sale => 
+      sale.item.toLowerCase().includes(effectiveSearch.toLowerCase()) ||
+      (sale.customer && sale.customer.toLowerCase().includes(effectiveSearch.toLowerCase()))
+    ), [sales, effectiveSearch]
   );
 
   if (filteredSales.length === 0) {
@@ -56,7 +59,7 @@ export const SalesTableView = ({
   }
 
   return (
-    <div className="h-[600px] rounded-lg border border-border/20 overflow-hidden">
+    <div className="h-[600px] rounded-xl border border-border/20 overflow-hidden card-elevated">
       <WhatsAppStyleSalesList
         sales={filteredSales}
         onView={onViewSale}
@@ -66,4 +69,6 @@ export const SalesTableView = ({
       />
     </div>
   );
-};
+});
+
+SalesTableView.displayName = "SalesTableView";

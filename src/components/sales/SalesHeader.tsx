@@ -1,4 +1,5 @@
 
+import { memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Download } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -8,16 +9,16 @@ interface SalesHeaderProps {
   onExport: () => void;
 }
 
-export const SalesHeader = ({ onAddSale, onExport }: SalesHeaderProps) => {
+export const SalesHeader = memo<SalesHeaderProps>(({ onAddSale, onExport }) => {
   const isMobile = useIsMobile();
 
   return (
     <div className="flex justify-between items-center">
       <div>
-        <h2 className="text-2xl font-bold">Sales Entry</h2>
-        <p className="text-muted-foreground">Record and track your sales</p>
+        <h2 className="text-headline-large font-semibold">Sales Entry</h2>
+        <p className="text-body-medium text-muted-foreground">Record and track your sales</p>
       </div>
-      <div className="flex gap-1">
+      <div className="flex gap-space-1">
         <Button 
           variant="outline" 
           size="icon"
@@ -36,4 +37,6 @@ export const SalesHeader = ({ onAddSale, onExport }: SalesHeaderProps) => {
       </div>
     </div>
   );
-};
+});
+
+SalesHeader.displayName = "SalesHeader";
