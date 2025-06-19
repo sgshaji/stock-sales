@@ -27,7 +27,6 @@ interface CartItem {
   quantity: number;
   pricePerUnit: number;
   total: number;
-  discount: number; // absolute dollar amount
 }
 
 interface SalesEntryFormProps {
@@ -35,6 +34,119 @@ interface SalesEntryFormProps {
   onComplete: (saleData: any) => void;
   onCancel: () => void;
 }
+
+// Completion Popup Component
+const CompletionPopup = memo<{
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: (discount: number) => void;
+  cart: CartItem[];
+}>(({ isOpen, onClose, onConfirm, cart }) => {
+  const [discount, setDiscount] = useState("0");
+  
+  const subtotal = useMemo(() => 
+    cart.reduce((sum, item) => sum + item.total, 0), [cart]
+  );
+  
+  const discountAmount = parseFloat(discount) || 0;
+  const finalTotal = Math.max(0, subtotal - discountAmount);
+  
+  const handleConfirm = () => {
+    onConfirm(discountAmount);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-black/50 z-[60] animate-fade-in" onClick={onClose} />
+      
+      {/* Popup */}
+      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[61] w-[90%] max-w-md bg-white rounded-2xl shadow-2xl animate-scale-in">
+        <div className="p-6">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-gray-900">Complete Sale</h3>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="h-8 w-8 rounded-full"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Sale Summary */}
+          <div className="space-y-4 mb-6">
+            <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Items ({cart.length}):</span>
+                <span className="font-medium">{cart.reduce((sum, item) => sum + item.quantity, 0)} units</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Subtotal:</span>
+                <span className="font-medium">${subtotal.toFixed(2)}</span>
+              </div>
+            </div>
+
+            {/* Discount Input */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-700">Discount Amount (optional)</Label>
+              <div className="relative">
+                <DollarSign className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Input
+                  type="number"
+                  value={discount}
+                  onChange={(e) => setDiscount(e.target.value)}
+                  className="pl-10 h-11 text-sm"
+                  min="0"
+                  max={subtotal}
+                  step="0.01"
+                  placeholder="0.00"
+                />
+              </div>
+              <p className="text-xs text-gray-500">Enter discount amount in dollars</p>
+            </div>
+
+            {/* Final Total */}
+            <div className="bg-primary-50 border border-primary-200 rounded-xl p-4">
+              <div className="flex justify-between items-center">
+                <span className="text-lg font-semibold text-gray-900">Final Total:</span>
+                <span className="text-2xl font-bold text-primary-600">${finalTotal.toFixed(2)}</span>
+              </div>
+              {discountAmount > 0 && (
+                <div className="text-sm text-success-600 mt-1">
+                  Discount applied: -${discountAmount.toFixed(2)}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="flex-1 h-11 rounded-full"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirm}
+              className="flex-1 h-11 bg-primary-600 hover:bg-primary-700 rounded-full font-semibold"
+            >
+              Complete Sale
+            </Button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+});
+
+CompletionPopup.displayName = "CompletionPopup";
 
 const ProductSearchItem = memo<{
   product: InventoryItem;
@@ -87,52 +199,35 @@ const CartItemComponent = memo<{
 }>(({ item, onUpdate, onRemove }) => {
   const [quantity, setQuantity] = useState(item.quantity.toString());
   const [pricePerUnit, setPricePerUnit] = useState(item.pricePerUnit.toString());
-  const [discount, setDiscount] = useState(item.discount.toString());
 
   // Calculate total whenever inputs change
-  const calculateTotal = useCallback((qty: number, price: number, discountAmount: number) => {
-    const subtotal = qty * price;
-    return Math.max(0, subtotal - discountAmount); // Ensure total doesn't go negative
+  const calculateTotal = useCallback((qty: number, price: number) => {
+    return qty * price;
   }, []);
 
   const handleQuantityChange = useCallback((value: string) => {
     setQuantity(value);
     const qty = Math.max(1, parseInt(value) || 1);
     const price = parseFloat(pricePerUnit) || 0;
-    const discountAmount = parseFloat(discount) || 0;
-    const total = calculateTotal(qty, price, discountAmount);
+    const total = calculateTotal(qty, price);
     
     onUpdate(item.id, { 
       quantity: qty, 
       total 
     });
-  }, [item.id, pricePerUnit, discount, calculateTotal, onUpdate]);
+  }, [item.id, pricePerUnit, calculateTotal, onUpdate]);
 
   const handlePriceChange = useCallback((value: string) => {
     setPricePerUnit(value);
     const price = Math.max(0, parseFloat(value) || 0);
     const qty = parseInt(quantity) || 1;
-    const discountAmount = parseFloat(discount) || 0;
-    const total = calculateTotal(qty, price, discountAmount);
+    const total = calculateTotal(qty, price);
     
     onUpdate(item.id, { 
       pricePerUnit: price, 
       total 
     });
-  }, [item.id, quantity, discount, calculateTotal, onUpdate]);
-
-  const handleDiscountChange = useCallback((value: string) => {
-    setDiscount(value);
-    const discountAmount = Math.max(0, parseFloat(value) || 0);
-    const qty = parseInt(quantity) || 1;
-    const price = parseFloat(pricePerUnit) || 0;
-    const total = calculateTotal(qty, price, discountAmount);
-    
-    onUpdate(item.id, { 
-      discount: discountAmount, 
-      total 
-    });
-  }, [item.id, quantity, pricePerUnit, calculateTotal, onUpdate]);
+  }, [item.id, quantity, calculateTotal, onUpdate]);
 
   const handleQuantityAdjust = useCallback((change: number) => {
     const newQty = Math.max(1, (parseInt(quantity) || 1) + change);
@@ -159,8 +254,8 @@ const CartItemComponent = memo<{
         </Button>
       </div>
       
-      {/* Input Fields - Properly aligned grid */}
-      <div className="grid grid-cols-4 gap-2">
+      {/* Input Fields - 3 column grid (removed discount) */}
+      <div className="grid grid-cols-3 gap-3">
         {/* Quantity - Takes 1 column */}
         <div className="col-span-1">
           <Label className="text-xs font-medium text-gray-700 mb-1 block">Qty</Label>
@@ -207,23 +302,6 @@ const CartItemComponent = memo<{
           </div>
         </div>
 
-        {/* Discount - Takes 1 column */}
-        <div className="col-span-1">
-          <Label className="text-xs font-medium text-gray-700 mb-1 block">Disc</Label>
-          <div className="relative">
-            <DollarSign className="absolute left-1 top-1/2 h-2 w-2 -translate-y-1/2 text-gray-400" />
-            <Input
-              type="number"
-              value={discount}
-              onChange={(e) => handleDiscountChange(e.target.value)}
-              className="pl-4 h-7 text-xs"
-              min="0"
-              step="0.01"
-              placeholder="0"
-            />
-          </div>
-        </div>
-
         {/* Total - Takes 1 column */}
         <div className="col-span-1">
           <Label className="text-xs font-medium text-gray-700 mb-1 block">Total</Label>
@@ -243,6 +321,7 @@ CartItemComponent.displayName = "CartItemComponent";
 export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete, onCancel }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showCompletionPopup, setShowCompletionPopup] = useState(false);
   const { toast } = useToast();
 
   // Filter products based on search with smart suggestions
@@ -259,21 +338,20 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
       const existing = prev.find(item => item.id === product.id);
       if (existing) {
         const newQuantity = existing.quantity + 1;
-        const total = newQuantity * existing.pricePerUnit - existing.discount;
+        const total = newQuantity * existing.pricePerUnit;
         return prev.map(item =>
           item.id === product.id
-            ? { ...item, quantity: newQuantity, total: Math.max(0, total) }
+            ? { ...item, quantity: newQuantity, total }
             : item
         );
       }
-      const total = 1 * product.price - 0; // No discount initially
+      const total = 1 * product.price;
       return [...prev, { 
         id: product.id,
         name: product.name,
         quantity: 1, 
         pricePerUnit: product.price,
-        total,
-        discount: 0 // Start with no discount
+        total
       }];
     });
     
@@ -300,7 +378,7 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
     };
   }, [cart]);
 
-  const handleCompleteSale = useCallback(() => {
+  const handleCompleteClick = useCallback(() => {
     if (cart.length === 0) {
       toast({
         title: "Empty Cart",
@@ -325,20 +403,25 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
       return;
     }
 
-    const subtotal = cart.reduce((sum, item) => sum + (item.quantity * item.pricePerUnit), 0);
-    const totalDiscount = cart.reduce((sum, item) => sum + item.discount, 0);
+    // Show completion popup
+    setShowCompletionPopup(true);
+  }, [cart, toast, inventory]);
+
+  const handleCompleteSale = useCallback((discountAmount: number) => {
+    const subtotal = cart.reduce((sum, item) => sum + item.total, 0);
+    const finalTotal = Math.max(0, subtotal - discountAmount);
 
     const saleData = {
       items: cart.map(item => ({
         name: item.name,
         quantity: item.quantity,
         unitPrice: item.pricePerUnit,
-        discount: item.discount, // Now absolute amount
+        discount: 0, // Individual item discount is 0
         total: item.total
       })),
       subtotal,
-      totalDiscount,
-      finalTotal: calculations.finalTotal,
+      totalDiscount: discountAmount, // Overall sale discount
+      finalTotal,
       date: new Date().toISOString().split('T')[0],
       time: new Date().toLocaleTimeString('en-US', { 
         hour12: false, 
@@ -349,7 +432,8 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
     };
 
     onComplete(saleData);
-  }, [cart, calculations, onComplete, toast, inventory]);
+    setShowCompletionPopup(false);
+  }, [cart, onComplete]);
 
   return (
     <div className="flex flex-col h-full">
@@ -432,7 +516,7 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
               Cancel
             </Button>
             <Button
-              onClick={handleCompleteSale}
+              onClick={handleCompleteClick}
               className="flex-1 h-11 bg-primary-600 hover:bg-primary-700 rounded-full font-semibold"
             >
               Complete
@@ -440,6 +524,14 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
           </div>
         </div>
       )}
+
+      {/* Completion Popup */}
+      <CompletionPopup
+        isOpen={showCompletionPopup}
+        onClose={() => setShowCompletionPopup(false)}
+        onConfirm={handleCompleteSale}
+        cart={cart}
+      />
     </div>
   );
 });
