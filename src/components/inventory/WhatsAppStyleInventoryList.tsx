@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,20 +21,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-
-interface InventoryItem {
-  id: number;
-  name: string;
-  sku: string;
-  stock: number;
-  price: number;
-  category?: string;
-  lastSold?: string;
-  velocity?: 'fast' | 'medium' | 'slow';
-  reorderPoint?: number;
-  purchasePrice?: number;
-  lastRestocked?: string;
-}
+import type { InventoryItem } from "@/types/inventory";
 
 interface WhatsAppStyleInventoryListProps {
   items: InventoryItem[];
@@ -67,9 +55,19 @@ const getCategoryColor = (category?: string) => {
   return colors[category as keyof typeof colors] || colors.default;
 };
 
-const formatTime = (lastSold?: string) => {
+const formatTime = (lastSold?: string | null) => {
   if (!lastSold) return "Never";
-  return lastSold;
+  const date = new Date(lastSold);
+  const now = new Date();
+  const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+  
+  if (diffInMinutes < 60) {
+    return `${diffInMinutes} minutes ago`;
+  } else if (diffInMinutes < 1440) {
+    return `${Math.floor(diffInMinutes / 60)} hours ago`;
+  } else {
+    return `${Math.floor(diffInMinutes / 1440)} days ago`;
+  }
 };
 
 export const WhatsAppStyleInventoryList = ({ 
@@ -132,8 +130,8 @@ export const WhatsAppStyleInventoryList = ({
       {/* Inventory List - MATCHING SALES DESIGN */}
       <div className="flex-1 overflow-y-auto">
         {items.map((item, index) => {
-          const status = getStockStatusIcon(item.stock, item.reorderPoint);
-          const categoryColor = getCategoryColor(item.category);
+          const status = getStockStatusIcon(item.stock, item.reorder_point || undefined);
+          const categoryColor = getCategoryColor(item.category || undefined);
           
           return (
             <div
@@ -176,7 +174,7 @@ export const WhatsAppStyleInventoryList = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 min-w-0 flex-1">
                     <span className="text-sm text-muted-foreground truncate">
-                      {item.sku}
+                      {item.sku || 'No SKU'}
                     </span>
                     <span className="text-sm font-medium text-primary">
                       ${item.price.toFixed(2)}
@@ -274,16 +272,16 @@ export const WhatsAppStyleInventoryList = ({
                 <div className="flex items-center gap-1 mt-1">
                   <Calendar className="h-3 w-3 text-muted-foreground" />
                   <span className="text-xs text-muted-foreground">
-                    Last sold: {formatTime(item.lastSold)}
+                    Last sold: {formatTime(item.last_sold)}
                   </span>
                 </div>
 
                 {/* Low stock warning - MATCHING SALES DESIGN */}
-                {item.stock <= (item.reorderPoint || 5) && (
+                {item.stock <= (item.reorder_point || 5) && (
                   <div className="mt-2 flex items-center gap-1">
                     <div className="w-2 h-2 rounded-full bg-orange-500" />
                     <span className="text-xs text-orange-600 dark:text-orange-400">
-                      {item.stock === 0 ? 'Out of stock' : `Low stock - Reorder at ${item.reorderPoint || 5} units`}
+                      {item.stock === 0 ? 'Out of stock' : `Low stock - Reorder at ${item.reorder_point || 5} units`}
                     </span>
                   </div>
                 )}
