@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { getShopName, getUserInitials } from "@/lib/config/shop";
 import { useTheme } from "next-themes";
+import { useToast } from "@/hooks/use-toast";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,6 +39,7 @@ export const TodayHeader = memo<TodayHeaderProps>(({ activeTab, onTabChange }) =
   const [isSigningOut, setIsSigningOut] = useState(false);
   const { user, signOut } = useAuth();
   const { theme, setTheme } = useTheme();
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -69,15 +71,28 @@ export const TodayHeader = memo<TodayHeaderProps>(({ activeTab, onTabChange }) =
 
   const handleSettings = () => {
     navigate('/settings');
+    toast({
+      title: "Settings",
+      description: "Opening business settings...",
+    });
   };
 
   const handleInventoryCategories = () => {
     // Quick access to inventory categories in settings
     navigate('/settings');
+    toast({
+      title: "Inventory Categories",
+      description: "Opening category management...",
+    });
   };
 
   const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    toast({
+      title: "Theme Updated",
+      description: `Switched to ${newTheme} mode`,
+    });
   };
 
   const shopName = getShopName(user);
