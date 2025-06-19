@@ -114,15 +114,14 @@ export const SalesTableView = ({
       render: (_, sale) => (
         <Button 
           variant="outline" 
-          size={isMobile ? "icon-sm" : "sm"}
-          className={isMobile ? "" : "gap-2"}
+          size="icon-sm"
           onClick={(e) => {
             e.stopPropagation();
             onViewSale(sale);
           }}
+          title="View sale details"
         >
           <Eye className="h-4 w-4" />
-          {!isMobile && <span>View</span>}
         </Button>
       )
     }
@@ -132,12 +131,11 @@ export const SalesTableView = ({
     <div className="flex gap-1">
       <Button 
         variant="outline" 
-        size={isMobile ? "icon-sm" : "sm"}
-        className={isMobile ? "" : "gap-2"}
+        size="icon-sm"
         onClick={onExport}
+        title="Export selected sales"
       >
         <Download className="h-4 w-4" />
-        {!isMobile && <span>Export Selected</span>}
       </Button>
     </div>
   );

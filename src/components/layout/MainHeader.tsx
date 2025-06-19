@@ -52,7 +52,7 @@ export const MainHeader = ({ onSearch, activeTab, onTabChange }: MainHeaderProps
             </p>
           </div>
           
-          {/* Mobile-optimized action buttons */}
+          {/* Mobile-optimized action buttons - ICON ONLY */}
           <div className="flex items-center gap-1">
             <div className={cn(
               "flex items-center bg-background/60 rounded-xl border border-border/40",
@@ -61,7 +61,7 @@ export const MainHeader = ({ onSearch, activeTab, onTabChange }: MainHeaderProps
               <TouchTarget minHeight={44}>
                 <Button 
                   variant="ghost" 
-                  size={isMobile ? "icon-sm" : "icon-sm"}
+                  size="icon-sm"
                   onClick={() => setShowSearch(!showSearch)}
                   className={cn(
                     "animate-quick",
@@ -69,6 +69,7 @@ export const MainHeader = ({ onSearch, activeTab, onTabChange }: MainHeaderProps
                       ? "bg-brand-50 text-brand-600 shadow-sm dark:bg-brand-950/50 dark:text-brand-400" 
                       : "hover:bg-accent/50"
                   )}
+                  title="Toggle search"
                 >
                   <Search className="h-4 w-4" />
                 </Button>
@@ -81,7 +82,7 @@ export const MainHeader = ({ onSearch, activeTab, onTabChange }: MainHeaderProps
               <TouchTarget minHeight={44}>
                 <Button 
                   variant="ghost" 
-                  size={isMobile ? "icon-sm" : "icon-sm"}
+                  size="icon-sm"
                   onClick={() => onTabChange("profile")}
                   className={cn(
                     "animate-quick",
@@ -89,6 +90,7 @@ export const MainHeader = ({ onSearch, activeTab, onTabChange }: MainHeaderProps
                       ? "bg-brand-50 text-brand-600 shadow-sm dark:bg-brand-950/50 dark:text-brand-400" 
                       : "hover:bg-accent/50"
                   )}
+                  title="Open settings"
                 >
                   <Settings className="h-4 w-4" />
                 </Button>
@@ -98,10 +100,11 @@ export const MainHeader = ({ onSearch, activeTab, onTabChange }: MainHeaderProps
             <TouchTarget minHeight={44}>
               <Button 
                 variant="ghost" 
-                size={isMobile ? "icon-sm" : "icon-sm"}
+                size="icon-sm"
                 onClick={handleSignOut}
                 loading={isSigningOut}
                 className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 animate-quick ml-space-2"
+                title="Sign out"
               >
                 <LogOut className="h-4 w-4" />
               </Button>

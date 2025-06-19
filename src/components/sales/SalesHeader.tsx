@@ -20,20 +20,18 @@ export const SalesHeader = ({ onAddSale, onExport }: SalesHeaderProps) => {
       <div className="flex gap-1">
         <Button 
           variant="outline" 
+          size="icon"
           onClick={onExport} 
-          size={isMobile ? "icon" : "default"}
-          className={isMobile ? "" : "gap-2"}
+          title="Export sales data"
         >
           <Download className="h-4 w-4" />
-          {!isMobile && <span>Export</span>}
         </Button>
         <Button 
           onClick={onAddSale} 
-          size={isMobile ? "icon" : "default"}
-          className={isMobile ? "" : "gap-2"}
+          size="icon"
+          title="Add new sale"
         >
           <Plus className="h-4 w-4" />
-          {!isMobile && <span>Add Sale</span>}
         </Button>
       </div>
     </div>

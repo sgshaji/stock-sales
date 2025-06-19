@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -181,17 +182,18 @@ export const WhatsAppStyleInventoryList = ({
                       </div>
                     </div>
                     
-                    {/* Quick adjust buttons - show on hover */}
+                    {/* Quick adjust buttons - show on hover - ICON ONLY */}
                     <div className="hidden group-hover:flex items-center gap-1 ml-2">
                       <TouchTarget minHeight={32}>
                         <Button
                           variant="ghost"
-                          size="sm"
+                          size="icon-sm"
                           onClick={(e) => {
                             e.stopPropagation();
                             onQuickAdjust(item, -1);
                           }}
-                          className="h-7 w-7 p-0 rounded-full hover:bg-accent/50"
+                          className="h-7 w-7 rounded-full hover:bg-accent/50"
+                          title="Decrease stock"
                         >
                           <Minus className="h-3 w-3" />
                         </Button>
@@ -200,12 +202,13 @@ export const WhatsAppStyleInventoryList = ({
                       <TouchTarget minHeight={32}>
                         <Button
                           variant="ghost"
-                          size="sm"
+                          size="icon-sm"
                           onClick={(e) => {
                             e.stopPropagation();
                             onQuickAdjust(item, 1);
                           }}
-                          className="h-7 w-7 p-0 rounded-full hover:bg-accent/50"
+                          className="h-7 w-7 rounded-full hover:bg-accent/50"
+                          title="Increase stock"
                         >
                           <Plus className="h-3 w-3" />
                         </Button>
@@ -216,9 +219,10 @@ export const WhatsAppStyleInventoryList = ({
                           <TouchTarget minHeight={32}>
                             <Button
                               variant="ghost"
-                              size="sm"
+                              size="icon-sm"
                               onClick={(e) => e.stopPropagation()}
-                              className="h-7 w-7 p-0 rounded-full hover:bg-accent/50"
+                              className="h-7 w-7 rounded-full hover:bg-accent/50"
+                              title="More options"
                             >
                               <MoreVertical className="h-3 w-3" />
                             </Button>
@@ -269,11 +273,12 @@ export const WhatsAppStyleInventoryList = ({
         })}
       </div>
 
-      {/* Floating Action Button */}
+      {/* Floating Action Button - ICON ONLY */}
       <div className="fixed bottom-20 right-4 z-20">
         <Button
           size="lg"
           className="h-14 w-14 rounded-full shadow-lg bg-green-500 hover:bg-green-600 text-white"
+          title="Add new item"
         >
           <Plus className="h-6 w-6" />
         </Button>

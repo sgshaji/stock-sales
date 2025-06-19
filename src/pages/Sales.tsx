@@ -29,9 +29,8 @@ const Sales = () => {
             </p>
           </div>
           {!isMobile && (
-            <Button onClick={handleNewSale} className="gap-2">
+            <Button onClick={handleNewSale} size="icon" title="Add sale">
               <Plus className="h-4 w-4" />
-              Add Sale
             </Button>
           )}
         </div>

@@ -31,9 +31,8 @@ const Inventory = () => {
             </p>
           </div>
           {!isMobile && (
-            <Button onClick={handleAddStock} className="gap-2">
+            <Button onClick={handleAddStock} size="icon" title="Add stock">
               <Plus className="h-4 w-4" />
-              Add Stock
             </Button>
           )}
         </div>
