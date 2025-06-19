@@ -286,12 +286,7 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
     // Clear search after adding
     setSearchQuery("");
     setShowSearch(false);
-    
-    toast({
-      title: "Added to cart",
-      description: `${product.name} added to cart`,
-    });
-  }, [toast]);
+  }, []);
 
   const updateCartItem = useCallback((id: number, updates: Partial<CartItem>) => {
     setCart(prev => prev.map(item =>
@@ -482,7 +477,7 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
               onClick={handleCompleteSale}
               className="flex-1 h-10 bg-primary-600 hover:bg-primary-700 rounded-full text-sm font-semibold"
             >
-              Complete Sale
+              Complete
             </Button>
           </div>
         </div>
