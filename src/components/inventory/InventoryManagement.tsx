@@ -8,13 +8,11 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { 
   Package, 
   AlertTriangle, 
-  TrendingUp, 
   Plus, 
   Minus,
   Edit,
   MoreVertical,
   RefreshCw,
-  Search,
   Filter,
   ArrowUpDown
 } from "lucide-react";
@@ -49,7 +47,6 @@ export const InventoryManagement = ({ searchQuery }: InventoryManagementProps) =
     { id: 5, name: "Decorative Clay Tiles", sku: "DCT005", stock: 0, price: 129.99, category: "clay", lastSold: "1 week ago", velocity: "slow", reorderPoint: 8 },
   ]);
 
-  const [activeView, setActiveView] = useState<'urgent' | 'trending' | 'all'>('urgent');
   const [localSearch, setLocalSearch] = useState("");
   const [sortBy, setSortBy] = useState<'name' | 'stock' | 'price' | 'lastSold'>('name');
   const [filterCategory, setFilterCategory] = useState<string>('all');
@@ -65,7 +62,6 @@ export const InventoryManagement = ({ searchQuery }: InventoryManagementProps) =
   };
 
   const urgentItems = items.filter(item => getStockStatus(item.stock, item.reorderPoint).urgent);
-  const trendingItems = items.filter(item => item.velocity === 'fast');
   
   const effectiveSearch = searchQuery || localSearch;
   const filteredItems = effectiveSearch 
@@ -75,21 +71,10 @@ export const InventoryManagement = ({ searchQuery }: InventoryManagementProps) =
       )
     : items;
 
-  const getDisplayItems = () => {
-    let baseItems = filteredItems;
-    
-    if (filterCategory !== 'all') {
-      baseItems = baseItems.filter(item => item.category === filterCategory);
-    }
-    
-    switch (activeView) {
-      case 'urgent': return baseItems.filter(item => getStockStatus(item.stock, item.reorderPoint).urgent);
-      case 'trending': return baseItems.filter(item => item.velocity === 'fast');
-      default: return baseItems;
-    }
-  };
+  const displayItems = filterCategory !== 'all' 
+    ? filteredItems.filter(item => item.category === filterCategory)
+    : filteredItems;
 
-  const displayItems = getDisplayItems();
   const categories = Array.from(new Set(items.map(item => item.category).filter(Boolean)));
 
   const handleQuickAdjust = (item: InventoryItem, adjustment: number) => {
@@ -116,13 +101,13 @@ export const InventoryManagement = ({ searchQuery }: InventoryManagementProps) =
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header with Smart Controls */}
+      {/* Header */}
       <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-md border-b border-border/20">
         <div className="p-4">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-xl font-bold text-foreground">Inventory Control</h2>
-              <p className="text-sm text-muted-foreground">Smart inventory management</p>
+              <h2 className="text-xl font-bold text-foreground">Inventory</h2>
+              <p className="text-sm text-muted-foreground">{displayItems.length} items</p>
             </div>
             <div className="flex items-center gap-2">
               <TouchTarget minHeight={40}>
@@ -140,7 +125,7 @@ export const InventoryManagement = ({ searchQuery }: InventoryManagementProps) =
             </div>
           </div>
 
-          {/* Search and Filters */}
+          {/* Search */}
           {!searchQuery && (
             <div className="mb-4">
               <IntelligentSearch
@@ -150,7 +135,7 @@ export const InventoryManagement = ({ searchQuery }: InventoryManagementProps) =
             </div>
           )}
 
-          {/* Quick Filters */}
+          {/* Filters */}
           <div className="flex gap-2 mb-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -191,7 +176,7 @@ export const InventoryManagement = ({ searchQuery }: InventoryManagementProps) =
             </DropdownMenu>
           </div>
 
-          {/* Critical Alerts */}
+          {/* Alert for urgent items */}
           {urgentItems.length > 0 && (
             <div className="mb-4 p-3 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800 rounded-xl">
               <div className="flex items-center gap-2">
@@ -202,51 +187,6 @@ export const InventoryManagement = ({ searchQuery }: InventoryManagementProps) =
               </div>
             </div>
           )}
-
-          {/* Quick Stats */}
-          <div className="grid grid-cols-3 gap-3 mb-4">
-            <div className="text-center p-3 bg-accent/30 rounded-xl">
-              <div className="text-lg font-bold text-foreground">{items.length}</div>
-              <div className="text-xs text-muted-foreground">Total Items</div>
-            </div>
-            <div className="text-center p-3 bg-red-50 dark:bg-red-950/20 rounded-xl">
-              <div className="text-lg font-bold text-red-600">{urgentItems.length}</div>
-              <div className="text-xs text-muted-foreground">Need Attention</div>
-            </div>
-            <div className="text-center p-3 bg-green-50 dark:bg-green-950/20 rounded-xl">
-              <div className="text-lg font-bold text-green-600">{trendingItems.length}</div>
-              <div className="text-xs text-muted-foreground">Fast Moving</div>
-            </div>
-          </div>
-
-          {/* Smart View Toggle */}
-          <div className="flex gap-2">
-            {[
-              { id: 'urgent', label: 'Urgent', count: urgentItems.length, icon: AlertTriangle },
-              { id: 'trending', label: 'Trending', count: trendingItems.length, icon: TrendingUp },
-              { id: 'all', label: 'All Items', count: filteredItems.length, icon: Package }
-            ].map((category) => (
-              <TouchTarget key={category.id} minHeight={40}>
-                <Button
-                  variant={activeView === category.id ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setActiveView(category.id as any)}
-                  className={cn(
-                    "flex-1 gap-2 rounded-full",
-                    activeView === category.id 
-                      ? "bg-primary text-primary-foreground" 
-                      : "bg-background/60 hover:bg-accent/50"
-                  )}
-                >
-                  <category.icon className="h-3 w-3" />
-                  <span className="text-xs">{category.label}</span>
-                  <Badge variant="secondary" className="ml-1 h-4 px-1.5 text-xs">
-                    {category.count}
-                  </Badge>
-                </Button>
-              </TouchTarget>
-            ))}
-          </div>
         </div>
       </div>
 
@@ -255,13 +195,11 @@ export const InventoryManagement = ({ searchQuery }: InventoryManagementProps) =
         {displayItems.length === 0 ? (
           <EmptyState
             icon={Package}
-            title={effectiveSearch ? "No items found" : "No items in this category"}
+            title={effectiveSearch ? "No items found" : "No items"}
             description={
               effectiveSearch 
                 ? `No items match "${effectiveSearch}"`
-                : activeView === 'urgent' 
-                  ? "Great! No items need immediate attention."
-                  : "No items in this category."
+                : "No items in this category."
             }
             action={{
               label: "Add New Item",
@@ -292,7 +230,7 @@ export const InventoryManagement = ({ searchQuery }: InventoryManagementProps) =
                         </h3>
                         <p className="text-sm text-muted-foreground">{item.sku}</p>
                         
-                        {/* Contextual Info */}
+                        {/* Status and velocity info */}
                         <div className="flex items-center gap-2 mt-2">
                           <Badge variant="outline" className="text-xs">
                             {status.label}
