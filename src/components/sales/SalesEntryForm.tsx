@@ -8,7 +8,6 @@ import {
   Minus, 
   ShoppingCart,
   DollarSign,
-  Percent,
   X,
   Package
 } from "lucide-react";
@@ -28,7 +27,7 @@ interface CartItem {
   quantity: number;
   pricePerUnit: number;
   total: number;
-  discount: number; // percentage
+  discount: number; // absolute dollar amount
 }
 
 interface SalesEntryFormProps {
@@ -91,18 +90,17 @@ const CartItemComponent = memo<{
   const [discount, setDiscount] = useState(item.discount.toString());
 
   // Calculate total whenever inputs change
-  const calculateTotal = useCallback((qty: number, price: number, disc: number) => {
+  const calculateTotal = useCallback((qty: number, price: number, discountAmount: number) => {
     const subtotal = qty * price;
-    const discountAmount = subtotal * (disc / 100);
-    return subtotal - discountAmount;
+    return Math.max(0, subtotal - discountAmount); // Ensure total doesn't go negative
   }, []);
 
   const handleQuantityChange = useCallback((value: string) => {
     setQuantity(value);
     const qty = Math.max(1, parseInt(value) || 1);
     const price = parseFloat(pricePerUnit) || 0;
-    const disc = parseFloat(discount) || 0;
-    const total = calculateTotal(qty, price, disc);
+    const discountAmount = parseFloat(discount) || 0;
+    const total = calculateTotal(qty, price, discountAmount);
     
     onUpdate(item.id, { 
       quantity: qty, 
@@ -114,8 +112,8 @@ const CartItemComponent = memo<{
     setPricePerUnit(value);
     const price = Math.max(0, parseFloat(value) || 0);
     const qty = parseInt(quantity) || 1;
-    const disc = parseFloat(discount) || 0;
-    const total = calculateTotal(qty, price, disc);
+    const discountAmount = parseFloat(discount) || 0;
+    const total = calculateTotal(qty, price, discountAmount);
     
     onUpdate(item.id, { 
       pricePerUnit: price, 
@@ -125,13 +123,13 @@ const CartItemComponent = memo<{
 
   const handleDiscountChange = useCallback((value: string) => {
     setDiscount(value);
-    const disc = Math.max(0, Math.min(100, parseFloat(value) || 0));
+    const discountAmount = Math.max(0, parseFloat(value) || 0);
     const qty = parseInt(quantity) || 1;
     const price = parseFloat(pricePerUnit) || 0;
-    const total = calculateTotal(qty, price, disc);
+    const total = calculateTotal(qty, price, discountAmount);
     
     onUpdate(item.id, { 
-      discount: disc, 
+      discount: discountAmount, 
       total 
     });
   }, [item.id, quantity, pricePerUnit, calculateTotal, onUpdate]);
@@ -209,20 +207,20 @@ const CartItemComponent = memo<{
           </div>
         </div>
 
-        {/* Discount */}
+        {/* Discount - Now absolute amount */}
         <div>
           <Label className="text-xs font-medium text-gray-700 mb-1 block">Discount</Label>
           <div className="relative">
+            <DollarSign className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-gray-400" />
             <Input
               type="number"
               value={discount}
               onChange={(e) => handleDiscountChange(e.target.value)}
-              className="pr-6 h-7 text-sm"
+              className="pl-6 h-7 text-sm"
               min="0"
-              max="100"
-              step="0.1"
+              step="0.01"
+              placeholder="0.00"
             />
-            <Percent className="absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-gray-400" />
           </div>
         </div>
 
@@ -261,21 +259,21 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
       const existing = prev.find(item => item.id === product.id);
       if (existing) {
         const newQuantity = existing.quantity + 1;
-        const total = newQuantity * existing.pricePerUnit * (1 - existing.discount / 100);
+        const total = newQuantity * existing.pricePerUnit - existing.discount;
         return prev.map(item =>
           item.id === product.id
-            ? { ...item, quantity: newQuantity, total }
+            ? { ...item, quantity: newQuantity, total: Math.max(0, total) }
             : item
         );
       }
-      const total = 1 * product.price * (1 - 0 / 100);
+      const total = 1 * product.price - 0; // No discount initially
       return [...prev, { 
         id: product.id,
         name: product.name,
         quantity: 1, 
         pricePerUnit: product.price,
         total,
-        discount: 0 
+        discount: 0 // Start with no discount
       }];
     });
     
@@ -297,7 +295,7 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
   const calculations = useMemo(() => {
     const finalTotal = cart.reduce((sum, item) => sum + item.total, 0);
     const subtotal = cart.reduce((sum, item) => sum + (item.quantity * item.pricePerUnit), 0);
-    const totalDiscount = subtotal - finalTotal;
+    const totalDiscount = cart.reduce((sum, item) => sum + item.discount, 0);
     
     return {
       subtotal,
@@ -336,7 +334,7 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
         name: item.name,
         quantity: item.quantity,
         unitPrice: item.pricePerUnit,
-        discount: item.discount,
+        discount: item.discount, // Now absolute amount
         total: item.total
       })),
       subtotal: calculations.subtotal,
