@@ -194,7 +194,7 @@ export const WhatsAppStyleInventoryList = ({
                       </div>
                     </div>
                     
-                    {/* UP/DOWN ARROWS - show on hover */}
+                    {/* UP/DOWN ARROWS - show on hover - VERTICAL STACK */}
                     <div className="hidden group-hover:flex flex-col items-center gap-0.5 ml-2">
                       <TouchTarget minHeight={32}>
                         <Button
