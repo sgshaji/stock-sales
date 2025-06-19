@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SearchInput } from "@/components/ui/search";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { TouchTarget } from "@/components/ui/mobile-touch";
-import { ShoppingCart, Users, BarChart3, LogOut, User, Settings, Search } from "lucide-react";
+import { ShoppingCart, Users, BarChart3, LogOut, User, Settings, Search, Package } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,7 @@ import SalesEntry from "@/components/SalesEntry";
 import VendorManagement from "@/components/VendorManagement";
 import Dashboard from "@/components/Dashboard";
 import UserProfile from "@/components/UserProfile";
+import InventoryManagement from "@/components/inventory/InventoryManagement";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -139,16 +140,17 @@ const Index = () => {
           isMobile ? "p-4 space-y-4" : "p-6"
         )}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            {/* Simplified 4-tab Navigation */}
+            {/* Enhanced 5-tab Navigation */}
             <TabsList className={cn(
               "w-full bg-background/95 backdrop-blur-sm shadow-lg border border-border/40 rounded-2xl p-2 h-auto",
               isMobile 
-                ? "grid grid-cols-4 gap-1" 
-                : "grid grid-cols-4 mb-8"
+                ? "grid grid-cols-5 gap-1" 
+                : "grid grid-cols-5 mb-8"
             )}>
               {[
                 { value: "dashboard", icon: BarChart3, label: "Dashboard" },
                 { value: "sales", icon: ShoppingCart, label: "Sales" },
+                { value: "inventory", icon: Package, label: "Inventory" },
                 { value: "vendors", icon: Users, label: "Vendors" },
                 { value: "profile", icon: User, label: "Profile" }
               ].map((tab) => (
@@ -181,6 +183,10 @@ const Index = () => {
 
               <TabsContent value="sales" className="mt-0">
                 <SalesEntry searchQuery={searchQuery} />
+              </TabsContent>
+
+              <TabsContent value="inventory" className="mt-0">
+                <InventoryManagement searchQuery={searchQuery} />
               </TabsContent>
 
               <TabsContent value="vendors" className="mt-0">
