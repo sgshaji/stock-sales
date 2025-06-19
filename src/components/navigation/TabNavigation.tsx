@@ -1,4 +1,3 @@
-
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TouchTarget } from "@/components/ui/mobile-touch";
 import { ShoppingCart, Users, BarChart3, User, Package } from "lucide-react";
@@ -8,6 +7,7 @@ import { cn } from "@/lib/utils";
 export const TabNavigation = () => {
   const isMobile = useIsMobile();
 
+  // Removed "profile" tab since settings is now only accessible via header
   const tabs = [
     { value: "dashboard", icon: BarChart3, label: "Dashboard" },
     { value: "sales", icon: ShoppingCart, label: "Sales" },
@@ -28,7 +28,7 @@ export const TabNavigation = () => {
           <TabsTrigger 
             value={tab.value}
             className={cn(
-              "flex flex-col gap-space-2 rounded-xl animate-quick data-[state=active]:bg-brand-600 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-brand-50 dark:data-[state=active]:bg-brand-600 dark:hover:bg-brand-950/20 font-medium w-full",
+              "flex flex-col gap-space-2 rounded-xl animate-quick data-[state=active]:bg-primary-600 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-primary-50 dark:data-[state=active]:bg-primary-600 dark:hover:bg-primary-950/20 font-medium w-full",
               isMobile ? "py-space-2 px-space-2" : "py-space-4 px-space-3"
             )}
           >

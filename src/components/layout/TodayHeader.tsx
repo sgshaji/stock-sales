@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useState, memo } from "react";
 import { SearchInput } from "@/components/ui/search";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 interface TodayHeaderProps {
@@ -19,6 +20,7 @@ export const TodayHeader = memo<TodayHeaderProps>(({ onSearch, activeTab, onTabC
   const [showSearch, setShowSearch] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   // Format today's date
   const today = new Date().toLocaleDateString('en-US', {
@@ -27,15 +29,23 @@ export const TodayHeader = memo<TodayHeaderProps>(({ onSearch, activeTab, onTabC
     day: 'numeric'
   });
 
-  // Mock today's revenue - in real app this would come from your data source
-  const todaysRevenue = "$1,247";
-
   const handleSignOut = async () => {
     setIsSigningOut(true);
     try {
       await signOut();
     } finally {
       setIsSigningOut(false);
+    }
+  };
+
+  // Handle settings click - navigate to settings page
+  const handleSettingsClick = () => {
+    if (window.location.pathname === '/') {
+      // If on main page, use tab change
+      onTabChange?.("profile");
+    } else {
+      // If on other pages, navigate to settings
+      navigate('/settings');
     }
   };
 
@@ -92,14 +102,7 @@ export const TodayHeader = memo<TodayHeaderProps>(({ onSearch, activeTab, onTabC
             </div>
           </div>
 
-          {/* Center: Today's Revenue */}
-          <div className="flex-shrink-0 mx-3">
-            <Badge variant="secondary" className="bg-primary-50 text-primary-700 border-primary-200 dark:bg-primary-950/50 dark:text-primary-400 dark:border-primary-800 font-semibold text-xs px-3 py-1.5">
-              {todaysRevenue}
-            </Badge>
-          </div>
-
-          {/* Right: User Profile & Actions */}
+          {/* Right: User Profile & Actions (Removed Revenue Badge) */}
           <div className="flex items-center gap-2 flex-shrink-0">
             {/* User Avatar */}
             <TouchTarget minHeight={40}>
@@ -153,10 +156,10 @@ export const TodayHeader = memo<TodayHeaderProps>(({ onSearch, activeTab, onTabC
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  onClick={() => onTabChange?.("profile")}
+                  onClick={handleSettingsClick}
                   className={cn(
                     "h-8 w-8 p-0 rounded-lg",
-                    activeTab === "profile" 
+                    (activeTab === "profile" || window.location.pathname === '/settings')
                       ? "bg-primary-50 text-primary-600 shadow-sm" 
                       : "hover:bg-accent/50"
                   )}

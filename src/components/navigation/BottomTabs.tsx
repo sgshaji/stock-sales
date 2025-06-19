@@ -1,15 +1,15 @@
 import { useState, useEffect, memo } from "react";
 import { Tab } from "@headlessui/react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { BarChart3, ShoppingCart, Package, TrendingUp, Settings } from "lucide-react";
+import { BarChart3, ShoppingCart, Package, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+// Removed Settings from bottom navigation - now only accessible via top header
 const tabs = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3, path: "/" },
   { id: "sales", label: "Sales", icon: ShoppingCart, path: "/sales" },
   { id: "inventory", label: "Inventory", icon: Package, path: "/inventory" },
-  { id: "analytics", label: "Analytics", icon: TrendingUp, path: "/analytics" },
-  { id: "settings", label: "Settings", icon: Settings, path: "/settings" }
+  { id: "analytics", label: "Analytics", icon: TrendingUp, path: "/analytics" }
 ];
 
 export const BottomTabs = memo(() => {
