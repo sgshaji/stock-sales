@@ -1,6 +1,8 @@
 
 import { BottomTabs } from "@/components/navigation/BottomTabs";
-import UserProfile from "@/components/UserProfile";
+import { BusinessProfile } from "@/components/settings/BusinessProfile";
+import { ConfigurationSettings } from "@/components/settings/ConfigurationSettings";
+import { InventoryCategories } from "@/components/settings/InventoryCategories";
 
 const Settings = () => {
   return (
@@ -11,10 +13,15 @@ const Settings = () => {
             Settings
           </h1>
           <p className="text-muted-foreground mt-1">
-            Manage your account and preferences
+            Manage your business profile and configurations
           </p>
         </div>
-        <UserProfile />
+
+        <div className="space-y-6">
+          <BusinessProfile />
+          <ConfigurationSettings />
+          <InventoryCategories />
+        </div>
       </div>
       <BottomTabs />
     </div>
