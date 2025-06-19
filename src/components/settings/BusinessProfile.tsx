@@ -7,13 +7,14 @@ import { Store, Phone, Mail, Edit, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { getShopName } from "@/lib/config/shop";
 
 export const BusinessProfile = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    businessName: user?.user_metadata?.business_name || "My Store",
+    businessName: getShopName(user),
     phone: user?.user_metadata?.phone || "+1 (555) 123-4567",
     email: user?.email || "contact@mystore.com"
   });
@@ -22,7 +23,7 @@ export const BusinessProfile = () => {
     // TODO: Save to Supabase user profile
     toast({
       title: "Success",
-      description: "Business profile updated successfully!",
+      description: "Business profile updated successfully! Changes will appear in the header.",
     });
     setIsEditing(false);
   };
@@ -30,7 +31,7 @@ export const BusinessProfile = () => {
   const handleCancel = () => {
     // Reset form data
     setFormData({
-      businessName: user?.user_metadata?.business_name || "My Store",
+      businessName: getShopName(user),
       phone: user?.user_metadata?.phone || "+1 (555) 123-4567",
       email: user?.email || "contact@mystore.com"
     });
@@ -96,7 +97,7 @@ export const BusinessProfile = () => {
             </p>
           )}
           <p className="text-label-small text-muted-foreground">
-            This name appears throughout the app and on reports
+            This name appears in the header and throughout the app
           </p>
         </div>
 
@@ -137,6 +138,22 @@ export const BusinessProfile = () => {
               {formData.email}
             </p>
           )}
+        </div>
+
+        {/* Brand Information */}
+        <div className="pt-4 border-t border-border/20">
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2 text-label-large">
+              <Store className="h-4 w-4" />
+              App Brand
+            </Label>
+            <p className="text-body-large py-2 px-3 bg-accent/30 rounded-xl">
+              StockFlow - Smart Inventory Management
+            </p>
+            <p className="text-label-small text-muted-foreground">
+              The app brand name and description (not editable)
+            </p>
+          </div>
         </div>
       </CardContent>
     </Card>

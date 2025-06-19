@@ -14,16 +14,24 @@ export const defaultShopConfig: ShopConfig = {
 
 // Get shop name from user profile or fallback to default
 export const getShopName = (user: any): string => {
+  // Priority 1: User's business name from profile
   if (user?.user_metadata?.business_name) {
     return user.user_metadata.business_name;
   }
+  
+  // Priority 2: User's full name + "Store"
   if (user?.user_metadata?.full_name) {
     return `${user.user_metadata.full_name}'s Store`;
   }
+  
+  // Priority 3: Email-based store name
   if (user?.email) {
     const emailName = user.email.split('@')[0];
-    return `${emailName.charAt(0).toUpperCase() + emailName.slice(1)}'s Store`;
+    const capitalizedName = emailName.charAt(0).toUpperCase() + emailName.slice(1);
+    return `${capitalizedName}'s Store`;
   }
+  
+  // Fallback: Default store name
   return defaultShopConfig.name;
 };
 
@@ -41,4 +49,11 @@ export const getUserInitials = (user: any): string => {
     return user.email.charAt(0).toUpperCase();
   }
   return "U";
+};
+
+// Update shop name in user profile
+export const updateShopName = async (newName: string) => {
+  // TODO: Implement Supabase profile update
+  console.log('Updating shop name to:', newName);
+  // This will be implemented when we add the profile update functionality
 };
