@@ -283,7 +283,7 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
       }];
     });
     
-    // Clear search after adding
+    // Clear search after adding - NO NOTIFICATION
     setSearchQuery("");
     setShowSearch(false);
   }, []);
