@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -115,7 +114,7 @@ export const WhatsAppStyleInventoryList = ({
             <div
               key={item.id}
               className={cn(
-                "flex items-center gap-4 p-4 hover:bg-accent/30 active:bg-accent/50 border-b border-border/5 transition-colors cursor-pointer"
+                "flex items-center gap-4 p-4 hover:bg-accent/30 active:bg-accent/50 border-b border-border/5 transition-colors cursor-pointer group"
               )}
               onClick={() => onEdit(item)}
             >
@@ -139,13 +138,10 @@ export const WhatsAppStyleInventoryList = ({
               {/* Product Info - Main Content */}
               <div className="flex-1 min-w-0 pr-2">
                 <div className="flex items-start justify-between mb-1">
-                  <h3 className="font-medium text-foreground text-base leading-tight line-clamp-2 pr-2">
+                  <h3 className="font-medium text-foreground text-base leading-tight line-clamp-1 pr-2 flex-1">
                     {item.name}
                   </h3>
-                  <div className="flex flex-col items-end gap-1 flex-shrink-0 ml-2">
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">
-                      {formatTime(item.lastSold)}
-                    </span>
+                  <div className="flex flex-col items-end gap-1 flex-shrink-0 ml-4">
                     {item.velocity === 'fast' && (
                       <div className="w-2 h-2 rounded-full bg-green-500" />
                     )}
@@ -153,7 +149,7 @@ export const WhatsAppStyleInventoryList = ({
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 min-w-0">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
                     <span className="text-sm text-muted-foreground truncate">
                       {item.sku}
                     </span>
@@ -173,7 +169,7 @@ export const WhatsAppStyleInventoryList = ({
                       </div>
                     </div>
                     
-                    {/* Quick adjust buttons - only show on hover/mobile */}
+                    {/* Quick adjust buttons - show on hover */}
                     <div className="hidden group-hover:flex items-center gap-1 ml-2">
                       <TouchTarget minHeight={32}>
                         <Button
