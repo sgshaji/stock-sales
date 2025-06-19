@@ -356,8 +356,8 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
 
   return (
     <div className="flex flex-col h-full">
-      {/* SEARCH BAR - Full width, no header */}
-      <div className="p-4 border-b border-gray-100 bg-white">
+      {/* SEARCH BAR - Top position, maximum width */}
+      <div className="p-3 border-b border-gray-100 bg-white">
         <SearchInput
           placeholder="Search products to add..."
           value={searchQuery}
@@ -367,7 +367,7 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
         
         {/* Cart summary when items exist */}
         {cart.length > 0 && (
-          <div className="flex items-center justify-between mt-3 text-xs text-gray-600">
+          <div className="flex items-center justify-between mt-2 text-xs text-gray-600">
             <div className="flex items-center gap-2">
               <ShoppingCart className="h-3 w-3" />
               <span>{cart.length} items</span>
@@ -379,7 +379,7 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
 
       {/* Search Results - Only show when searching */}
       {searchQuery && (
-        <div className="max-h-[20%] p-3 border-b border-gray-100 bg-gray-50 overflow-y-auto">
+        <div className="max-h-[15%] p-2 border-b border-gray-100 bg-gray-50 overflow-y-auto">
           {filteredProducts.length > 0 ? (
             <div className="space-y-2">
               {filteredProducts.map((product) => (
@@ -392,25 +392,25 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
               ))}
             </div>
           ) : (
-            <div className="text-center py-4">
+            <div className="text-center py-3">
               <p className="text-gray-500 text-sm">No products found for "{searchQuery}"</p>
             </div>
           )}
         </div>
       )}
 
-      {/* CART ITEMS - Maximum space allocated */}
-      <div className="flex-1 overflow-y-auto p-3">
+      {/* CART ITEMS - MAXIMUM SPACE ALLOCATED */}
+      <div className="flex-1 overflow-y-auto p-2">
         {cart.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="p-4 bg-gray-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <ShoppingCart className="h-8 w-8 text-gray-400" />
+          <div className="text-center py-8">
+            <div className="p-3 bg-gray-100 rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
+              <ShoppingCart className="h-6 w-6 text-gray-400" />
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">Start adding products</h3>
-            <p className="text-gray-500 text-sm mb-4">Use the search bar above to find and add products to your sale</p>
+            <h3 className="font-semibold text-gray-900 mb-1 text-sm">Start adding products</h3>
+            <p className="text-gray-500 text-xs mb-3">Use the search bar above to find and add products</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {cart.map((item) => (
               <CartItemComponent
                 key={item.id}
@@ -423,11 +423,11 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
         )}
       </div>
 
-      {/* BOTTOM SUMMARY - Compact 2-column format */}
+      {/* BOTTOM SUMMARY - Compact format */}
       {cart.length > 0 && (
-        <div className="border-t border-gray-200 bg-white p-4">
+        <div className="border-t border-gray-200 bg-white p-3">
           {/* 2-Column Summary */}
-          <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-gray-50 rounded-xl text-sm">
+          <div className="grid grid-cols-2 gap-3 mb-3 p-2 bg-gray-50 rounded-xl text-xs">
             <div className="flex justify-between">
               <span>Subtotal:</span>
               <span>${calculations.subtotal.toFixed(2)}</span>
@@ -439,23 +439,23 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
           </div>
           
           {/* Total */}
-          <div className="flex justify-between font-bold text-lg mb-4 border-t pt-2">
+          <div className="flex justify-between font-bold text-base mb-3 border-t pt-2">
             <span>Total:</span>
             <span className="text-primary-600">${calculations.finalTotal.toFixed(2)}</span>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3">
+          <div className="flex gap-2">
             <Button
               variant="outline"
               onClick={onCancel}
-              className="flex-1 h-11 rounded-full"
+              className="flex-1 h-10 rounded-full"
             >
               Cancel
             </Button>
             <Button
               onClick={handleCompleteSale}
-              className="flex-1 h-11 bg-primary-600 hover:bg-primary-700 rounded-full font-semibold"
+              className="flex-1 h-10 bg-primary-600 hover:bg-primary-700 rounded-full font-semibold"
             >
               Complete
             </Button>
