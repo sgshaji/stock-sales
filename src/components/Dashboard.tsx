@@ -2,8 +2,9 @@ import { useState, useEffect, memo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingGrid, LoadingCard } from "@/components/ui/loading-skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
-import { TrendingUp, Package, DollarSign, AlertTriangle, ArrowUp, ShoppingCart, Users } from "lucide-react";
+import { TrendingUp, Package, DollarSign, AlertTriangle, ArrowUp, ShoppingCart, Users, Plus } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface DashboardProps {
@@ -19,7 +20,7 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1000);
+    }, 800);
     return () => clearTimeout(timer);
   }, []);
 
@@ -47,23 +48,23 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
   return (
     <div className="space-y-4 animate-fade-in">
       {/* Compact Welcome Section */}
-      <div className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl p-4 text-white shadow-md">
+      <div className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl p-4 text-white shadow-lg">
         <h2 className="text-title-medium font-semibold mb-1">Welcome back!</h2>
-        <p className="text-primary-100 text-body-small">Here's your inventory overview</p>
+        <p className="text-primary-100 text-body-small opacity-90">Here's your business overview</p>
       </div>
 
       {/* Key Metrics Grid - Mobile Optimized */}
       <div className="grid grid-cols-2 gap-3">
-        <Card className="bg-gradient-to-br from-success-50 to-success-100/50 border-success-200">
+        <Card className="bg-gradient-to-br from-success-50 to-success-100/50 border-success-200/50 shadow-sm">
           <CardHeader className="pb-2 px-3 pt-3">
             <CardTitle className="text-label-medium flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-success-100 rounded-lg">
+                <div className="p-1.5 bg-success-100 rounded-lg shadow-sm">
                   <DollarSign className="h-3 w-3 text-success-600" />
                 </div>
                 <span className="text-gray-700 font-medium text-xs">Sales</span>
               </div>
-              <div className="flex items-center gap-1 text-success-600 text-xs bg-success-100 px-1.5 py-0.5 rounded-full">
+              <div className="flex items-center gap-1 text-success-600 text-xs bg-success-100 px-1.5 py-0.5 rounded-full border border-success-200">
                 <ArrowUp className="h-2 w-2" />
                 12%
               </div>
@@ -76,16 +77,16 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-info-50 to-info-100/50 border-info-200">
+        <Card className="bg-gradient-to-br from-info-50 to-info-100/50 border-info-200/50 shadow-sm">
           <CardHeader className="pb-2 px-3 pt-3">
             <CardTitle className="text-label-medium flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-info-100 rounded-lg">
+                <div className="p-1.5 bg-info-100 rounded-lg shadow-sm">
                   <Package className="h-3 w-3 text-info-600" />
                 </div>
                 <span className="text-gray-700 font-medium text-xs">Items</span>
               </div>
-              <div className="flex items-center gap-1 text-info-600 text-xs bg-info-100 px-1.5 py-0.5 rounded-full">
+              <div className="flex items-center gap-1 text-info-600 text-xs bg-info-100 px-1.5 py-0.5 rounded-full border border-info-200">
                 <ArrowUp className="h-2 w-2" />
                 5%
               </div>
@@ -98,16 +99,16 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-primary-50 to-primary-100/50 border-primary-200">
+        <Card className="bg-gradient-to-br from-primary-50 to-primary-100/50 border-primary-200/50 shadow-sm">
           <CardHeader className="pb-2 px-3 pt-3">
             <CardTitle className="text-label-medium flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-primary-100 rounded-lg">
+                <div className="p-1.5 bg-primary-100 rounded-lg shadow-sm">
                   <ShoppingCart className="h-3 w-3 text-primary-600" />
                 </div>
                 <span className="text-gray-700 font-medium text-xs">Orders</span>
               </div>
-              <div className="flex items-center gap-1 text-primary-600 text-xs bg-primary-100 px-1.5 py-0.5 rounded-full">
+              <div className="flex items-center gap-1 text-primary-600 text-xs bg-primary-100 px-1.5 py-0.5 rounded-full border border-primary-200">
                 <ArrowUp className="h-2 w-2" />
                 8%
               </div>
@@ -120,16 +121,16 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-warning-50 to-warning-100/50 border-warning-200">
+        <Card className="bg-gradient-to-br from-warning-50 to-warning-100/50 border-warning-200/50 shadow-sm">
           <CardHeader className="pb-2 px-3 pt-3">
             <CardTitle className="text-label-medium flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-warning-100 rounded-lg">
+                <div className="p-1.5 bg-warning-100 rounded-lg shadow-sm">
                   <Users className="h-3 w-3 text-warning-600" />
                 </div>
                 <span className="text-gray-700 font-medium text-xs">Customers</span>
               </div>
-              <div className="flex items-center gap-1 text-warning-600 text-xs bg-warning-100 px-1.5 py-0.5 rounded-full">
+              <div className="flex items-center gap-1 text-warning-600 text-xs bg-warning-100 px-1.5 py-0.5 rounded-full border border-warning-200">
                 <ArrowUp className="h-2 w-2" />
                 3%
               </div>
@@ -143,11 +144,29 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
         </Card>
       </div>
 
+      {/* Quick Actions */}
+      <div className="grid grid-cols-2 gap-3">
+        <Button 
+          variant="outline" 
+          className="h-12 gap-2 bg-gradient-to-r from-primary-50 to-primary-100 border-primary-200 hover:from-primary-100 hover:to-primary-150"
+        >
+          <Plus className="h-4 w-4" />
+          <span className="text-sm font-medium">Add Sale</span>
+        </Button>
+        <Button 
+          variant="outline" 
+          className="h-12 gap-2 bg-gradient-to-r from-success-50 to-success-100 border-success-200 hover:from-success-100 hover:to-success-150"
+        >
+          <Package className="h-4 w-4" />
+          <span className="text-sm font-medium">Add Stock</span>
+        </Button>
+      </div>
+
       {/* Low Stock Alerts - Compact */}
-      <Card className="bg-gradient-to-br from-destructive/5 to-warning/5 border-destructive/20">
+      <Card className="bg-gradient-to-br from-destructive/5 to-warning/5 border-destructive/20 shadow-sm">
         <CardHeader className="pb-2 px-4 pt-3">
           <CardTitle className="text-title-small flex items-center gap-2">
-            <div className="p-1.5 bg-destructive/10 rounded-lg">
+            <div className="p-1.5 bg-destructive/10 rounded-lg shadow-sm">
               <AlertTriangle className="h-3 w-3 text-destructive" />
             </div>
             <span className="font-medium">Low Stock</span>
@@ -158,7 +177,7 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
         </CardHeader>
         <CardContent className="px-4 pb-3">
           <div className="space-y-2">
-            <div className="flex justify-between items-center p-2 bg-background rounded-lg border border-destructive/10">
+            <div className="flex justify-between items-center p-2.5 bg-background rounded-lg border border-destructive/10 shadow-sm">
               <div>
                 <span className="font-medium text-body-small">Premium Headphones</span>
                 <p className="text-xs text-muted-foreground">SKU: HD001</p>
@@ -168,7 +187,7 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
                 <p className="text-xs text-muted-foreground">Need: 20</p>
               </div>
             </div>
-            <div className="flex justify-between items-center p-2 bg-background rounded-lg border border-destructive/10">
+            <div className="flex justify-between items-center p-2.5 bg-background rounded-lg border border-destructive/10 shadow-sm">
               <div>
                 <span className="font-medium text-body-small">Wireless Mouse</span>
                 <p className="text-xs text-muted-foreground">SKU: MS002</p>
@@ -183,10 +202,10 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
       </Card>
 
       {/* Top Selling Items - Compact */}
-      <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+      <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 shadow-sm">
         <CardHeader className="pb-2 px-4 pt-3">
           <CardTitle className="text-title-small flex items-center gap-2">
-            <div className="p-1.5 bg-primary-100 rounded-lg">
+            <div className="p-1.5 bg-primary-100 rounded-lg shadow-sm">
               <TrendingUp className="h-3 w-3 text-primary-600" />
             </div>
             <span className="font-medium">Top Sellers</span>
@@ -197,9 +216,9 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
         </CardHeader>
         <CardContent className="px-4 pb-3">
           <div className="space-y-2">
-            <div className="flex justify-between items-center p-2 bg-white rounded-lg border border-primary-100">
+            <div className="flex justify-between items-center p-2.5 bg-white rounded-lg border border-primary-100 shadow-sm">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-gradient-to-r from-primary-500 to-primary-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">
+                <div className="w-6 h-6 bg-gradient-to-r from-primary-500 to-primary-600 rounded-lg flex items-center justify-center text-white text-xs font-bold shadow-sm">
                   1
                 </div>
                 <div>
@@ -212,9 +231,9 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
                 <p className="text-xs text-gray-500">$689.85</p>
               </div>
             </div>
-            <div className="flex justify-between items-center p-2 bg-white rounded-lg border border-primary-100">
+            <div className="flex justify-between items-center p-2.5 bg-white rounded-lg border border-primary-100 shadow-sm">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-gradient-to-r from-success-500 to-info-500 rounded-lg flex items-center justify-center text-white text-xs font-bold">
+                <div className="w-6 h-6 bg-gradient-to-r from-success-500 to-info-500 rounded-lg flex items-center justify-center text-white text-xs font-bold shadow-sm">
                   2
                 </div>
                 <div>
@@ -227,9 +246,9 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
                 <p className="text-xs text-gray-500">$155.88</p>
               </div>
             </div>
-            <div className="flex justify-between items-center p-2 bg-white rounded-lg border border-primary-100">
+            <div className="flex justify-between items-center p-2.5 bg-white rounded-lg border border-primary-100 shadow-sm">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-gradient-to-r from-warning-500 to-warning-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">
+                <div className="w-6 h-6 bg-gradient-to-r from-warning-500 to-warning-600 rounded-lg flex items-center justify-center text-white text-xs font-bold shadow-sm">
                   3
                 </div>
                 <div>

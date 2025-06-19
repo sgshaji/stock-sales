@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/search";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { TouchTarget } from "@/components/ui/mobile-touch";
-import { LogOut, Settings } from "lucide-react";
+import { LogOut, Settings, Search } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -39,13 +39,13 @@ export const MainHeader = memo<MainHeaderProps>(({ onSearch, activeTab, onTabCha
     }
     if (user?.email) {
       const emailName = user.email.split('@')[0];
-      return `${emailName}'s Store`;
+      return `${emailName.charAt(0).toUpperCase() + emailName.slice(1)}'s Store`;
     }
     return "Your Store";
   };
 
   return (
-    <div className="bg-background/95 backdrop-blur-md shadow-sm border-b border-border/30 sticky top-0 z-20">
+    <div className="bg-background/95 backdrop-blur-md shadow-sm border-b border-border/30 sticky top-12 z-19">
       <div className={cn(
         "p-4",
         isMobile ? "py-3" : "p-6"
@@ -72,6 +72,23 @@ export const MainHeader = memo<MainHeaderProps>(({ onSearch, activeTab, onTabCha
               "flex items-center bg-background/60 rounded-2xl border border-border/30 backdrop-blur-sm",
               isMobile ? "p-1 gap-1" : "p-1 gap-1"
             )}>
+              <TouchTarget minHeight={44}>
+                <Button 
+                  variant="ghost" 
+                  size="icon-sm"
+                  onClick={() => setShowSearch(!showSearch)}
+                  className={cn(
+                    "animate-quick rounded-xl",
+                    showSearch 
+                      ? "bg-primary-50 text-primary-600 shadow-sm dark:bg-primary-950/50 dark:text-primary-400" 
+                      : "hover:bg-accent/50"
+                  )}
+                  title="Toggle search"
+                >
+                  <Search className="h-4 w-4" />
+                </Button>
+              </TouchTarget>
+              
               <TouchTarget minHeight={44}>
                 <ThemeToggle />
               </TouchTarget>
