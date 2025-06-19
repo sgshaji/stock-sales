@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,7 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { Suspense, lazy } from "react";
-import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
+import { LoadingCard } from "@/components/ui/loading-skeleton";
 
 // Lazy load all route components for better performance
 const Index = lazy(() => import("./pages/Index"));
@@ -34,7 +33,7 @@ const App = () => (
         <Sonner />
         <AuthProvider>
           <BrowserRouter>
-            <Suspense fallback={<LoadingSkeleton />}>
+            <Suspense fallback={<LoadingCard count={3} />}>
               <Routes>
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/" element={
