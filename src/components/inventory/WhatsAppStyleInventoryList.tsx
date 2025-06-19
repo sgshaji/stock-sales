@@ -9,8 +9,8 @@ import {
   Edit,
   Trash2,
   MoreVertical,
-  Plus,
-  Minus,
+  ChevronUp,
+  ChevronDown,
   AlertTriangle,
   CheckCircle2,
   Clock,
@@ -31,6 +31,8 @@ interface InventoryItem {
   lastSold?: string;
   velocity?: 'fast' | 'medium' | 'slow';
   reorderPoint?: number;
+  purchasePrice?: number;
+  lastRestocked?: string;
 }
 
 interface WhatsAppStyleInventoryListProps {
@@ -40,6 +42,7 @@ interface WhatsAppStyleInventoryListProps {
   onQuickAdjust: (item: InventoryItem, adjustment: number) => void;
   searchQuery?: string;
   onSearch?: (query: string) => void;
+  onItemClick?: (item: InventoryItem) => void;
 }
 
 const getStockStatusIcon = (stock: number, reorderPoint?: number) => {
@@ -75,9 +78,18 @@ export const WhatsAppStyleInventoryList = ({
   onDelete, 
   onQuickAdjust,
   searchQuery,
-  onSearch
+  onSearch,
+  onItemClick
 }: WhatsAppStyleInventoryListProps) => {
   const isMobile = useIsMobile();
+
+  const handleItemClick = (item: InventoryItem) => {
+    if (onItemClick) {
+      onItemClick(item);
+    } else {
+      onEdit(item);
+    }
+  };
 
   return (
     <div className="flex flex-col h-full bg-background">
@@ -129,7 +141,7 @@ export const WhatsAppStyleInventoryList = ({
               className={cn(
                 "flex items-center gap-4 p-4 hover:bg-accent/30 active:bg-accent/50 border-b border-border/5 transition-colors cursor-pointer group"
               )}
-              onClick={() => onEdit(item)}
+              onClick={() => handleItemClick(item)}
             >
               {/* Product Avatar - MATCHING SALES DESIGN */}
               <div className="relative flex-shrink-0">
@@ -144,7 +156,7 @@ export const WhatsAppStyleInventoryList = ({
                   "absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center",
                   status.bgColor
                 )}>
-                  <status.icon className={cn("w-2.5 h-2.5", status.color)} />
+                  <status.icon className={cn("w-2.5 h-2.5 text-white")} />
                 </div>
               </div>
 
@@ -182,20 +194,20 @@ export const WhatsAppStyleInventoryList = ({
                       </div>
                     </div>
                     
-                    {/* Quick adjust buttons - show on hover - ICON ONLY */}
-                    <div className="hidden group-hover:flex items-center gap-1 ml-2">
+                    {/* UP/DOWN ARROWS - show on hover */}
+                    <div className="hidden group-hover:flex flex-col items-center gap-0.5 ml-2">
                       <TouchTarget minHeight={32}>
                         <Button
                           variant="ghost"
                           size="icon-sm"
                           onClick={(e) => {
                             e.stopPropagation();
-                            onQuickAdjust(item, -1);
+                            onQuickAdjust(item, 1);
                           }}
-                          className="h-7 w-7 rounded-full hover:bg-accent/50"
-                          title="Decrease stock"
+                          className="h-6 w-6 rounded-md hover:bg-accent/50 p-0"
+                          title="Increase stock"
                         >
-                          <Minus className="h-3 w-3" />
+                          <ChevronUp className="h-3 w-3" />
                         </Button>
                       </TouchTarget>
                       
@@ -205,12 +217,12 @@ export const WhatsAppStyleInventoryList = ({
                           size="icon-sm"
                           onClick={(e) => {
                             e.stopPropagation();
-                            onQuickAdjust(item, 1);
+                            onQuickAdjust(item, -1);
                           }}
-                          className="h-7 w-7 rounded-full hover:bg-accent/50"
-                          title="Increase stock"
+                          className="h-6 w-6 rounded-md hover:bg-accent/50 p-0"
+                          title="Decrease stock"
                         >
-                          <Plus className="h-3 w-3" />
+                          <ChevronDown className="h-3 w-3" />
                         </Button>
                       </TouchTarget>
 
@@ -221,7 +233,7 @@ export const WhatsAppStyleInventoryList = ({
                               variant="ghost"
                               size="icon-sm"
                               onClick={(e) => e.stopPropagation()}
-                              className="h-7 w-7 rounded-full hover:bg-accent/50"
+                              className="h-6 w-6 rounded-md hover:bg-accent/50 p-0 mt-0.5"
                               title="More options"
                             >
                               <MoreVertical className="h-3 w-3" />
@@ -234,7 +246,7 @@ export const WhatsAppStyleInventoryList = ({
                             Edit Details
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => onQuickAdjust(item, 5)} className="gap-2">
-                            <Plus className="h-4 w-4" />
+                            <ChevronUp className="h-4 w-4" />
                             Quick Restock (+5)
                           </DropdownMenuItem>
                           <ConfirmationDialog
@@ -260,7 +272,7 @@ export const WhatsAppStyleInventoryList = ({
 
                 {/* Additional info row - MATCHING SALES DESIGN */}
                 <div className="flex items-center gap-1 mt-1">
-                  <Calendar className="h-3 w-3 text-gray-400" />
+                  <Calendar className="h-3 w-3 text-muted-foreground" />
                   <span className="text-xs text-muted-foreground">
                     Last sold: {formatTime(item.lastSold)}
                   </span>
@@ -271,7 +283,7 @@ export const WhatsAppStyleInventoryList = ({
                   <div className="mt-2 flex items-center gap-1">
                     <div className="w-2 h-2 rounded-full bg-orange-500" />
                     <span className="text-xs text-orange-600 dark:text-orange-400">
-                      Low stock - Reorder at {item.reorderPoint || 5} units
+                      {item.stock === 0 ? 'Out of stock' : `Low stock - Reorder at ${item.reorderPoint || 5} units`}
                     </span>
                   </div>
                 )}
@@ -288,7 +300,7 @@ export const WhatsAppStyleInventoryList = ({
           className="h-14 w-14 rounded-full shadow-lg bg-green-500 hover:bg-green-600 text-white"
           title="Add new item"
         >
-          <Plus className="h-6 w-6" />
+          <Package className="h-6 w-6" />
         </Button>
       </div>
     </div>
