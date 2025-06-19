@@ -434,7 +434,7 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
                   onClick={handleCompleteSale}
                   className="flex-1 h-11 bg-primary-600 hover:bg-primary-700 rounded-full font-semibold"
                 >
-                  Complete Sale - ${calculations.finalTotal.toFixed(2)}
+                  Complete
                 </Button>
               </div>
             </div>
