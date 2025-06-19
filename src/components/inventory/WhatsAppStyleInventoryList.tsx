@@ -272,6 +272,17 @@ export const WhatsAppStyleInventoryList = ({
           );
         })}
       </div>
+
+      {/* Floating Action Button - ICON ONLY */}
+      <div className="fixed bottom-20 right-4 z-20">
+        <Button
+          size="lg"
+          className="h-14 w-14 rounded-full shadow-lg bg-green-500 hover:bg-green-600 text-white"
+          title="Add new item"
+        >
+          <Plus className="h-6 w-6" />
+        </Button>
+      </div>
     </div>
   );
 };
