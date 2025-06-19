@@ -3,15 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { SearchInput } from "@/components/ui/search";
 import { 
   Plus, 
   Minus, 
-  Scan, 
   Search, 
   ShoppingCart,
-  User,
   DollarSign,
   Percent,
   X,
@@ -27,8 +24,12 @@ interface InventoryItem {
   stock: number;
 }
 
-interface CartItem extends InventoryItem {
+interface CartItem {
+  id: number;
+  name: string;
   quantity: number;
+  pricePerUnit: number;
+  total: number;
   discount: number; // percentage
 }
 
@@ -85,30 +86,63 @@ ProductSearchItem.displayName = "ProductSearchItem";
 
 const CartItemComponent = memo<{
   item: CartItem;
-  onUpdateQuantity: (id: number, quantity: number) => void;
-  onUpdateDiscount: (id: number, discount: number) => void;
+  onUpdate: (id: number, updates: Partial<CartItem>) => void;
   onRemove: (id: number) => void;
-}>(({ item, onUpdateQuantity, onUpdateDiscount, onRemove }) => {
-  const [discountInput, setDiscountInput] = useState(item.discount.toString());
-  
-  const handleQuantityChange = useCallback((change: number) => {
-    const newQuantity = Math.max(0, item.quantity + change);
-    if (newQuantity === 0) {
-      onRemove(item.id);
-    } else {
-      onUpdateQuantity(item.id, newQuantity);
-    }
-  }, [item.id, item.quantity, onUpdateQuantity, onRemove]);
+}>(({ item, onUpdate, onRemove }) => {
+  const [quantity, setQuantity] = useState(item.quantity.toString());
+  const [pricePerUnit, setPricePerUnit] = useState(item.pricePerUnit.toString());
+  const [discount, setDiscount] = useState(item.discount.toString());
+
+  // Calculate total whenever inputs change
+  const calculateTotal = useCallback((qty: number, price: number, disc: number) => {
+    const subtotal = qty * price;
+    const discountAmount = subtotal * (disc / 100);
+    return subtotal - discountAmount;
+  }, []);
+
+  const handleQuantityChange = useCallback((value: string) => {
+    setQuantity(value);
+    const qty = Math.max(1, parseInt(value) || 1);
+    const price = parseFloat(pricePerUnit) || 0;
+    const disc = parseFloat(discount) || 0;
+    const total = calculateTotal(qty, price, disc);
+    
+    onUpdate(item.id, { 
+      quantity: qty, 
+      total 
+    });
+  }, [item.id, pricePerUnit, discount, calculateTotal, onUpdate]);
+
+  const handlePriceChange = useCallback((value: string) => {
+    setPricePerUnit(value);
+    const price = Math.max(0, parseFloat(value) || 0);
+    const qty = parseInt(quantity) || 1;
+    const disc = parseFloat(discount) || 0;
+    const total = calculateTotal(qty, price, disc);
+    
+    onUpdate(item.id, { 
+      pricePerUnit: price, 
+      total 
+    });
+  }, [item.id, quantity, discount, calculateTotal, onUpdate]);
 
   const handleDiscountChange = useCallback((value: string) => {
-    setDiscountInput(value);
-    const discount = Math.max(0, Math.min(100, parseFloat(value) || 0));
-    onUpdateDiscount(item.id, discount);
-  }, [item.id, onUpdateDiscount]);
+    setDiscount(value);
+    const disc = Math.max(0, Math.min(100, parseFloat(value) || 0));
+    const qty = parseInt(quantity) || 1;
+    const price = parseFloat(pricePerUnit) || 0;
+    const total = calculateTotal(qty, price, disc);
+    
+    onUpdate(item.id, { 
+      discount: disc, 
+      total 
+    });
+  }, [item.id, quantity, pricePerUnit, calculateTotal, onUpdate]);
 
-  const itemTotal = item.price * item.quantity;
-  const discountAmount = itemTotal * (item.discount / 100);
-  const finalPrice = itemTotal - discountAmount;
+  const handleQuantityAdjust = useCallback((change: number) => {
+    const newQty = Math.max(1, (parseInt(quantity) || 1) + change);
+    handleQuantityChange(newQty.toString());
+  }, [quantity, handleQuantityChange]);
 
   return (
     <Card className="bg-white">
@@ -119,7 +153,7 @@ const CartItemComponent = memo<{
           </div>
           
           <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between mb-2">
+            <div className="flex items-start justify-between mb-3">
               <h3 className="font-medium text-gray-900 truncate pr-2">{item.name}</h3>
               <Button
                 variant="ghost"
@@ -131,24 +165,30 @@ const CartItemComponent = memo<{
               </Button>
             </div>
             
-            <div className="space-y-3">
-              {/* Quantity Controls */}
-              <div className="flex items-center gap-3">
-                <Label className="text-xs text-gray-500 w-12">Qty:</Label>
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              {/* Quantity */}
+              <div>
+                <Label className="text-xs text-gray-500 mb-1 block">Quantity</Label>
                 <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleQuantityChange(-1)}
+                    onClick={() => handleQuantityAdjust(-1)}
                     className="h-8 w-8 rounded-full p-0"
                   >
                     <Minus className="h-3 w-3" />
                   </Button>
-                  <span className="w-8 text-center font-medium">{item.quantity}</span>
+                  <Input
+                    type="number"
+                    value={quantity}
+                    onChange={(e) => handleQuantityChange(e.target.value)}
+                    className="w-16 h-8 text-center text-sm"
+                    min="1"
+                  />
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleQuantityChange(1)}
+                    onClick={() => handleQuantityAdjust(1)}
                     className="h-8 w-8 rounded-full p-0"
                   >
                     <Plus className="h-3 w-3" />
@@ -156,39 +196,48 @@ const CartItemComponent = memo<{
                 </div>
               </div>
 
-              {/* Discount Input */}
-              <div className="flex items-center gap-3">
-                <Label className="text-xs text-gray-500 w-12">Disc:</Label>
-                <div className="flex items-center gap-2">
+              {/* Price Per Unit */}
+              <div>
+                <Label className="text-xs text-gray-500 mb-1 block">Price Per Unit</Label>
+                <div className="relative">
+                  <DollarSign className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-gray-400" />
                   <Input
                     type="number"
-                    value={discountInput}
+                    value={pricePerUnit}
+                    onChange={(e) => handlePriceChange(e.target.value)}
+                    className="pl-7 h-8 text-sm"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {/* Discount */}
+              <div>
+                <Label className="text-xs text-gray-500 mb-1 block">Discount</Label>
+                <div className="relative">
+                  <Input
+                    type="number"
+                    value={discount}
                     onChange={(e) => handleDiscountChange(e.target.value)}
-                    className="w-16 h-8 text-sm"
+                    className="pr-7 h-8 text-sm"
                     min="0"
                     max="100"
+                    step="0.1"
                   />
-                  <span className="text-xs text-gray-500">%</span>
+                  <Percent className="absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-gray-400" />
                 </div>
               </div>
 
-              {/* Price Breakdown */}
-              <div className="space-y-1">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">
-                    ${item.price.toFixed(2)} × {item.quantity}
+              {/* Total */}
+              <div>
+                <Label className="text-xs text-gray-500 mb-1 block">Total</Label>
+                <div className="h-8 px-3 bg-gray-50 rounded-lg flex items-center">
+                  <span className="text-sm font-semibold text-primary-600">
+                    ${item.total.toFixed(2)}
                   </span>
-                  <span>${itemTotal.toFixed(2)}</span>
-                </div>
-                {item.discount > 0 && (
-                  <div className="flex justify-between text-sm text-success-600">
-                    <span>Discount ({item.discount}%)</span>
-                    <span>-${discountAmount.toFixed(2)}</span>
-                  </div>
-                )}
-                <div className="flex justify-between font-semibold text-primary-600 border-t pt-1">
-                  <span>Total</span>
-                  <span>${finalPrice.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -204,9 +253,6 @@ CartItemComponent.displayName = "CartItemComponent";
 export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete, onCancel }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [customerName, setCustomerName] = useState("");
-  const [scanMode, setScanMode] = useState(false);
-  const [overallDiscount, setOverallDiscount] = useState(0); // percentage
   const { toast } = useToast();
 
   // Filter products based on search with smart suggestions
@@ -222,13 +268,23 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id);
       if (existing) {
+        const newQuantity = existing.quantity + 1;
+        const total = newQuantity * existing.pricePerUnit * (1 - existing.discount / 100);
         return prev.map(item =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: newQuantity, total }
             : item
         );
       }
-      return [...prev, { ...product, quantity: 1, discount: 0 }];
+      const total = 1 * product.price * (1 - 0 / 100);
+      return [...prev, { 
+        id: product.id,
+        name: product.name,
+        quantity: 1, 
+        pricePerUnit: product.price,
+        total,
+        discount: 0 
+      }];
     });
     
     // Clear search after adding
@@ -240,15 +296,9 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
     });
   }, [toast]);
 
-  const updateQuantity = useCallback((id: number, quantity: number) => {
+  const updateCartItem = useCallback((id: number, updates: Partial<CartItem>) => {
     setCart(prev => prev.map(item =>
-      item.id === id ? { ...item, quantity } : item
-    ));
-  }, []);
-
-  const updateDiscount = useCallback((id: number, discount: number) => {
-    setCart(prev => prev.map(item =>
-      item.id === id ? { ...item, discount } : item
+      item.id === id ? { ...item, ...updates } : item
     ));
   }, []);
 
@@ -258,26 +308,16 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
 
   // Calculate totals
   const calculations = useMemo(() => {
-    const subtotal = cart.reduce((sum, item) => {
-      const itemTotal = item.price * item.quantity;
-      const itemDiscount = itemTotal * (item.discount / 100);
-      return sum + (itemTotal - itemDiscount);
-    }, 0);
-    
-    const overallDiscountAmount = subtotal * (overallDiscount / 100);
-    const finalTotal = subtotal - overallDiscountAmount;
-    const totalItemDiscount = cart.reduce((sum, item) => {
-      const itemTotal = item.price * item.quantity;
-      return sum + (itemTotal * (item.discount / 100));
-    }, 0);
-    const totalDiscount = totalItemDiscount + overallDiscountAmount;
+    const finalTotal = cart.reduce((sum, item) => sum + item.total, 0);
+    const subtotal = cart.reduce((sum, item) => sum + (item.quantity * item.pricePerUnit), 0);
+    const totalDiscount = subtotal - finalTotal;
     
     return {
-      subtotal: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+      subtotal,
       totalDiscount,
       finalTotal
     };
-  }, [cart, overallDiscount]);
+  }, [cart]);
 
   const handleCompleteSale = useCallback(() => {
     if (cart.length === 0) {
@@ -290,7 +330,11 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
     }
 
     // Check stock availability
-    const stockIssues = cart.filter(item => item.quantity > item.stock);
+    const stockIssues = cart.filter(item => {
+      const inventoryItem = inventory.find(inv => inv.id === item.id);
+      return !inventoryItem || item.quantity > inventoryItem.stock;
+    });
+    
     if (stockIssues.length > 0) {
       toast({
         title: "Insufficient Stock",
@@ -301,12 +345,12 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
     }
 
     const saleData = {
-      customerName: customerName.trim() || undefined,
       items: cart.map(item => ({
         name: item.name,
         quantity: item.quantity,
-        unitPrice: item.price,
-        discount: item.discount
+        unitPrice: item.pricePerUnit,
+        discount: item.discount,
+        total: item.total
       })),
       subtotal: calculations.subtotal,
       totalDiscount: calculations.totalDiscount,
@@ -321,90 +365,22 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
     };
 
     onComplete(saleData);
-  }, [cart, customerName, calculations, onComplete, toast]);
-
-  const handleBarcodeSearch = useCallback((barcode: string) => {
-    // Mock barcode search - in real app this would match against product barcodes
-    const product = inventory.find(p => p.id.toString() === barcode);
-    if (product) {
-      addToCart(product);
-      toast({
-        title: "Product Found",
-        description: `${product.name} added to cart`,
-      });
-    } else {
-      toast({
-        title: "Product Not Found",
-        description: "No product found with this barcode",
-        variant: "destructive",
-      });
-    }
-  }, [inventory, addToCart, toast]);
+  }, [cart, calculations, onComplete, toast, inventory]);
 
   return (
     <div className="flex flex-col h-full">
-      {/* Customer Info */}
+      {/* Search Section */}
       <div className="p-4 border-b border-gray-100">
-        <Label htmlFor="customer" className="text-sm font-medium text-gray-700 mb-2 block">
-          Customer Name (Optional)
-        </Label>
-        <Input
-          id="customer"
-          placeholder="Enter customer name..."
-          value={customerName}
-          onChange={(e) => setCustomerName(e.target.value)}
-          className="h-10 rounded-xl"
+        <SearchInput
+          placeholder="Search products to add to cart..."
+          value={searchQuery}
+          onSearch={setSearchQuery}
+          className="h-12 rounded-full bg-gray-100 border-0"
         />
       </div>
 
-      {/* Search/Scan Toggle */}
-      <div className="p-4 border-b border-gray-100">
-        <div className="flex gap-2 mb-3">
-          <Button
-            variant={!scanMode ? "default" : "outline"}
-            onClick={() => setScanMode(false)}
-            className="flex-1 h-10 rounded-full"
-          >
-            <Search className="h-4 w-4 mr-2" />
-            Search
-          </Button>
-          <Button
-            variant={scanMode ? "default" : "outline"}
-            onClick={() => setScanMode(true)}
-            className="flex-1 h-10 rounded-full"
-          >
-            <Scan className="h-4 w-4 mr-2" />
-            Scan
-          </Button>
-        </div>
-
-        {scanMode ? (
-          <div className="bg-gray-100 rounded-2xl p-6 text-center">
-            <Scan className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-sm text-gray-600 mb-3">Point camera at barcode</p>
-            <Input
-              placeholder="Or enter barcode manually..."
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  handleBarcodeSearch(e.currentTarget.value);
-                  e.currentTarget.value = '';
-                }
-              }}
-              className="h-10 rounded-xl"
-            />
-          </div>
-        ) : (
-          <SearchInput
-            placeholder="Search products... (start typing for suggestions)"
-            value={searchQuery}
-            onSearch={setSearchQuery}
-            className="h-12 rounded-full bg-gray-100 border-0"
-          />
-        )}
-      </div>
-
       {/* Product Search Results */}
-      {!scanMode && searchQuery && (
+      {searchQuery && (
         <div className="p-4 border-b border-gray-100">
           <div className="space-y-2 max-h-48 overflow-y-auto">
             {filteredProducts.length > 0 ? (
@@ -449,8 +425,7 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
                 <CartItemComponent
                   key={item.id}
                   item={item}
-                  onUpdateQuantity={updateQuantity}
-                  onUpdateDiscount={updateDiscount}
+                  onUpdate={updateCartItem}
                   onRemove={removeFromCart}
                 />
               ))}
@@ -462,24 +437,6 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
       {/* Total and Complete Sale */}
       {cart.length > 0 && (
         <div className="border-t border-gray-200 bg-white p-4">
-          {/* Overall Discount */}
-          <div className="mb-4">
-            <Label className="text-sm font-medium text-gray-700 mb-2 block">
-              Overall Discount (Optional)
-            </Label>
-            <div className="flex items-center gap-2">
-              <Input
-                type="number"
-                value={overallDiscount}
-                onChange={(e) => setOverallDiscount(Math.max(0, Math.min(100, parseFloat(e.target.value) || 0)))}
-                className="w-20 h-10"
-                min="0"
-                max="100"
-              />
-              <span className="text-sm text-gray-500">% off total</span>
-            </div>
-          </div>
-
           {/* Price Summary */}
           <Card className="mb-4">
             <CardContent className="p-4">
