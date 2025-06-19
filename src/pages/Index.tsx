@@ -5,11 +5,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SearchInput } from "@/components/ui/search";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { TouchTarget } from "@/components/ui/mobile-touch";
-import { Package, ShoppingCart, Users, BarChart3, LogOut, User, Settings, Search, Menu } from "lucide-react";
+import { ShoppingCart, Users, BarChart3, LogOut, User, Settings, Search } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import InventoryManagement from "@/components/InventoryManagement";
 import SalesEntry from "@/components/SalesEntry";
 import VendorManagement from "@/components/VendorManagement";
 import Dashboard from "@/components/Dashboard";
@@ -125,7 +124,7 @@ const Index = () => {
             {showSearch && (
               <div className="animate-slide-up">
                 <SearchInput
-                  placeholder="Search inventory, sales, vendors..."
+                  placeholder="Search across all modules..."
                   onSearch={handleSearch}
                   className="w-full"
                 />
@@ -140,16 +139,15 @@ const Index = () => {
           isMobile ? "p-4 space-y-4" : "p-6"
         )}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            {/* Mobile-first Tab Navigation */}
+            {/* Simplified 4-tab Navigation */}
             <TabsList className={cn(
               "w-full bg-background/95 backdrop-blur-sm shadow-lg border border-border/40 rounded-2xl p-2 h-auto",
               isMobile 
-                ? "grid grid-cols-5 gap-1" 
-                : "grid grid-cols-5 mb-8"
+                ? "grid grid-cols-4 gap-1" 
+                : "grid grid-cols-4 mb-8"
             )}>
               {[
                 { value: "dashboard", icon: BarChart3, label: "Dashboard" },
-                { value: "inventory", icon: Package, label: "Inventory" },
                 { value: "sales", icon: ShoppingCart, label: "Sales" },
                 { value: "vendors", icon: Users, label: "Vendors" },
                 { value: "profile", icon: User, label: "Profile" }
@@ -179,10 +177,6 @@ const Index = () => {
             <div className="animate-fade-in mt-4">
               <TabsContent value="dashboard" className="mt-0">
                 <Dashboard searchQuery={searchQuery} />
-              </TabsContent>
-
-              <TabsContent value="inventory" className="mt-0">
-                <InventoryManagement searchQuery={searchQuery} />
               </TabsContent>
 
               <TabsContent value="sales" className="mt-0">
