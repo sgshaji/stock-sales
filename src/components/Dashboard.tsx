@@ -46,16 +46,16 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
   }
 
   return (
-    <div className="space-y-4 animate-fade-in">
+    <div className="space-y-4 animate-fade-in max-w-md mx-auto">
       {/* Compact Welcome Section */}
       <div className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl p-4 text-white shadow-lg">
         <h2 className="text-title-medium font-semibold mb-1">Welcome back!</h2>
         <p className="text-primary-100 text-body-small opacity-90">Here's your business overview</p>
       </div>
 
-      {/* Key Metrics Grid - Mobile Optimized */}
-      <div className="grid grid-cols-2 gap-3">
-        <Card className="bg-gradient-to-br from-success-50 to-success-100/50 border-success-200/50 shadow-sm">
+      {/* Key Metrics Grid - Mobile Optimized & Properly Aligned */}
+      <div className="grid grid-cols-2 gap-3 w-full">
+        <Card className="bg-gradient-to-br from-success-50 to-success-100/50 border-success-200/50 shadow-sm w-full">
           <CardHeader className="pb-2 px-3 pt-3">
             <CardTitle className="text-label-medium flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -77,7 +77,7 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-info-50 to-info-100/50 border-info-200/50 shadow-sm">
+        <Card className="bg-gradient-to-br from-info-50 to-info-100/50 border-info-200/50 shadow-sm w-full">
           <CardHeader className="pb-2 px-3 pt-3">
             <CardTitle className="text-label-medium flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -99,7 +99,7 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-primary-50 to-primary-100/50 border-primary-200/50 shadow-sm">
+        <Card className="bg-gradient-to-br from-primary-50 to-primary-100/50 border-primary-200/50 shadow-sm w-full">
           <CardHeader className="pb-2 px-3 pt-3">
             <CardTitle className="text-label-medium flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -121,7 +121,7 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-warning-50 to-warning-100/50 border-warning-200/50 shadow-sm">
+        <Card className="bg-gradient-to-br from-warning-50 to-warning-100/50 border-warning-200/50 shadow-sm w-full">
           <CardHeader className="pb-2 px-3 pt-3">
             <CardTitle className="text-label-medium flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -145,17 +145,17 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 w-full">
         <Button 
           variant="outline" 
-          className="h-12 gap-2 bg-gradient-to-r from-primary-50 to-primary-100 border-primary-200 hover:from-primary-100 hover:to-primary-150"
+          className="h-12 gap-2 bg-gradient-to-r from-primary-50 to-primary-100 border-primary-200 hover:from-primary-100 hover:to-primary-150 w-full"
         >
           <Plus className="h-4 w-4" />
           <span className="text-sm font-medium">Add Sale</span>
         </Button>
         <Button 
           variant="outline" 
-          className="h-12 gap-2 bg-gradient-to-r from-success-50 to-success-100 border-success-200 hover:from-success-100 hover:to-success-150"
+          className="h-12 gap-2 bg-gradient-to-r from-success-50 to-success-100 border-success-200 hover:from-success-100 hover:to-success-150 w-full"
         >
           <Package className="h-4 w-4" />
           <span className="text-sm font-medium">Add Stock</span>
@@ -163,7 +163,7 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
       </div>
 
       {/* Low Stock Alerts - Compact */}
-      <Card className="bg-gradient-to-br from-destructive/5 to-warning/5 border-destructive/20 shadow-sm">
+      <Card className="bg-gradient-to-br from-destructive/5 to-warning/5 border-destructive/20 shadow-sm w-full">
         <CardHeader className="pb-2 px-4 pt-3">
           <CardTitle className="text-title-small flex items-center gap-2">
             <div className="p-1.5 bg-destructive/10 rounded-lg shadow-sm">
@@ -202,7 +202,7 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
       </Card>
 
       {/* Top Selling Items - Compact */}
-      <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 shadow-sm">
+      <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 shadow-sm w-full">
         <CardHeader className="pb-2 px-4 pt-3">
           <CardTitle className="text-title-small flex items-center gap-2">
             <div className="p-1.5 bg-primary-100 rounded-lg shadow-sm">

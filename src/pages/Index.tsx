@@ -1,9 +1,7 @@
-
 import { useState } from "react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { TodayHeader } from "@/components/layout/TodayHeader";
-import { MainHeader } from "@/components/layout/MainHeader";
 import { TabNavigation } from "@/components/navigation/TabNavigation";
 import { BottomTabs } from "@/components/navigation/BottomTabs";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -25,9 +23,7 @@ const Index = () => {
 
   return (
     <MainLayout>
-      <TodayHeader />
-      
-      <MainHeader 
+      <TodayHeader 
         onSearch={handleSearch}
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -35,13 +31,13 @@ const Index = () => {
 
       {/* Main Content */}
       <div className={cn(
-        "content-spacing-relaxed pb-20 md:pb-6",
-        isMobile ? "p-space-4 space-y-space-4" : "p-space-6"
+        "pb-20 md:pb-6",
+        isMobile ? "px-4 pt-4" : "px-6 pt-6"
       )}>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabNavigation />
 
-          <div className="animate-fade-in mt-space-4">
+          <div className="animate-fade-in mt-4 space-y-4">
             <TabsContent value="dashboard" className="mt-0">
               <Dashboard searchQuery={searchQuery} />
             </TabsContent>
