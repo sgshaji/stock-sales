@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { TouchTarget } from "@/components/ui/mobile-touch";
-import { LogOut, Settings, Search } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, memo } from "react";
-import { SearchInput } from "@/components/ui/search";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { getShopName, getUserInitials, defaultShopConfig } from "@/lib/config/shop";
 
 interface TodayHeaderProps {
   onSearch?: (query: string) => void;
@@ -16,7 +16,6 @@ interface TodayHeaderProps {
 }
 
 export const TodayHeader = memo<TodayHeaderProps>(({ onSearch, activeTab, onTabChange }) => {
-  const [showSearch, setShowSearch] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
@@ -41,61 +40,90 @@ export const TodayHeader = memo<TodayHeaderProps>(({ onSearch, activeTab, onTabC
     }
   };
 
-  // Get user's business name from profile or fallback to email
-  const getWorkspaceName = () => {
-    if (user?.user_metadata?.business_name) {
-      return user.user_metadata.business_name;
+  // Handle profile click
+  const handleProfileClick = () => {
+    if (window.location.pathname === '/') {
+      onTabChange?.("profile");
+    } else {
+      navigate('/');
+      // Small delay to ensure navigation completes before tab change
+      setTimeout(() => onTabChange?.("profile"), 100);
     }
-    if (user?.user_metadata?.full_name) {
-      return `${user.user_metadata.full_name}'s Store`;
-    }
-    if (user?.email) {
-      const emailName = user.email.split('@')[0];
-      return `${emailName.charAt(0).toUpperCase() + emailName.slice(1)}'s Store`;
-    }
-    return "Your Store";
   };
 
-  const getUserInitials = () => {
-    if (user?.user_metadata?.full_name) {
-      return user.user_metadata.full_name
-        .split(' ')
-        .map(n => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2);
-    }
-    if (user?.email) {
-      return user.email.charAt(0).toUpperCase();
-    }
-    return "U";
-  };
+  const shopName = getShopName(user);
+  const userInitials = getUserInitials(user);
 
   return (
     <div className="bg-background/95 backdrop-blur-md shadow-sm border-b border-border/20 sticky top-0 z-20">
       <div className="px-4 py-4">
-        {/* Single Clean Header Row */}
-        <div className="flex items-center justify-between">
-          {/* Left: StockFlow + Store Name Combined */}
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className="flex flex-col">
+        {/* Clean Two-Row Header Layout */}
+        <div className="space-y-2">
+          {/* Top Row: Brand + Controls */}
+          <div className="flex items-center justify-between">
+            {/* Left: StockFlow Brand */}
+            <div className="flex items-center">
               <h1 className="text-title-large font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
-                StockFlow
+                {defaultShopConfig.brandName}
               </h1>
-              <p className="text-body-small text-muted-foreground truncate -mt-0.5">
-                {getWorkspaceName()}
-              </p>
+            </div>
+
+            {/* Right: Essential Controls */}
+            <div className="flex items-center gap-1">
+              {/* Theme Toggle */}
+              <TouchTarget minHeight={44}>
+                <ThemeToggle />
+              </TouchTarget>
+              
+              {/* Settings */}
+              <TouchTarget minHeight={44}>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={handleSettingsClick}
+                  className={cn(
+                    "h-9 w-9 p-0 rounded-xl",
+                    (activeTab === "profile" || window.location.pathname === '/settings')
+                      ? "bg-primary-50 text-primary-600 shadow-sm" 
+                      : "hover:bg-accent/50"
+                  )}
+                  title="Open settings"
+                >
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </TouchTarget>
+
+              {/* Logout */}
+              <TouchTarget minHeight={44}>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={handleSignOut}
+                  loading={isSigningOut}
+                  className="h-9 w-9 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl"
+                  title="Sign out"
+                >
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </TouchTarget>
             </div>
           </div>
 
-          {/* Right: Essential Actions Only */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {/* User Avatar */}
+          {/* Bottom Row: Shop Name + Avatar (Bottom-Right) */}
+          <div className="flex items-center justify-between">
+            {/* Left: Configurable Shop Name */}
+            <div className="flex-1 min-w-0">
+              <p className="text-body-medium text-muted-foreground truncate">
+                {shopName}
+              </p>
+            </div>
+
+            {/* Right: User Avatar (Bottom-Right Position) */}
             <TouchTarget minHeight={44}>
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onTabChange?.("profile")}
+                onClick={handleProfileClick}
                 className={cn(
                   "h-10 w-10 p-0 rounded-full",
                   activeTab === "profile" 
@@ -107,73 +135,13 @@ export const TodayHeader = memo<TodayHeaderProps>(({ onSearch, activeTab, onTabC
                 <Avatar className="h-9 w-9">
                   <AvatarImage src={user?.user_metadata?.avatar_url} />
                   <AvatarFallback className="bg-primary-100 text-primary-700 text-sm font-semibold">
-                    {getUserInitials()}
+                    {userInitials}
                   </AvatarFallback>
                 </Avatar>
               </Button>
             </TouchTarget>
-
-            {/* Essential Actions - Search & Settings Only */}
-            <TouchTarget minHeight={44}>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => setShowSearch(!showSearch)}
-                className={cn(
-                  "h-10 w-10 p-0 rounded-full",
-                  showSearch 
-                    ? "bg-primary-50 text-primary-600 shadow-sm" 
-                    : "hover:bg-accent/50"
-                )}
-                title="Toggle search"
-              >
-                <Search className="h-4 w-4" />
-              </Button>
-            </TouchTarget>
-            
-            <TouchTarget minHeight={44}>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={handleSettingsClick}
-                className={cn(
-                  "h-10 w-10 p-0 rounded-full",
-                  (activeTab === "profile" || window.location.pathname === '/settings')
-                    ? "bg-primary-50 text-primary-600 shadow-sm" 
-                    : "hover:bg-accent/50"
-                )}
-                title="Open settings"
-              >
-                <Settings className="h-4 w-4" />
-              </Button>
-            </TouchTarget>
-
-            {/* Logout Button */}
-            <TouchTarget minHeight={44}>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={handleSignOut}
-                loading={isSigningOut}
-                className="h-10 w-10 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full ml-1"
-                title="Sign out"
-              >
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </TouchTarget>
           </div>
         </div>
-        
-        {/* Search Bar - Collapsible */}
-        {showSearch && (
-          <div className="animate-slide-down mt-3">
-            <SearchInput
-              placeholder="Search across all modules..."
-              onSearch={onSearch}
-              className="w-full bg-background/80 backdrop-blur-sm border-border/30 rounded-xl h-11"
-            />
-          </div>
-        )}
       </div>
     </div>
   );

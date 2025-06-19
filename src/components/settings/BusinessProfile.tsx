@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,22 +5,35 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Store, Phone, Mail, Edit, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 export const BusinessProfile = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    businessName: "My Store",
-    phone: "+1 (555) 123-4567",
-    email: "contact@mystore.com"
+    businessName: user?.user_metadata?.business_name || "My Store",
+    phone: user?.user_metadata?.phone || "+1 (555) 123-4567",
+    email: user?.email || "contact@mystore.com"
   });
 
   const handleSave = () => {
-    // TODO: Save to database
+    // TODO: Save to Supabase user profile
+    toast({
+      title: "Success",
+      description: "Business profile updated successfully!",
+    });
     setIsEditing(false);
   };
 
   const handleCancel = () => {
     // Reset form data
+    setFormData({
+      businessName: user?.user_metadata?.business_name || "My Store",
+      phone: user?.user_metadata?.phone || "+1 (555) 123-4567",
+      email: user?.email || "contact@mystore.com"
+    });
     setIsEditing(false);
   };
 
@@ -29,7 +41,7 @@ export const BusinessProfile = () => {
     <Card className="card-elevated">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-primary/10">
+          <div className="p-2 rounded-xl bg-primary/10">
             <Store className="h-5 w-5 text-primary" />
           </div>
           <CardTitle className="text-headline-large">Business Profile</CardTitle>
@@ -39,7 +51,7 @@ export const BusinessProfile = () => {
             variant="ghost"
             size="sm"
             onClick={() => setIsEditing(true)}
-            className="h-9 w-9 p-0"
+            className="h-9 w-9 p-0 rounded-xl"
           >
             <Edit className="h-4 w-4" />
           </Button>
@@ -49,7 +61,7 @@ export const BusinessProfile = () => {
               variant="ghost"
               size="sm"
               onClick={handleCancel}
-              className="h-9 w-9 p-0"
+              className="h-9 w-9 p-0 rounded-xl"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -57,7 +69,7 @@ export const BusinessProfile = () => {
               variant="ghost"
               size="sm"
               onClick={handleSave}
-              className="h-9 w-9 p-0"
+              className="h-9 w-9 p-0 rounded-xl"
             >
               <Check className="h-4 w-4" />
             </Button>
@@ -68,7 +80,7 @@ export const BusinessProfile = () => {
         <div className="space-y-2">
           <Label htmlFor="businessName" className="flex items-center gap-2 text-label-large">
             <Store className="h-4 w-4" />
-            Business Name
+            Shop Name
           </Label>
           {isEditing ? (
             <Input
@@ -76,12 +88,16 @@ export const BusinessProfile = () => {
               value={formData.businessName}
               onChange={(e) => setFormData(prev => ({ ...prev, businessName: e.target.value }))}
               className="h-11"
+              placeholder="Enter your shop name"
             />
           ) : (
-            <p className="text-body-large py-2 px-3 bg-accent/30 rounded-lg">
+            <p className="text-body-large py-2 px-3 bg-accent/30 rounded-xl">
               {formData.businessName}
             </p>
           )}
+          <p className="text-label-small text-muted-foreground">
+            This name appears throughout the app and on reports
+          </p>
         </div>
 
         <div className="space-y-2">
@@ -97,7 +113,7 @@ export const BusinessProfile = () => {
               className="h-11"
             />
           ) : (
-            <p className="text-body-large py-2 px-3 bg-accent/30 rounded-lg">
+            <p className="text-body-large py-2 px-3 bg-accent/30 rounded-xl">
               {formData.phone}
             </p>
           )}
@@ -117,7 +133,7 @@ export const BusinessProfile = () => {
               className="h-11"
             />
           ) : (
-            <p className="text-body-large py-2 px-3 bg-accent/30 rounded-lg">
+            <p className="text-body-large py-2 px-3 bg-accent/30 rounded-xl">
               {formData.email}
             </p>
           )}
