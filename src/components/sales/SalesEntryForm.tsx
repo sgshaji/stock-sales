@@ -56,7 +56,7 @@ const ProductSearchItem = memo<{
 
   return (
     <div 
-      className="flex items-center justify-between p-2 bg-white rounded-lg border border-gray-200 hover:shadow-sm transition-shadow cursor-pointer"
+      className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:shadow-sm transition-shadow cursor-pointer"
       onClick={handleAdd}
     >
       <div className="flex-1 min-w-0">
@@ -142,12 +142,12 @@ const CartItemComponent = memo<{
   }, [quantity, handleQuantityChange]);
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
+    <div className="bg-white rounded-xl border border-gray-200 p-3 space-y-3">
       {/* Item Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-            <Package className="h-4 w-4 text-gray-600" />
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center">
+            <Package className="h-3 w-3 text-gray-600" />
           </div>
           <h3 className="font-medium text-gray-900 text-sm">{item.name}</h3>
         </div>
@@ -162,7 +162,7 @@ const CartItemComponent = memo<{
       </div>
       
       {/* Input Fields - 2x2 Grid */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2">
         {/* Quantity */}
         <div>
           <Label className="text-xs font-medium text-gray-700 mb-1 block">Quantity</Label>
@@ -171,7 +171,7 @@ const CartItemComponent = memo<{
               variant="outline"
               size="sm"
               onClick={() => handleQuantityAdjust(-1)}
-              className="h-8 w-8 rounded-full p-0"
+              className="h-7 w-7 rounded-full p-0"
             >
               <Minus className="h-3 w-3" />
             </Button>
@@ -179,14 +179,14 @@ const CartItemComponent = memo<{
               type="number"
               value={quantity}
               onChange={(e) => handleQuantityChange(e.target.value)}
-              className="flex-1 h-8 text-center text-sm font-medium"
+              className="flex-1 h-7 text-center text-sm font-medium"
               min="1"
             />
             <Button
               variant="outline"
               size="sm"
               onClick={() => handleQuantityAdjust(1)}
-              className="h-8 w-8 rounded-full p-0"
+              className="h-7 w-7 rounded-full p-0"
             >
               <Plus className="h-3 w-3" />
             </Button>
@@ -202,7 +202,7 @@ const CartItemComponent = memo<{
               type="number"
               value={pricePerUnit}
               onChange={(e) => handlePriceChange(e.target.value)}
-              className="pl-7 h-8 text-sm"
+              className="pl-6 h-7 text-sm"
               min="0"
               step="0.01"
             />
@@ -217,7 +217,7 @@ const CartItemComponent = memo<{
               type="number"
               value={discount}
               onChange={(e) => handleDiscountChange(e.target.value)}
-              className="pr-7 h-8 text-sm"
+              className="pr-6 h-7 text-sm"
               min="0"
               max="100"
               step="0.1"
@@ -229,7 +229,7 @@ const CartItemComponent = memo<{
         {/* Total */}
         <div>
           <Label className="text-xs font-medium text-gray-700 mb-1 block">Total</Label>
-          <div className="h-8 px-3 bg-primary-50 border border-primary-200 rounded-lg flex items-center">
+          <div className="h-7 px-2 bg-primary-50 border border-primary-200 rounded-lg flex items-center">
             <span className="text-sm font-bold text-primary-700">
               ${item.total.toFixed(2)}
             </span>
@@ -279,7 +279,7 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
       }];
     });
     
-    // Clear search after adding - NO NOTIFICATION
+    // Clear search after adding
     setSearchQuery("");
   }, []);
 
@@ -356,16 +356,16 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
 
   return (
     <div className="flex flex-col h-full">
-      {/* SIMPLIFIED Header - Just search bar with proper spacing */}
+      {/* SEARCH BAR - Full width, no header */}
       <div className="p-4 border-b border-gray-100 bg-white">
         <SearchInput
           placeholder="Search products to add..."
           value={searchQuery}
           onSearch={setSearchQuery}
-          className="h-10 rounded-full bg-gray-100 border-0 text-sm"
+          className="h-12 rounded-full bg-gray-100 border-0 text-sm"
         />
         
-        {/* Cart summary in header when items exist */}
+        {/* Cart summary when items exist */}
         {cart.length > 0 && (
           <div className="flex items-center justify-between mt-3 text-xs text-gray-600">
             <div className="flex items-center gap-2">
@@ -379,7 +379,7 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
 
       {/* Search Results - Only show when searching */}
       {searchQuery && (
-        <div className="max-h-[25%] p-3 border-b border-gray-100 bg-gray-50 overflow-y-auto">
+        <div className="max-h-[20%] p-3 border-b border-gray-100 bg-gray-50 overflow-y-auto">
           {filteredProducts.length > 0 ? (
             <div className="space-y-2">
               {filteredProducts.map((product) => (
@@ -399,7 +399,7 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
         </div>
       )}
 
-      {/* CART ITEMS - Takes remaining space */}
+      {/* CART ITEMS - Maximum space allocated */}
       <div className="flex-1 overflow-y-auto p-3">
         {cart.length === 0 ? (
           <div className="text-center py-12">
@@ -423,25 +423,25 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
         )}
       </div>
 
-      {/* BOTTOM SUMMARY - Fixed height */}
+      {/* BOTTOM SUMMARY - Compact 2-column format */}
       {cart.length > 0 && (
         <div className="border-t border-gray-200 bg-white p-4">
-          {/* Compact Summary */}
-          <div className="space-y-2 mb-4 p-3 bg-gray-50 rounded-xl">
-            <div className="flex justify-between text-sm">
+          {/* 2-Column Summary */}
+          <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-gray-50 rounded-xl text-sm">
+            <div className="flex justify-between">
               <span>Subtotal:</span>
               <span>${calculations.subtotal.toFixed(2)}</span>
             </div>
-            {calculations.totalDiscount > 0 && (
-              <div className="flex justify-between text-sm text-success-600">
-                <span>Discount:</span>
-                <span>-${calculations.totalDiscount.toFixed(2)}</span>
-              </div>
-            )}
-            <div className="flex justify-between font-bold text-lg border-t pt-2">
-              <span>Total:</span>
-              <span className="text-primary-600">${calculations.finalTotal.toFixed(2)}</span>
+            <div className="flex justify-between text-success-600">
+              <span>Discount:</span>
+              <span>-${calculations.totalDiscount.toFixed(2)}</span>
             </div>
+          </div>
+          
+          {/* Total */}
+          <div className="flex justify-between font-bold text-lg mb-4 border-t pt-2">
+            <span>Total:</span>
+            <span className="text-primary-600">${calculations.finalTotal.toFixed(2)}</span>
           </div>
 
           {/* Action Buttons */}
