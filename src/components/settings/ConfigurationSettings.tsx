@@ -1,10 +1,10 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Settings, Currency, Edit, Check, X } from "lucide-react";
+import { Settings, Currency, Edit, Check, X, Globe, Clock } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const currencies = [
   { value: "USD", label: "US Dollar ($)", symbol: "$" },
@@ -15,37 +15,63 @@ const currencies = [
   { value: "AUD", label: "Australian Dollar (A$)", symbol: "A$" },
 ];
 
+const timezones = [
+  { value: "UTC", label: "UTC (Coordinated Universal Time)" },
+  { value: "America/New_York", label: "Eastern Time (ET)" },
+  { value: "America/Chicago", label: "Central Time (CT)" },
+  { value: "America/Denver", label: "Mountain Time (MT)" },
+  { value: "America/Los_Angeles", label: "Pacific Time (PT)" },
+  { value: "Europe/London", label: "London (GMT)" },
+  { value: "Europe/Paris", label: "Paris (CET)" },
+  { value: "Asia/Tokyo", label: "Tokyo (JST)" },
+  { value: "Asia/Kolkata", label: "India (IST)" },
+];
+
 export const ConfigurationSettings = () => {
+  const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState("USD");
+  const [selectedTimezone, setSelectedTimezone] = useState("UTC");
 
   const handleSave = () => {
-    // TODO: Save to database
+    // TODO: Save to Supabase user profile
+    toast({
+      title: "Success",
+      description: "Configuration settings updated successfully!",
+    });
     setIsEditing(false);
   };
 
   const handleCancel = () => {
     // Reset changes
+    setSelectedCurrency("USD");
+    setSelectedTimezone("UTC");
     setIsEditing(false);
   };
 
   const currentCurrency = currencies.find(c => c.value === selectedCurrency);
+  const currentTimezone = timezones.find(t => t.value === selectedTimezone);
 
   return (
     <Card className="card-elevated">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-warning/10">
+          <div className="p-2 rounded-xl bg-warning/10">
             <Settings className="h-5 w-5 text-warning-600" />
           </div>
-          <CardTitle className="text-headline-large">Configuration</CardTitle>
+          <div>
+            <CardTitle className="text-headline-large">App Configuration</CardTitle>
+            <p className="text-body-small text-muted-foreground mt-1">
+              Regional settings and app preferences
+            </p>
+          </div>
         </div>
         {!isEditing ? (
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setIsEditing(true)}
-            className="h-9 w-9 p-0"
+            className="h-9 w-9 p-0 rounded-xl"
           >
             <Edit className="h-4 w-4" />
           </Button>
@@ -55,7 +81,7 @@ export const ConfigurationSettings = () => {
               variant="ghost"
               size="sm"
               onClick={handleCancel}
-              className="h-9 w-9 p-0"
+              className="h-9 w-9 p-0 rounded-xl"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -63,14 +89,14 @@ export const ConfigurationSettings = () => {
               variant="ghost"
               size="sm"
               onClick={handleSave}
-              className="h-9 w-9 p-0"
+              className="h-9 w-9 p-0 rounded-xl"
             >
               <Check className="h-4 w-4" />
             </Button>
           </div>
         )}
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         <div className="space-y-2">
           <Label className="flex items-center gap-2 text-label-large">
             <Currency className="h-4 w-4" />
@@ -93,11 +119,58 @@ export const ConfigurationSettings = () => {
               </SelectContent>
             </Select>
           ) : (
-            <div className="flex items-center gap-2 py-2 px-3 bg-accent/30 rounded-lg">
+            <div className="flex items-center gap-2 py-2 px-3 bg-accent/30 rounded-xl">
               <span className="font-medium text-lg">{currentCurrency?.symbol}</span>
               <span className="text-body-large">{currentCurrency?.label}</span>
             </div>
           )}
+          <p className="text-label-small text-muted-foreground">
+            This currency will be used throughout the app for pricing and reports
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2 text-label-large">
+            <Clock className="h-4 w-4" />
+            Timezone
+          </Label>
+          {isEditing ? (
+            <Select value={selectedTimezone} onValueChange={setSelectedTimezone}>
+              <SelectTrigger className="h-11">
+                <SelectValue placeholder="Select timezone" />
+              </SelectTrigger>
+              <SelectContent>
+                {timezones.map((timezone) => (
+                  <SelectItem key={timezone.value} value={timezone.value}>
+                    {timezone.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <div className="py-2 px-3 bg-accent/30 rounded-xl">
+              <span className="text-body-large">{currentTimezone?.label}</span>
+            </div>
+          )}
+          <p className="text-label-small text-muted-foreground">
+            Used for timestamps and scheduling features
+          </p>
+        </div>
+
+        {/* App Information */}
+        <div className="pt-4 border-t border-border/20 space-y-4">
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2 text-label-large">
+              <Globe className="h-4 w-4" />
+              App Version
+            </Label>
+            <div className="py-2 px-3 bg-accent/30 rounded-xl">
+              <span className="text-body-large">StockFlow v1.0.0</span>
+            </div>
+            <p className="text-label-small text-muted-foreground">
+              Current version of the inventory management app
+            </p>
+          </div>
         </div>
       </CardContent>
     </Card>

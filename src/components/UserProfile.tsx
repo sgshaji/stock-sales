@@ -5,14 +5,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { User, Mail, Phone, MapPin, Building, Save, Camera, Bell, Shield, Palette } from "lucide-react";
+import { User, Mail, Phone, MapPin, Building, Save, Camera, Bell, Shield, Palette, Lock } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from "@/components/ui/switch";
+import { getUserInitials } from "@/lib/config/shop";
+import { useTheme } from "next-themes";
 
 const UserProfile = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     fullName: user?.user_metadata?.full_name || user?.email?.split('@')[0] || '',
@@ -26,11 +29,12 @@ const UserProfile = () => {
     emailNotifications: true,
     pushNotifications: false,
     lowStockAlerts: true,
-    salesReports: true
+    salesReports: true,
+    darkMode: theme === 'dark'
   });
 
   const handleSaveProfile = async () => {
-    // Here you would typically update the user profile in Supabase
+    // TODO: Save to Supabase user profile
     toast({
       title: "Success",
       description: "Profile updated successfully!",
@@ -38,116 +42,118 @@ const UserProfile = () => {
     setIsEditing(false);
   };
 
+  const handleThemeToggle = (enabled: boolean) => {
+    const newTheme = enabled ? 'dark' : 'light';
+    setTheme(newTheme);
+    setPreferences(prev => ({ ...prev, darkMode: enabled }));
+    toast({
+      title: "Theme Updated",
+      description: `Switched to ${newTheme} mode`,
+    });
+  };
+
   const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    return getUserInitials({ user_metadata: { full_name: name } });
   };
 
   return (
-    <div className="space-system-lg animate-fade-in">
+    <div className="space-y-6 animate-fade-in max-w-md mx-auto">
       {/* Enhanced Profile Header */}
-      <Card className="bg-gradient-to-r from-primary-50 via-indigo-50 to-primary-50 border-primary-200 card-hover">
+      <Card className="bg-gradient-to-r from-primary-50 via-indigo-50 to-primary-50 border-primary-200/50 card-hover overflow-hidden">
         <CardContent className="p-6">
           <div className="flex items-center space-x-4">
             <div className="relative">
               <Avatar className="h-20 w-20 border-4 border-white shadow-lg">
                 <AvatarImage src={user?.user_metadata?.avatar_url} />
-                <AvatarFallback className="bg-primary-500 text-white text-xl">
+                <AvatarFallback className="bg-primary-500 text-white text-xl font-bold">
                   {getInitials(formData.fullName)}
                 </AvatarFallback>
               </Avatar>
               <Button 
                 size="sm" 
-                className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-primary-600 hover:bg-primary-700 shadow-md"
-                onClick={() => {}}
+                className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-primary-600 hover:bg-primary-700 shadow-md p-0"
+                onClick={() => {
+                  toast({
+                    title: "Coming Soon",
+                    description: "Photo upload feature will be available soon!",
+                  });
+                }}
               >
                 <Camera className="h-4 w-4" />
               </Button>
             </div>
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold text-gray-900">{formData.fullName}</h2>
-              <p className="text-gray-600 flex items-center gap-2">
-                <Mail className="h-4 w-4" />
+            <div className="flex-1 min-w-0">
+              <h2 className="text-headline-large font-bold text-gray-900 truncate">{formData.fullName}</h2>
+              <p className="text-body-medium text-gray-600 flex items-center gap-2 truncate">
+                <Mail className="h-4 w-4 flex-shrink-0" />
                 {formData.email}
               </p>
-              <p className="text-sm text-primary-600 mt-1 font-medium">Inventory Manager</p>
+              <p className="text-label-medium text-primary-600 mt-1 font-medium">Inventory Manager</p>
             </div>
-            <Button 
-              variant={isEditing ? "default" : "outline"}
-              onClick={() => setIsEditing(!isEditing)}
-              className="gap-2"
-            >
-              {isEditing ? <Save className="h-4 w-4" /> : <User className="h-4 w-4" />}
-              {isEditing ? "Save Changes" : "Edit Profile"}
-            </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Enhanced Profile Information */}
+      {/* Profile Information */}
       <Card className="card-hover">
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
           <CardTitle className="flex items-center gap-2">
-            <div className="p-2 bg-primary-100 rounded-lg">
+            <div className="p-2 bg-primary-100 rounded-xl">
               <User className="h-5 w-5 text-primary-600" />
             </div>
             Profile Information
           </CardTitle>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsEditing(!isEditing)}
+            className="h-9 w-9 p-0 rounded-xl"
+          >
+            {isEditing ? <Save className="h-4 w-4" /> : <User className="h-4 w-4" />}
+          </Button>
         </CardHeader>
-        <CardContent className="space-system-md">
-          <div className="grid grid-cols-1 gap-4">
-            <div>
-              <Label htmlFor="fullName">Full Name</Label>
-              <Input
-                id="fullName"
-                value={formData.fullName}
-                onChange={(e) => setFormData({...formData, fullName: e.target.value})}
-                disabled={!isEditing}
-                className={isEditing ? "border-blue-300" : "bg-gray-50"}
-              />
-            </div>
-            <div>
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
-                value={formData.email}
-                disabled
-                className="bg-gray-50"
-              />
-              <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
-            </div>
-            <div>
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input
-                id="phone"
-                value={formData.phone}
-                onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                disabled={!isEditing}
-                placeholder="Enter your phone number"
-                className={isEditing ? "border-blue-300" : "bg-gray-50"}
-              />
-            </div>
-            <div>
-              <Label htmlFor="company">Company</Label>
-              <Input
-                id="company"
-                value={formData.company}
-                onChange={(e) => setFormData({...formData, company: e.target.value})}
-                disabled={!isEditing}
-                placeholder="Enter your company name"
-                className={isEditing ? "border-blue-300" : "bg-gray-50"}
-              />
-            </div>
-            <div>
-              <Label htmlFor="address">Address</Label>
-              <Input
-                id="address"
-                value={formData.address}
-                onChange={(e) => setFormData({...formData, address: e.target.value})}
-                disabled={!isEditing}
-                placeholder="Enter your address"
-                className={isEditing ? "border-blue-300" : "bg-gray-50"}
-              />
-            </div>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="fullName">Full Name</Label>
+            <Input
+              id="fullName"
+              value={formData.fullName}
+              onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+              disabled={!isEditing}
+              className={isEditing ? "border-primary-300" : "bg-gray-50"}
+            />
+          </div>
+          <div>
+            <Label htmlFor="email">Email Address</Label>
+            <Input
+              id="email"
+              value={formData.email}
+              disabled
+              className="bg-gray-50"
+            />
+            <p className="text-label-small text-gray-500 mt-1">Email cannot be changed</p>
+          </div>
+          <div>
+            <Label htmlFor="phone">Phone Number</Label>
+            <Input
+              id="phone"
+              value={formData.phone}
+              onChange={(e) => setFormData({...formData, phone: e.target.value})}
+              disabled={!isEditing}
+              placeholder="Enter your phone number"
+              className={isEditing ? "border-primary-300" : "bg-gray-50"}
+            />
+          </div>
+          <div>
+            <Label htmlFor="company">Company</Label>
+            <Input
+              id="company"
+              value={formData.company}
+              onChange={(e) => setFormData({...formData, company: e.target.value})}
+              disabled={!isEditing}
+              placeholder="Enter your company name"
+              className={isEditing ? "border-primary-300" : "bg-gray-50"}
+            />
           </div>
           
           {isEditing && (
@@ -167,21 +173,32 @@ const UserProfile = () => {
         </CardContent>
       </Card>
 
-      {/* Enhanced Notification Preferences */}
+      {/* App Preferences */}
       <Card className="card-hover">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <div className="p-2 bg-warning-100 rounded-lg">
-              <Bell className="h-5 w-5 text-warning-600" />
+            <div className="p-2 bg-info-100 rounded-xl">
+              <Palette className="h-5 w-5 text-info-600" />
             </div>
-            Notification Preferences
+            App Preferences
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-system-md">
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">Dark Mode</p>
+              <p className="text-body-small text-gray-600">Use dark theme for better night viewing</p>
+            </div>
+            <Switch 
+              checked={preferences.darkMode}
+              onCheckedChange={handleThemeToggle}
+            />
+          </div>
+          <Separator />
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">Email Notifications</p>
-              <p className="text-sm text-gray-600">Receive updates via email</p>
+              <p className="text-body-small text-gray-600">Receive updates via email</p>
             </div>
             <Switch 
               checked={preferences.emailNotifications}
@@ -192,7 +209,7 @@ const UserProfile = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">Low Stock Alerts</p>
-              <p className="text-sm text-gray-600">Get notified when inventory is low</p>
+              <p className="text-body-small text-gray-600">Get notified when inventory is low</p>
             </div>
             <Switch 
               checked={preferences.lowStockAlerts}
@@ -203,7 +220,7 @@ const UserProfile = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">Daily Sales Reports</p>
-              <p className="text-sm text-gray-600">Receive daily sales summaries</p>
+              <p className="text-body-small text-gray-600">Receive daily sales summaries</p>
             </div>
             <Switch 
               checked={preferences.salesReports}
@@ -213,24 +230,48 @@ const UserProfile = () => {
         </CardContent>
       </Card>
 
-      {/* Enhanced Security Settings */}
+      {/* Security Settings */}
       <Card className="card-hover">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <div className="p-2 bg-success-100 rounded-lg">
+            <div className="p-2 bg-success-100 rounded-xl">
               <Shield className="h-5 w-5 text-success-600" />
             </div>
-            Security Settings
+            Security & Privacy
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-system-md">
-          <Button variant="outline" className="w-full justify-start gap-2 interactive-hover">
-            <Shield className="h-4 w-4" />
-            Change Password
+        <CardContent className="space-y-3">
+          <Button 
+            variant="outline" 
+            className="w-full justify-start gap-2 interactive-hover h-12"
+            onClick={() => {
+              toast({
+                title: "Coming Soon",
+                description: "Password change feature will be available soon!",
+              });
+            }}
+          >
+            <Lock className="h-4 w-4" />
+            <div className="text-left">
+              <div className="font-medium">Change Password</div>
+              <div className="text-label-small text-muted-foreground">Update your account password</div>
+            </div>
           </Button>
-          <Button variant="outline" className="w-full justify-start gap-2 interactive-hover">
+          <Button 
+            variant="outline" 
+            className="w-full justify-start gap-2 interactive-hover h-12"
+            onClick={() => {
+              toast({
+                title: "Coming Soon",
+                description: "Email update feature will be available soon!",
+              });
+            }}
+          >
             <Mail className="h-4 w-4" />
-            Update Email Address
+            <div className="text-left">
+              <div className="font-medium">Update Email Address</div>
+              <div className="text-label-small text-muted-foreground">Change your login email</div>
+            </div>
           </Button>
         </CardContent>
       </Card>
