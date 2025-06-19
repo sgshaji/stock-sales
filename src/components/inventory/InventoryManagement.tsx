@@ -13,6 +13,7 @@ import {
   Edit,
   X
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface InventoryItem {
   id: number;
