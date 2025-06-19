@@ -341,7 +341,7 @@ export const MobileSalesEntry = memo<MobileSalesEntryProps>(({ searchQuery }) =>
             </p>
             <Button onClick={handleNewSale} className="gap-2">
               <Plus className="h-4 w-4" />
-              Record First Sale
+              Add Sales
             </Button>
           </div>
         ) : (
