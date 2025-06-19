@@ -74,6 +74,21 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
+				// Brand color tokens
+				brand: {
+					DEFAULT: '#2F5DFF',
+					50: '#EEF3FF',
+					100: '#DDE7FF',
+					200: '#C2D4FF',
+					300: '#9CB8FF',
+					400: '#7592FF',
+					500: '#2F5DFF',
+					600: '#1E3FEB',
+					700: '#1A2E7A',
+					800: '#162565',
+					900: '#1A2E7A',
+					950: '#0F1A4A'
+				},
 				// Enhanced semantic color system
 				success: {
 					50: '#f0fdf4',
@@ -160,6 +175,22 @@ export default {
 				'3xl': ['1.875rem', { lineHeight: '2.25rem' }],
 				'4xl': ['2.25rem', { lineHeight: '2.5rem' }],
 				'5xl': ['3rem', { lineHeight: '1' }],
+				// Design token typography scale
+				'display-large': ['3.5rem', { lineHeight: '1.1', fontWeight: '700' }],
+				'display-medium': ['2.875rem', { lineHeight: '1.15', fontWeight: '700' }],
+				'display-small': ['2.25rem', { lineHeight: '1.2', fontWeight: '600' }],
+				'headline-large': ['2rem', { lineHeight: '1.25', fontWeight: '600' }],
+				'headline-medium': ['1.75rem', { lineHeight: '1.3', fontWeight: '600' }],
+				'headline-small': ['1.5rem', { lineHeight: '1.35', fontWeight: '500' }],
+				'title-large': ['1.375rem', { lineHeight: '1.4', fontWeight: '500' }],
+				'title-medium': ['1.125rem', { lineHeight: '1.45', fontWeight: '500' }],
+				'title-small': ['1rem', { lineHeight: '1.5', fontWeight: '500' }],
+				'label-large': ['0.875rem', { lineHeight: '1.4', fontWeight: '500' }],
+				'label-medium': ['0.75rem', { lineHeight: '1.35', fontWeight: '500' }],
+				'label-small': ['0.6875rem', { lineHeight: '1.3', fontWeight: '500' }],
+				'body-large': ['1rem', { lineHeight: '1.6' }],
+				'body-medium': ['0.875rem', { lineHeight: '1.55' }],
+				'body-small': ['0.75rem', { lineHeight: '1.5' }],
 			},
 			spacing: {
 				'0.5': '2px',
@@ -184,6 +215,21 @@ export default {
 				'24': '96px',
 				'28': '112px',
 				'32': '128px',
+				// Design token spacing scale
+				'space-0': '0px',
+				'space-1': '4px',
+				'space-2': '8px',
+				'space-3': '12px',
+				'space-4': '16px',
+				'space-5': '20px',
+				'space-6': '24px',
+				'space-8': '32px',
+				'space-10': '40px',
+				'space-12': '48px',
+				'space-16': '64px',
+				'space-20': '80px',
+				'space-24': '96px',
+				'space-32': '128px',
 			},
 			boxShadow: {
 				'xs': '0 1px 2px 0 rgb(0 0 0 / 0.05)',

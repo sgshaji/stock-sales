@@ -37,28 +37,28 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary-50/30 to-primary-100/40 dark:from-background dark:via-primary-950/30 dark:to-primary-900/40">
+    <div className="min-h-screen bg-gradient-to-br from-background via-brand-50/30 to-brand-100/40 dark:from-background dark:via-brand-950/30 dark:to-brand-900/40">
       <div className={cn(
         "mx-auto",
-        isMobile ? "px-4 max-w-full" : "container-content"
+        isMobile ? "px-space-4 max-w-full" : "container-content"
       )}>
         {/* Mobile-optimized Header */}
         <div className="bg-background/95 backdrop-blur-md shadow-sm border-b border-border/40 sticky top-0 z-20 rounded-b-2xl">
           <div className={cn(
-            "p-4",
-            isMobile ? "py-3" : "p-6"
+            "p-space-4",
+            isMobile ? "py-space-3" : "p-space-6"
           )}>
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-space-4">
               <div className="animate-fade-in">
                 <h1 className={cn(
-                  "bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent dark:from-primary-400 dark:to-primary-500",
-                  isMobile ? "text-xl font-bold" : "text-display-medium"
+                  "bg-gradient-to-r from-brand-600 to-brand-700 bg-clip-text text-transparent dark:from-brand-400 dark:to-brand-500",
+                  isMobile ? "text-title-large font-bold" : "text-display-medium"
                 )}>
                   StockFlow
                 </h1>
                 <p className={cn(
                   "text-muted-foreground mt-1",
-                  isMobile ? "text-xs" : "text-body-small"
+                  isMobile ? "text-body-small" : "text-body-medium"
                 )}>
                   {user?.user_metadata?.full_name || user?.email?.split('@')[0]}'s workspace
                 </p>
@@ -78,7 +78,7 @@ const Index = () => {
                       className={cn(
                         "animate-quick",
                         showSearch 
-                          ? "bg-primary-50 text-primary-600 shadow-sm dark:bg-primary-950/50 dark:text-primary-400" 
+                          ? "bg-brand-50 text-brand-600 shadow-sm dark:bg-brand-950/50 dark:text-brand-400" 
                           : "hover:bg-accent/50"
                       )}
                     >
@@ -98,7 +98,7 @@ const Index = () => {
                       className={cn(
                         "animate-quick",
                         activeTab === "profile" 
-                          ? "bg-primary-50 text-primary-600 shadow-sm dark:bg-primary-950/50 dark:text-primary-400" 
+                          ? "bg-brand-50 text-brand-600 shadow-sm dark:bg-brand-950/50 dark:text-brand-400" 
                           : "hover:bg-accent/50"
                       )}
                     >
@@ -113,7 +113,7 @@ const Index = () => {
                     size={isMobile ? "icon-sm" : "icon-sm"}
                     onClick={handleSignOut}
                     loading={isSigningOut}
-                    className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 animate-quick ml-2"
+                    className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 animate-quick ml-space-2"
                   >
                     <LogOut className="h-4 w-4" />
                   </Button>
@@ -137,15 +137,15 @@ const Index = () => {
         {/* Mobile-optimized Main Content */}
         <div className={cn(
           "content-spacing-relaxed",
-          isMobile ? "p-4 space-y-4" : "p-6"
+          isMobile ? "p-space-4 space-y-space-4" : "p-space-6"
         )}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             {/* Enhanced 5-tab Navigation */}
             <TabsList className={cn(
-              "w-full bg-background/95 backdrop-blur-sm shadow-lg border border-border/40 rounded-2xl p-2 h-auto",
+              "w-full bg-background/95 backdrop-blur-sm shadow-lg border border-border/40 rounded-2xl p-space-2 h-auto",
               isMobile 
                 ? "grid grid-cols-5 gap-1" 
-                : "grid grid-cols-5 mb-8"
+                : "grid grid-cols-5 mb-space-8"
             )}>
               {[
                 { value: "dashboard", icon: BarChart3, label: "Dashboard" },
@@ -158,8 +158,8 @@ const Index = () => {
                   <TabsTrigger 
                     value={tab.value}
                     className={cn(
-                      "flex flex-col gap-2 rounded-xl animate-quick data-[state=active]:bg-primary-600 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-primary-50 dark:data-[state=active]:bg-primary-600 dark:hover:bg-primary-950/20 font-medium w-full",
-                      isMobile ? "py-2 px-2" : "py-4 px-3"
+                      "flex flex-col gap-space-2 rounded-xl animate-quick data-[state=active]:bg-brand-600 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-brand-50 dark:data-[state=active]:bg-brand-600 dark:hover:bg-brand-950/20 font-medium w-full",
+                      isMobile ? "py-space-2 px-space-2" : "py-space-4 px-space-3"
                     )}
                   >
                     <tab.icon className={cn(
@@ -167,7 +167,7 @@ const Index = () => {
                     )} />
                     <span className={cn(
                       "font-medium",
-                      isMobile ? "text-xs leading-tight" : "text-label-medium"
+                      isMobile ? "text-label-small leading-tight" : "text-label-medium"
                     )}>
                       {isMobile ? tab.label.split(' ')[0] : tab.label}
                     </span>
@@ -176,7 +176,7 @@ const Index = () => {
               ))}
             </TabsList>
 
-            <div className="animate-fade-in mt-4">
+            <div className="animate-fade-in mt-space-4">
               <TabsContent value="dashboard" className="mt-0">
                 <Dashboard searchQuery={searchQuery} />
               </TabsContent>
