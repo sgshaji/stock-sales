@@ -1,17 +1,15 @@
 
+import { useState } from "react";
 import { BottomTabs } from "@/components/navigation/BottomTabs";
 import SalesEntry from "@/components/SalesEntry";
 import { FloatingAction } from "@/components/ui/floating-action";
-import { useToast } from "@/hooks/use-toast";
+import { SalesQuickAdd } from "@/components/sales/SalesQuickAdd";
 
 const Sales = () => {
-  const { toast } = useToast();
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
 
   const handleNewSale = () => {
-    toast({
-      title: "New Sale",
-      description: "Opening new sale form...",
-    });
+    setShowQuickAdd(true);
   };
 
   return (
@@ -28,6 +26,10 @@ const Sales = () => {
         <SalesEntry />
       </div>
       <FloatingAction variant="sale" onClick={handleNewSale} />
+      <SalesQuickAdd 
+        isOpen={showQuickAdd}
+        onClose={() => setShowQuickAdd(false)}
+      />
       <BottomTabs />
     </div>
   );

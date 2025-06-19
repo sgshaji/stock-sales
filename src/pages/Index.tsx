@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,6 +15,7 @@ import Dashboard from "@/components/Dashboard";
 import UserProfile from "@/components/UserProfile";
 import InventoryManagement from "@/components/inventory/InventoryManagement";
 import { BottomTabs } from "@/components/navigation/BottomTabs";
+import { Badge } from "@/components/ui/badge";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -36,14 +38,38 @@ const Index = () => {
     setSearchQuery(query);
   };
 
+  // Format today's date
+  const today = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric'
+  });
+
+  // Mock today's revenue - in real app this would come from your data source
+  const todaysRevenue = "$2,847.50";
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-brand-50/30 to-brand-100/40 dark:from-background dark:via-brand-950/30 dark:to-brand-900/40">
       <div className={cn(
         "mx-auto",
-        isMobile ? "px-space-4 max-w-full" : "container-content"
+        isMobile ? "px-0 max-w-full" : "container-content"
       )}>
-        {/* Mobile-optimized Header */}
-        <div className="bg-background/95 backdrop-blur-md shadow-sm border-b border-border/40 sticky top-0 z-20 rounded-b-2xl">
+        {/* Slim Today Header Bar */}
+        <div className="bg-background/95 backdrop-blur-md shadow-sm border-b border-border/40 sticky top-0 z-20">
+          <div className="flex items-center justify-between px-space-4 py-space-3">
+            <div className="flex items-center gap-space-2">
+              <span className="text-body-medium font-medium text-foreground">
+                {today}
+              </span>
+            </div>
+            <Badge variant="secondary" className="bg-brand-50 text-brand-700 border-brand-200 dark:bg-brand-950/50 dark:text-brand-400 dark:border-brand-800 font-semibold">
+              {todaysRevenue}
+            </Badge>
+          </div>
+        </div>
+
+        {/* Simplified Header */}
+        <div className="bg-background/95 backdrop-blur-md shadow-sm border-b border-border/40 sticky top-12 z-19">
           <div className={cn(
             "p-space-4",
             isMobile ? "py-space-3" : "p-space-6"
@@ -134,7 +160,7 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Mobile-optimized Main Content */}
+        {/* Main Content */}
         <div className={cn(
           "content-spacing-relaxed pb-20 md:pb-6",
           isMobile ? "p-space-4 space-y-space-4" : "p-space-6"

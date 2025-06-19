@@ -5,6 +5,7 @@ import { SalesHeader } from "./sales/SalesHeader";
 import { SalesFilters } from "./sales/SalesFilters";
 import { SalesSelectionSummary } from "./sales/SalesSelectionSummary";
 import { SalesTableView } from "./sales/SalesTableView";
+import { SalesQuickAdd } from "./sales/SalesQuickAdd";
 
 interface Sale {
   id: number;
@@ -23,6 +24,7 @@ interface SalesEntryProps {
 const SalesEntry = ({ searchQuery }: SalesEntryProps) => {
   const [localSearch, setLocalSearch] = useState("");
   const [selectedSales, setSelectedSales] = useState<Sale[]>([]);
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [sales] = useState<Sale[]>([
     { id: 1, item: "Premium Headphones", quantity: 2, price: 199.98, date: "2024-01-15", status: "completed", customer: "John Doe" },
     { id: 2, item: "Wireless Mouse", quantity: 1, price: 29.99, date: "2024-01-15", status: "completed", customer: "Jane Smith" },
@@ -33,10 +35,7 @@ const SalesEntry = ({ searchQuery }: SalesEntryProps) => {
   const { toast } = useToast();
 
   const handleAddSale = () => {
-    toast({
-      title: "Sale recorded",
-      description: "New sale has been added successfully.",
-    });
+    setShowQuickAdd(true);
   };
 
   const handleViewSale = (sale: Sale) => {
@@ -85,6 +84,11 @@ const SalesEntry = ({ searchQuery }: SalesEntryProps) => {
         onViewSale={handleViewSale}
         onExport={handleExport}
         onAddSale={handleAddSale}
+      />
+
+      <SalesQuickAdd 
+        isOpen={showQuickAdd}
+        onClose={() => setShowQuickAdd(false)}
       />
     </div>
   );
