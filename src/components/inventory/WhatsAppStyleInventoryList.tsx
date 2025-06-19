@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +13,8 @@ import {
   Minus,
   AlertTriangle,
   CheckCircle2,
-  Clock
+  Clock,
+  Calendar
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -44,12 +44,12 @@ interface WhatsAppStyleInventoryListProps {
 
 const getStockStatusIcon = (stock: number, reorderPoint?: number) => {
   if (stock === 0) {
-    return { icon: AlertTriangle, color: "text-red-500", bgColor: "bg-red-500/10" };
+    return { icon: AlertTriangle, color: "text-red-500", bgColor: "bg-red-500" };
   }
   if (reorderPoint && stock <= reorderPoint) {
-    return { icon: Clock, color: "text-amber-500", bgColor: "bg-amber-500/10" };
+    return { icon: Clock, color: "text-amber-500", bgColor: "bg-amber-500" };
   }
-  return { icon: CheckCircle2, color: "text-green-500", bgColor: "bg-green-500/10" };
+  return { icon: CheckCircle2, color: "text-green-500", bgColor: "bg-green-500" };
 };
 
 const getCategoryColor = (category?: string) => {
@@ -117,7 +117,7 @@ export const WhatsAppStyleInventoryList = ({
         </ScrollArea>
       </div>
 
-      {/* Inventory List */}
+      {/* Inventory List - MATCHING SALES DESIGN */}
       <div className="flex-1 overflow-y-auto">
         {items.map((item, index) => {
           const status = getStockStatusIcon(item.stock, item.reorderPoint);
@@ -131,7 +131,7 @@ export const WhatsAppStyleInventoryList = ({
               )}
               onClick={() => onEdit(item)}
             >
-              {/* Product Avatar */}
+              {/* Product Avatar - MATCHING SALES DESIGN */}
               <div className="relative flex-shrink-0">
                 <div className={cn(
                   "w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-sm",
@@ -148,7 +148,7 @@ export const WhatsAppStyleInventoryList = ({
                 </div>
               </div>
 
-              {/* Product Info - Main Content */}
+              {/* Product Info - MATCHING SALES DESIGN */}
               <div className="flex-1 min-w-0 pr-2">
                 <div className="flex items-start justify-between mb-1">
                   <h3 className="font-medium text-foreground text-base leading-tight line-clamp-1 pr-2 flex-1">
@@ -171,7 +171,7 @@ export const WhatsAppStyleInventoryList = ({
                     </span>
                   </div>
                   
-                  {/* Stock quantity - prominently displayed on right */}
+                  {/* Stock quantity - prominently displayed on right - MATCHING SALES DESIGN */}
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <div className="text-right">
                       <div className="text-lg font-bold text-foreground">
@@ -258,7 +258,15 @@ export const WhatsAppStyleInventoryList = ({
                   </div>
                 </div>
 
-                {/* Low stock warning */}
+                {/* Additional info row - MATCHING SALES DESIGN */}
+                <div className="flex items-center gap-1 mt-1">
+                  <Calendar className="h-3 w-3 text-gray-400" />
+                  <span className="text-xs text-muted-foreground">
+                    Last sold: {formatTime(item.lastSold)}
+                  </span>
+                </div>
+
+                {/* Low stock warning - MATCHING SALES DESIGN */}
                 {item.stock <= (item.reorderPoint || 5) && (
                   <div className="mt-2 flex items-center gap-1">
                     <div className="w-2 h-2 rounded-full bg-orange-500" />
@@ -273,7 +281,7 @@ export const WhatsAppStyleInventoryList = ({
         })}
       </div>
 
-      {/* Floating Action Button - ICON ONLY */}
+      {/* Floating Action Button - MATCHING SALES DESIGN */}
       <div className="fixed bottom-20 right-4 z-20">
         <Button
           size="lg"
