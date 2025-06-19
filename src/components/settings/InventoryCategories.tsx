@@ -1,16 +1,15 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Package, Plus, X, Edit } from "lucide-react";
+import { Package, Plus, X, Edit, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const InventoryCategories = () => {
   const [categories, setCategories] = useState([
     "Electronics",
-    "Clothing",
+    "Clothing", 
     "Food & Beverages",
     "Home & Garden",
     "Sports & Outdoor"
