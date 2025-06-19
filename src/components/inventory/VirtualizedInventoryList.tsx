@@ -1,4 +1,3 @@
-
 import { FixedSizeList as List } from 'react-window';
 import { useState, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
@@ -13,7 +12,6 @@ import {
   Plus,
   Minus
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
