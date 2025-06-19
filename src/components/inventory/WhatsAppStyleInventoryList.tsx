@@ -18,6 +18,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface InventoryItem {
   id: number;
@@ -82,26 +83,37 @@ export const WhatsAppStyleInventoryList = ({
       {/* Header with Search */}
       <div className="p-4 border-b border-border/10 bg-background/95 backdrop-blur-md sticky top-0 z-10">
         <SearchInput
-          placeholder="Ask Meta AI or Search"
+          placeholder="Search inventory items..."
           onSearch={onSearch}
           className="bg-accent/30 border-0 rounded-full pl-12 h-12 text-sm"
         />
       </div>
 
-      {/* Filter Tabs (WhatsApp style) */}
-      <div className="flex gap-1 px-4 py-2 border-b border-border/5">
-        <Badge variant="secondary" className="rounded-full px-4 py-1 bg-primary text-primary-foreground">
-          All
-        </Badge>
-        <Badge variant="outline" className="rounded-full px-4 py-1 bg-transparent">
-          Low Stock
-        </Badge>
-        <Badge variant="outline" className="rounded-full px-4 py-1 bg-transparent">
-          Fast Moving
-        </Badge>
-        <Badge variant="outline" className="rounded-full px-4 py-1 bg-transparent">
-          Categories
-        </Badge>
+      {/* Filter Tabs (WhatsApp style) - Scrollable on mobile */}
+      <div className="border-b border-border/5">
+        <ScrollArea className="w-full whitespace-nowrap">
+          <div className="flex gap-1 px-4 py-2 w-max">
+            <Badge variant="secondary" className="rounded-full px-4 py-1 bg-primary text-primary-foreground flex-shrink-0">
+              All
+            </Badge>
+            <Badge variant="outline" className="rounded-full px-4 py-1 bg-transparent flex-shrink-0">
+              Low Stock
+            </Badge>
+            <Badge variant="outline" className="rounded-full px-4 py-1 bg-transparent flex-shrink-0">
+              Fast Moving
+            </Badge>
+            <Badge variant="outline" className="rounded-full px-4 py-1 bg-transparent flex-shrink-0">
+              Categories
+            </Badge>
+            <Badge variant="outline" className="rounded-full px-4 py-1 bg-transparent flex-shrink-0">
+              Out of Stock
+            </Badge>
+            <Badge variant="outline" className="rounded-full px-4 py-1 bg-transparent flex-shrink-0">
+              Reorder Soon
+            </Badge>
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
 
       {/* Inventory List */}
