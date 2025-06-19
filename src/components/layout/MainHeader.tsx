@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, memo } from "react";
 import { Button } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/search";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -15,7 +14,7 @@ interface MainHeaderProps {
   onTabChange: (tab: string) => void;
 }
 
-export const MainHeader = ({ onSearch, activeTab, onTabChange }: MainHeaderProps) => {
+export const MainHeader = memo<MainHeaderProps>(({ onSearch, activeTab, onTabChange }) => {
   const [showSearch, setShowSearch] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const { user, signOut } = useAuth();
@@ -31,31 +30,31 @@ export const MainHeader = ({ onSearch, activeTab, onTabChange }: MainHeaderProps
   };
 
   return (
-    <div className="bg-background/95 backdrop-blur-md shadow-sm border-b border-border/40 sticky top-12 z-19">
+    <div className="bg-background/95 backdrop-blur-md shadow-sm border-b border-border/30 sticky top-0 z-20">
       <div className={cn(
-        "p-space-4",
-        isMobile ? "py-space-3" : "p-space-6"
+        "p-4",
+        isMobile ? "py-3" : "p-6"
       )}>
-        <div className="flex justify-between items-center mb-space-4">
+        <div className="flex justify-between items-center mb-4">
           <div className="animate-fade-in">
             <h1 className={cn(
-              "bg-gradient-to-r from-brand-600 to-brand-700 bg-clip-text text-transparent dark:from-brand-400 dark:to-brand-500",
-              isMobile ? "text-title-large font-bold" : "text-display-medium"
+              "bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent dark:from-primary-400 dark:to-primary-500 font-bold",
+              isMobile ? "text-title-large" : "text-display-medium"
             )}>
               StockFlow
             </h1>
             <p className={cn(
-              "text-muted-foreground mt-1",
+              "text-muted-foreground mt-0.5",
               isMobile ? "text-body-small" : "text-body-medium"
             )}>
               {user?.user_metadata?.full_name || user?.email?.split('@')[0]}'s workspace
             </p>
           </div>
           
-          {/* Mobile-optimized action buttons - ICON ONLY */}
+          {/* Mobile-optimized action buttons */}
           <div className="flex items-center gap-1">
             <div className={cn(
-              "flex items-center bg-background/60 rounded-xl border border-border/40",
+              "flex items-center bg-background/60 rounded-2xl border border-border/30 backdrop-blur-sm",
               isMobile ? "p-1 gap-1" : "p-1 gap-1"
             )}>
               <TouchTarget minHeight={44}>
@@ -64,9 +63,9 @@ export const MainHeader = ({ onSearch, activeTab, onTabChange }: MainHeaderProps
                   size="icon-sm"
                   onClick={() => setShowSearch(!showSearch)}
                   className={cn(
-                    "animate-quick",
+                    "animate-quick rounded-xl",
                     showSearch 
-                      ? "bg-brand-50 text-brand-600 shadow-sm dark:bg-brand-950/50 dark:text-brand-400" 
+                      ? "bg-primary-50 text-primary-600 shadow-sm dark:bg-primary-950/50 dark:text-primary-400" 
                       : "hover:bg-accent/50"
                   )}
                   title="Toggle search"
@@ -85,9 +84,9 @@ export const MainHeader = ({ onSearch, activeTab, onTabChange }: MainHeaderProps
                   size="icon-sm"
                   onClick={() => onTabChange("profile")}
                   className={cn(
-                    "animate-quick",
+                    "animate-quick rounded-xl",
                     activeTab === "profile" 
-                      ? "bg-brand-50 text-brand-600 shadow-sm dark:bg-brand-950/50 dark:text-brand-400" 
+                      ? "bg-primary-50 text-primary-600 shadow-sm dark:bg-primary-950/50 dark:text-primary-400" 
                       : "hover:bg-accent/50"
                   )}
                   title="Open settings"
@@ -103,7 +102,7 @@ export const MainHeader = ({ onSearch, activeTab, onTabChange }: MainHeaderProps
                 size="icon-sm"
                 onClick={handleSignOut}
                 loading={isSigningOut}
-                className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 animate-quick ml-space-2"
+                className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 animate-quick ml-2 rounded-xl"
                 title="Sign out"
               >
                 <LogOut className="h-4 w-4" />
@@ -112,17 +111,19 @@ export const MainHeader = ({ onSearch, activeTab, onTabChange }: MainHeaderProps
           </div>
         </div>
         
-        {/* Mobile-optimized Search */}
+        {/* Enhanced Search */}
         {showSearch && (
-          <div className="animate-slide-up">
+          <div className="animate-slide-down">
             <SearchInput
               placeholder="Search across all modules..."
               onSearch={onSearch}
-              className="w-full"
+              className="w-full bg-background/80 backdrop-blur-sm border-border/40 rounded-2xl"
             />
           </div>
         )}
       </div>
     </div>
   );
-};
+});
+
+MainHeader.displayName = "MainHeader";
