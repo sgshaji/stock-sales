@@ -34,53 +34,55 @@ export const BatchActionBar = ({
 
   return (
     <div className={cn(
-      "fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/40 p-4 z-40 animate-slide-up",
+      "fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/40 safe-bottom z-40",
       className
     )}>
-      <div className="flex items-center justify-between max-w-screen-xl mx-auto">
-        <div className="flex items-center gap-3">
-          <Badge variant="secondary" className="font-medium">
-            {selectedItems.length} selected
-          </Badge>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClearSelection}
-            className="gap-2"
-          >
-            <X className="h-4 w-4" />
-            Clear
-          </Button>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onBatchExport}
-            className="gap-2"
-          >
-            <Download className="h-4 w-4" />
-            Export
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onBatchEdit}
-            className="gap-2"
-          >
-            <Edit className="h-4 w-4" />
-            Edit
-          </Button>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={onBatchDelete}
-            className="gap-2"
-          >
-            <Trash2 className="h-4 w-4" />
-            Delete
-          </Button>
+      <div className="p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Badge variant="secondary" className="font-semibold px-3 py-1">
+              {selectedItems.length} selected
+            </Badge>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClearSelection}
+              className="gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+              Clear
+            </Button>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onBatchExport}
+              className="gap-2 h-9"
+            >
+              <Download className="h-4 w-4" />
+              Export
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onBatchEdit}
+              className="gap-2 h-9"
+            >
+              <Edit className="h-4 w-4" />
+              Edit
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={onBatchDelete}
+              className="gap-2 h-9"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </Button>
+          </div>
         </div>
       </div>
     </div>

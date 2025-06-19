@@ -149,66 +149,76 @@ export const EnhancedInventoryManagement = ({ searchQuery }: EnhancedInventoryMa
   }
 
   return (
-    <div className={cn("space-y-0 animate-fade-in pb-20", isMobile && "pb-24")}>
-      {/* Intelligent Search */}
-      {!searchQuery && (
-        <div className="mb-4">
-          <IntelligentSearch
-            placeholder="Search products, SKUs, categories..."
-            onSearch={setLocalSearch}
-          />
+    <div className={cn(
+      "min-h-screen bg-background",
+      isMobile ? "pb-28" : "pb-20"
+    )}>
+      {/* Mobile-first Header - Compact and clean */}
+      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-md border-b border-border/20">
+        <div className="px-4 py-3">
+          <h2 className="text-lg font-semibold text-foreground">Inventory</h2>
         </div>
-      )}
-      
-      {/* Smart Filter Bar */}
-      <SmartFilterBar
-        categories={categoriesWithCounts}
-        activeCategory={activeCategory}
-        onCategoryChange={setActiveCategory}
-        view={viewType}
-        onViewChange={handleViewChange}
-        totalItems={items.length}
-        filteredCount={filteredItems.length}
-        searchQuery={effectiveSearch}
-        onClearSearch={effectiveSearch ? handleClearSearch : undefined}
-      />
+        
+        {/* Search - Only show if not passed from parent */}
+        {!searchQuery && (
+          <div className="px-4 pb-3">
+            <IntelligentSearch
+              placeholder="Search products, SKUs..."
+              onSearch={setLocalSearch}
+            />
+          </div>
+        )}
+        
+        {/* Smart Filter Bar */}
+        <SmartFilterBar
+          categories={categoriesWithCounts}
+          activeCategory={activeCategory}
+          onCategoryChange={setActiveCategory}
+          view={viewType}
+          onViewChange={handleViewChange}
+          totalItems={items.length}
+          filteredCount={filteredItems.length}
+          searchQuery={effectiveSearch}
+          onClearSearch={effectiveSearch ? handleClearSearch : undefined}
+        />
+      </div>
 
-      {/* Content */}
-      <div className="pt-4">
+      {/* Content Area - Mobile optimized spacing */}
+      <div className="px-4 py-4">
         {filteredItems.length === 0 ? (
-          <EmptyState
-            icon={Package}
-            title={effectiveSearch || activeCategory !== "all" ? "No items found" : "No inventory items"}
-            description={
-              effectiveSearch || activeCategory !== "all"
-                ? "No items match your current filters. Try adjusting your search or category selection."
-                : "Start by adding your first inventory item to track stock levels."
-            }
-            action={{
-              label: "Add First Item",
-              onClick: handleAddItem
-            }}
-          />
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <EmptyState
+              icon={Package}
+              title={effectiveSearch || activeCategory !== "all" ? "No items found" : "No inventory items"}
+              description={
+                effectiveSearch || activeCategory !== "all"
+                  ? "No items match your current filters. Try adjusting your search or category selection."
+                  : "Start by adding your first inventory item to track stock levels."
+              }
+              action={{
+                label: "Add First Item",
+                onClick: handleAddItem
+              }}
+            />
+          </div>
         ) : (
-          <Card className="border-0 shadow-none bg-transparent">
-            <CardContent className="p-0">
-              {viewType === "list" ? (
-                <FlatInventoryList
-                  items={filteredItems}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                  selectedItems={selectedItems}
-                  onSelect={handleRowSelect}
-                />
-              ) : (
-                <InventoryTileView
-                  items={filteredItems}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                />
-              )}
-            </CardContent>
-          </Card>
+          <div className="space-y-0">
+            {viewType === "list" ? (
+              <FlatInventoryList
+                items={filteredItems}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                selectedItems={selectedItems}
+                onSelect={handleRowSelect}
+              />
+            ) : (
+              <InventoryTileView
+                items={filteredItems}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            )}
+          </div>
         )}
       </div>
 

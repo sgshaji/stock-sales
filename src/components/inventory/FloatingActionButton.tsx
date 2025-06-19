@@ -17,8 +17,9 @@ export const FloatingActionButton = ({ onClick, loading, className }: FloatingAc
       size="lg"
       className={cn(
         "fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 z-50",
-        "bg-primary-600 hover:bg-primary-700 text-white",
-        "animate-scale-in",
+        "bg-primary hover:bg-primary/90 text-primary-foreground",
+        "border border-border/20",
+        "active:scale-95",
         className
       )}
     >
