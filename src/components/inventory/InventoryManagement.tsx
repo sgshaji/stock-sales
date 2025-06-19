@@ -5,13 +5,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TouchTarget } from "@/components/ui/mobile-touch";
 import { EmptyState } from "@/components/ui/empty-state";
+import { VirtualizedInventoryList } from "./VirtualizedInventoryList";
 import { 
   Package, 
   AlertTriangle, 
   Plus, 
-  Minus,
-  Edit,
-  MoreVertical,
   RefreshCw,
   Filter,
   ArrowUpDown
@@ -89,6 +87,13 @@ export const InventoryManagement = ({ searchQuery }: InventoryManagementProps) =
     toast({
       title: "Edit Item",
       description: `Opening edit form for ${item.name}`,
+    });
+  };
+
+  const handleDelete = (item: InventoryItem) => {
+    toast({
+      title: "Item Deleted",
+      description: `${item.name} has been removed from inventory`,
     });
   };
 
@@ -207,133 +212,13 @@ export const InventoryManagement = ({ searchQuery }: InventoryManagementProps) =
             }}
           />
         ) : (
-          <div className="space-y-3">
-            {displayItems.map((item) => {
-              const status = getStockStatus(item.stock, item.reorderPoint);
-              
-              return (
-                <Card
-                  key={item.id}
-                  className="bg-background border border-border/40 rounded-xl hover:bg-accent/20 transition-all duration-200"
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      {/* Visual Stock Health Indicator */}
-                      <div className="flex-shrink-0">
-                        <div className={cn("w-3 h-12 rounded-full", status.color)} />
-                      </div>
-
-                      {/* Product Info */}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-base text-foreground truncate leading-tight">
-                          {item.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">{item.sku}</p>
-                        
-                        {/* Status and velocity info */}
-                        <div className="flex items-center gap-2 mt-2">
-                          <Badge variant="outline" className="text-xs">
-                            {status.label}
-                          </Badge>
-                          {item.velocity === 'fast' && (
-                            <Badge variant="outline" className="text-xs bg-green-50 text-green-700">
-                              Fast Moving
-                            </Badge>
-                          )}
-                          {item.lastSold && (
-                            <span className="text-xs text-muted-foreground">
-                              Sold {item.lastSold}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Stock Count & Quick Actions */}
-                      <div className="flex items-center gap-2">
-                        <TouchTarget minHeight={40}>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleQuickAdjust(item, -1)}
-                            className="h-8 w-8 p-0 rounded-full"
-                          >
-                            <Minus className="h-3 w-3" />
-                          </Button>
-                        </TouchTarget>
-                        
-                        <TouchTarget minHeight={40}>
-                          <Button
-                            variant="ghost"
-                            className="min-w-[3rem] h-8 font-bold text-lg px-2"
-                            onClick={() => handleEdit(item)}
-                          >
-                            {item.stock}
-                          </Button>
-                        </TouchTarget>
-                        
-                        <TouchTarget minHeight={40}>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleQuickAdjust(item, 1)}
-                            className="h-8 w-8 p-0 rounded-full"
-                          >
-                            <Plus className="h-3 w-3" />
-                          </Button>
-                        </TouchTarget>
-
-                        {/* More Actions */}
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <TouchTarget minHeight={40}>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0 rounded-full"
-                              >
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </TouchTarget>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-48">
-                            <DropdownMenuItem onClick={() => handleEdit(item)} className="gap-2">
-                              <Edit className="h-4 w-4" />
-                              Edit Details
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleQuickAdjust(item, 5)} className="gap-2">
-                              <Plus className="h-4 w-4" />
-                              Quick Restock (+5)
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleQuickAdjust(item, item.reorderPoint || 10)} className="gap-2">
-                              <RefreshCw className="h-4 w-4" />
-                              Restock to Reorder Point
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-
-                    {/* Price and Value Info */}
-                    <div className="mt-3 flex justify-between items-center">
-                      <span className="text-lg font-bold text-primary">
-                        ${item.price.toFixed(2)}
-                      </span>
-                      <div className="text-right">
-                        <span className="text-sm text-muted-foreground">
-                          Stock value: ${(item.stock * item.price).toFixed(2)}
-                        </span>
-                        {item.reorderPoint && (
-                          <div className="text-xs text-muted-foreground">
-                            Reorder at: {item.reorderPoint} units
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+          <VirtualizedInventoryList
+            items={displayItems}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onQuickAdjust={handleQuickAdjust}
+            height={isMobile ? 500 : 600}
+          />
         )}
       </div>
     </div>
