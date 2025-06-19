@@ -357,11 +357,11 @@ export const MobileSalesEntry = memo<MobileSalesEntryProps>(({ searchQuery }) =>
         )}
       </div>
 
-      {/* New Sale Form */}
+      {/* New Sale Form - NO HEADER, SEARCH BAR AT TOP */}
       <MobileBottomSheet
         isOpen={showNewSale}
         onClose={() => setShowNewSale(false)}
-        title="New Sale"
+        showHeader={false}
         className="h-[95vh]"
       >
         <SalesEntryForm 

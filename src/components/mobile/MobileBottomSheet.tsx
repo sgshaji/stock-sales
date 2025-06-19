@@ -6,9 +6,10 @@ import { cn } from "@/lib/utils";
 interface MobileBottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  title: string;
+  title?: string; // Make title optional
   children: ReactNode;
   className?: string;
+  showHeader?: boolean; // Add option to hide header completely
 }
 
 export const MobileBottomSheet = ({ 
@@ -16,7 +17,8 @@ export const MobileBottomSheet = ({
   onClose, 
   title, 
   children, 
-  className 
+  className,
+  showHeader = true
 }: MobileBottomSheetProps) => {
   if (!isOpen) return null;
 
@@ -38,18 +40,34 @@ export const MobileBottomSheet = ({
           <div className="w-12 h-1 bg-gray-300 rounded-full" />
         </div>
         
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-3 border-b border-gray-100">
-          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="h-8 w-8 rounded-full"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
+        {/* Header - Only show if showHeader is true and title exists */}
+        {showHeader && title && (
+          <div className="flex items-center justify-between px-6 py-3 border-b border-gray-100">
+            <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="h-8 w-8 rounded-full"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+
+        {/* Close button when no header */}
+        {(!showHeader || !title) && (
+          <div className="absolute top-4 right-4 z-10">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="h-8 w-8 rounded-full bg-white/80 backdrop-blur-sm"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
         
         {/* Content */}
         <div className="flex-1 overflow-y-auto">

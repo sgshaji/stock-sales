@@ -356,7 +356,7 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
 
   return (
     <div className="flex flex-col h-full">
-      {/* SEARCH BAR - Moved to top, no heading, maximum width */}
+      {/* SEARCH BAR AT TOP - NO HEADING, MAXIMUM WIDTH */}
       <div className="p-4 border-b border-gray-100 bg-white">
         <SearchInput
           placeholder="Search products to add..."
