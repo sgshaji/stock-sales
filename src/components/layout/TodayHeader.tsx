@@ -4,7 +4,6 @@ import { TouchTarget } from "@/components/ui/mobile-touch";
 import { 
   LogOut, 
   Settings, 
-  Search, 
   ChevronDown,
   User,
   Store,
@@ -14,11 +13,9 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, memo } from "react";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { getShopName, getUserInitials } from "@/lib/config/shop";
-import { SearchInput } from "@/components/ui/search";
 import { useTheme } from "next-themes";
 import {
   DropdownMenu,
@@ -34,9 +31,8 @@ interface TodayHeaderProps {
   onTabChange?: (tab: string) => void;
 }
 
-export const TodayHeader = memo<TodayHeaderProps>(({ onSearch, activeTab, onTabChange }) => {
+export const TodayHeader = memo<TodayHeaderProps>(({ activeTab, onTabChange }) => {
   const [isSigningOut, setIsSigningOut] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
   const { user, signOut } = useAuth();
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
@@ -92,38 +88,17 @@ export const TodayHeader = memo<TodayHeaderProps>(({ onSearch, activeTab, onTabC
   return (
     <div className="bg-background/95 backdrop-blur-md shadow-sm border-b border-border/20 sticky top-0 z-20">
       <div className="px-4 py-3">
-        {/* SINGLE LINE: Shop Name + Profile Menu */}
+        {/* CLEAN SINGLE LINE: Shop Name + Profile Menu */}
         <div className="flex items-center justify-between">
-          {/* Left: Shop Name (No Truncation!) */}
+          {/* Left: Shop Name (Full Space - No Truncation!) */}
           <div className="flex-1 min-w-0 mr-4">
-            <h1 className="text-title-large font-bold text-foreground">
+            <h1 className="text-title-large font-bold text-foreground truncate">
               {shopName}
             </h1>
           </div>
 
-          {/* Right: Compact Controls */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {/* Search Toggle */}
-            {onSearch && (
-              <TouchTarget minHeight={44}>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => setShowSearch(!showSearch)}
-                  className={cn(
-                    "h-9 w-9 p-0 rounded-xl",
-                    showSearch 
-                      ? "bg-primary-50 text-primary-600 shadow-sm" 
-                      : "hover:bg-accent/50"
-                  )}
-                  title="Toggle search"
-                >
-                  <Search className="h-4 w-4" />
-                </Button>
-              </TouchTarget>
-            )}
-
-            {/* Profile Menu Dropdown */}
+          {/* Right: Profile Menu Only */}
+          <div className="flex-shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <TouchTarget minHeight={44}>
@@ -212,17 +187,6 @@ export const TodayHeader = memo<TodayHeaderProps>(({ onSearch, activeTab, onTabC
             </DropdownMenu>
           </div>
         </div>
-
-        {/* Expandable Search Bar */}
-        {showSearch && onSearch && (
-          <div className="mt-3 animate-slide-down">
-            <SearchInput
-              placeholder="Search across all modules..."
-              onSearch={onSearch}
-              className="w-full"
-            />
-          </div>
-        )}
       </div>
     </div>
   );
