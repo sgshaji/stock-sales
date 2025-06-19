@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,6 +13,7 @@ import VendorManagement from "@/components/VendorManagement";
 import Dashboard from "@/components/Dashboard";
 import UserProfile from "@/components/UserProfile";
 import InventoryManagement from "@/components/inventory/InventoryManagement";
+import { BottomTabs } from "@/components/navigation/BottomTabs";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -136,15 +136,15 @@ const Index = () => {
 
         {/* Mobile-optimized Main Content */}
         <div className={cn(
-          "content-spacing-relaxed",
+          "content-spacing-relaxed pb-20 md:pb-6",
           isMobile ? "p-space-4 space-y-space-4" : "p-space-6"
         )}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            {/* Enhanced 5-tab Navigation */}
+            {/* Enhanced 5-tab Navigation - Hidden on mobile when BottomTabs is present */}
             <TabsList className={cn(
               "w-full bg-background/95 backdrop-blur-sm shadow-lg border border-border/40 rounded-2xl p-space-2 h-auto",
               isMobile 
-                ? "grid grid-cols-5 gap-1" 
+                ? "hidden" 
                 : "grid grid-cols-5 mb-space-8"
             )}>
               {[
@@ -200,6 +200,9 @@ const Index = () => {
           </Tabs>
         </div>
       </div>
+      
+      {/* Add BottomTabs for mobile */}
+      <BottomTabs />
     </div>
   );
 };
