@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/search";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { TouchTarget } from "@/components/ui/mobile-touch";
-import { LogOut, Settings, Search } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -29,6 +29,21 @@ export const MainHeader = memo<MainHeaderProps>(({ onSearch, activeTab, onTabCha
     }
   };
 
+  // Get user's business name from profile or fallback to email
+  const getWorkspaceName = () => {
+    if (user?.user_metadata?.business_name) {
+      return `${user.user_metadata.business_name}`;
+    }
+    if (user?.user_metadata?.full_name) {
+      return `${user.user_metadata.full_name}'s Store`;
+    }
+    if (user?.email) {
+      const emailName = user.email.split('@')[0];
+      return `${emailName}'s Store`;
+    }
+    return "Your Store";
+  };
+
   return (
     <div className="bg-background/95 backdrop-blur-md shadow-sm border-b border-border/30 sticky top-0 z-20">
       <div className={cn(
@@ -47,7 +62,7 @@ export const MainHeader = memo<MainHeaderProps>(({ onSearch, activeTab, onTabCha
               "text-muted-foreground mt-0.5",
               isMobile ? "text-body-small" : "text-body-medium"
             )}>
-              {user?.user_metadata?.full_name || user?.email?.split('@')[0]}'s workspace
+              {getWorkspaceName()}
             </p>
           </div>
           
@@ -57,23 +72,6 @@ export const MainHeader = memo<MainHeaderProps>(({ onSearch, activeTab, onTabCha
               "flex items-center bg-background/60 rounded-2xl border border-border/30 backdrop-blur-sm",
               isMobile ? "p-1 gap-1" : "p-1 gap-1"
             )}>
-              <TouchTarget minHeight={44}>
-                <Button 
-                  variant="ghost" 
-                  size="icon-sm"
-                  onClick={() => setShowSearch(!showSearch)}
-                  className={cn(
-                    "animate-quick rounded-xl",
-                    showSearch 
-                      ? "bg-primary-50 text-primary-600 shadow-sm dark:bg-primary-950/50 dark:text-primary-400" 
-                      : "hover:bg-accent/50"
-                  )}
-                  title="Toggle search"
-                >
-                  <Search className="h-4 w-4" />
-                </Button>
-              </TouchTarget>
-              
               <TouchTarget minHeight={44}>
                 <ThemeToggle />
               </TouchTarget>
