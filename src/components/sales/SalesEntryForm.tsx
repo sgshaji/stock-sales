@@ -419,49 +419,28 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
                 onRemove={removeFromCart}
               />
             ))}
+            
+            {/* FLOATING ACTION BUTTONS - FIXED AT BOTTOM OF CART */}
+            <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 p-4 -mx-3 mt-6">
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={onCancel}
+                  className="flex-1 h-11 rounded-full"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleCompleteSale}
+                  className="flex-1 h-11 bg-primary-600 hover:bg-primary-700 rounded-full font-semibold"
+                >
+                  Complete Sale - ${calculations.finalTotal.toFixed(2)}
+                </Button>
+              </div>
+            </div>
           </div>
         )}
       </div>
-
-      {/* BOTTOM SUMMARY - Compact 2-column format */}
-      {cart.length > 0 && (
-        <div className="border-t border-gray-200 bg-white p-4">
-          {/* 2-Column Summary to save space */}
-          <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-gray-50 rounded-xl text-sm">
-            <div className="flex justify-between">
-              <span>Subtotal:</span>
-              <span>${calculations.subtotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-success-600">
-              <span>Discount:</span>
-              <span>-${calculations.totalDiscount.toFixed(2)}</span>
-            </div>
-          </div>
-          
-          {/* Total */}
-          <div className="flex justify-between font-bold text-lg mb-4 border-t pt-3">
-            <span>Total:</span>
-            <span className="text-primary-600">${calculations.finalTotal.toFixed(2)}</span>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              onClick={onCancel}
-              className="flex-1 h-11 rounded-full"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleCompleteSale}
-              className="flex-1 h-11 bg-primary-600 hover:bg-primary-700 rounded-full font-semibold"
-            >
-              Complete Sale
-            </Button>
-          </div>
-        </div>
-      )}
     </div>
   );
 });
