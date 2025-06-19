@@ -27,7 +27,6 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
   if (isLoading) {
     return (
       <div className="space-y-4 animate-fade-in">
-        <LoadingCard count={1} />
         <LoadingGrid count={4} />
         <LoadingCard count={2} />
       </div>
@@ -47,13 +46,7 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
 
   return (
     <div className="space-y-6 animate-fade-in max-w-md mx-auto">
-      {/* Welcome Section - Simplified */}
-      <div className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl p-5 text-white shadow-lg">
-        <h2 className="text-title-large font-semibold mb-2">Welcome back!</h2>
-        <p className="text-primary-100 text-body-medium opacity-90">Here's your business overview</p>
-      </div>
-
-      {/* Key Metrics Grid - Properly Aligned */}
+      {/* Key Metrics Grid - Clean and Professional */}
       <div className="grid grid-cols-2 gap-4 w-full">
         <Card className="bg-gradient-to-br from-success-50 to-success-100/50 border-success-200/50 shadow-sm">
           <CardHeader className="pb-3 px-4 pt-4">
@@ -144,7 +137,7 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
         </Card>
       </div>
 
-      {/* Quick Actions */}
+      {/* Quick Actions - Professional Layout */}
       <div className="grid grid-cols-2 gap-4 w-full">
         <Button 
           variant="outline" 
@@ -162,7 +155,7 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
         </Button>
       </div>
 
-      {/* Low Stock Alerts - Compact */}
+      {/* Low Stock Alerts - Compact and Clean */}
       <Card className="bg-gradient-to-br from-destructive/5 to-warning/5 border-destructive/20 shadow-sm w-full">
         <CardHeader className="pb-3 px-5 pt-4">
           <CardTitle className="text-title-medium flex items-center gap-3">
@@ -201,7 +194,7 @@ const Dashboard = memo<DashboardProps>(({ searchQuery }) => {
         </CardContent>
       </Card>
 
-      {/* Top Selling Items - Compact */}
+      {/* Top Selling Items - Clean and Focused */}
       <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 shadow-sm w-full">
         <CardHeader className="pb-3 px-5 pt-4">
           <CardTitle className="text-title-medium flex items-center gap-3">
