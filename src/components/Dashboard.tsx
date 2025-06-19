@@ -4,6 +4,7 @@ import { LoadingGrid, LoadingCard } from "@/components/ui/loading-skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { TrendingUp, Package, DollarSign, AlertTriangle, ArrowUp, ArrowDown, ShoppingCart, Users, Plus } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { BASE } from "@/lib/utils/motion";
 
 interface DashboardProps {
   searchQuery?: string;
@@ -45,7 +46,7 @@ const Dashboard = ({ searchQuery }: DashboardProps) => {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow duration-200">
+      <div className={`bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow duration-[${BASE}ms]`}>
         <h2 className="text-2xl font-bold mb-2">Welcome back!</h2>
         <p className="text-primary-100 text-sm">Here's what's happening with your inventory today</p>
       </div>
@@ -142,7 +143,7 @@ const Dashboard = ({ searchQuery }: DashboardProps) => {
       </div>
 
       {/* Low Stock Alerts */}
-      <Card className="bg-gradient-to-br from-destructive/5 to-warning/5 border-destructive/20 hover:shadow-lg transition-shadow duration-200">
+      <Card className={`bg-gradient-to-br from-destructive/5 to-warning/5 border-destructive/20 hover:shadow-lg transition-shadow duration-[${BASE}ms]`}>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <div className="p-2 bg-destructive/10 rounded-lg shadow-sm">
@@ -156,7 +157,7 @@ const Dashboard = ({ searchQuery }: DashboardProps) => {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            <div className="flex justify-between items-center p-3 bg-background rounded-lg border border-destructive/10 hover:shadow-sm transition-shadow duration-200">
+            <div className={`flex justify-between items-center p-3 bg-background rounded-lg border border-destructive/10 hover:shadow-sm transition-shadow duration-[${BASE}ms]`}>
               <div>
                 <span className="font-medium text-sm">Premium Headphones</span>
                 <p className="text-xs text-muted-foreground">SKU: HD001</p>
@@ -166,7 +167,7 @@ const Dashboard = ({ searchQuery }: DashboardProps) => {
                 <p className="text-xs text-muted-foreground">Reorder: 20</p>
               </div>
             </div>
-            <div className="flex justify-between items-center p-3 bg-background rounded-lg border border-destructive/10 hover:shadow-sm transition-shadow duration-200">
+            <div className={`flex justify-between items-center p-3 bg-background rounded-lg border border-destructive/10 hover:shadow-sm transition-shadow duration-[${BASE}ms]`}>
               <div>
                 <span className="font-medium text-sm">Wireless Mouse</span>
                 <p className="text-xs text-muted-foreground">SKU: MS002</p>
@@ -181,7 +182,7 @@ const Dashboard = ({ searchQuery }: DashboardProps) => {
       </Card>
 
       {/* Top Selling Items */}
-      <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 hover:shadow-lg transition-shadow duration-200">
+      <Card className={`bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 hover:shadow-lg transition-shadow duration-[${BASE}ms]`}>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <div className="p-2 bg-primary-100 rounded-lg shadow-sm">
