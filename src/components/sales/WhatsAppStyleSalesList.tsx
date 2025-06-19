@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TouchTarget } from "@/components/ui/mobile-touch";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { SearchInput } from "@/components/ui/search";
 import { 
   ShoppingCart, 
   Eye,
@@ -19,7 +18,6 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface Sale {
   id: number;
@@ -35,8 +33,6 @@ interface WhatsAppStyleSalesListProps {
   sales: Sale[];
   onView: (sale: Sale) => void;
   onExport: () => void;
-  searchQuery?: string;
-  onSearch?: (query: string) => void;
   selectedSales: Sale[];
   onRowSelect: (sale: Sale, selected: boolean) => void;
 }
@@ -68,8 +64,6 @@ export const WhatsAppStyleSalesList = ({
   sales, 
   onView, 
   onExport,
-  searchQuery,
-  onSearch,
   selectedSales,
   onRowSelect
 }: WhatsAppStyleSalesListProps) => {
@@ -77,43 +71,7 @@ export const WhatsAppStyleSalesList = ({
 
   return (
     <div className="flex flex-col h-full bg-background">
-      {/* Header with Search */}
-      <div className="p-4 border-b border-border/10 bg-background/95 backdrop-blur-md sticky top-0 z-10">
-        <SearchInput
-          placeholder="Search sales records..."
-          onSearch={onSearch}
-          className="bg-accent/30 border-0 rounded-full pl-12 h-12 text-sm"
-        />
-      </div>
-
-      {/* Filter Tabs (WhatsApp style) - Scrollable on mobile */}
-      <div className="border-b border-border/5">
-        <ScrollArea className="w-full whitespace-nowrap">
-          <div className="flex gap-1 px-4 py-2 w-max">
-            <Badge variant="secondary" className="rounded-full px-4 py-1 bg-primary text-primary-foreground flex-shrink-0">
-              All
-            </Badge>
-            <Badge variant="outline" className="rounded-full px-4 py-1 bg-transparent flex-shrink-0">
-              Completed
-            </Badge>
-            <Badge variant="outline" className="rounded-full px-4 py-1 bg-transparent flex-shrink-0">
-              Pending
-            </Badge>
-            <Badge variant="outline" className="rounded-full px-4 py-1 bg-transparent flex-shrink-0">
-              Today
-            </Badge>
-            <Badge variant="outline" className="rounded-full px-4 py-1 bg-transparent flex-shrink-0">
-              This Week
-            </Badge>
-            <Badge variant="outline" className="rounded-full px-4 py-1 bg-transparent flex-shrink-0">
-              High Value
-            </Badge>
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </div>
-
-      {/* Sales List */}
+      {/* Sales List - Full height */}
       <div className="flex-1 overflow-y-auto">
         {sales.map((sale, index) => {
           const status = getStatusIcon(sale.status);
@@ -237,18 +195,6 @@ export const WhatsAppStyleSalesList = ({
             </div>
           );
         })}
-      </div>
-
-      {/* Floating Action Button */}
-      <div className="fixed bottom-20 right-4 z-20">
-        <Button
-          size="lg"
-          className="h-14 w-14 rounded-full shadow-lg bg-green-500 hover:bg-green-600 text-white"
-          title="Export sales"
-          onClick={onExport}
-        >
-          <Download className="h-6 w-6" />
-        </Button>
       </div>
     </div>
   );
