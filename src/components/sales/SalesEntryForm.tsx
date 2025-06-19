@@ -6,14 +6,11 @@ import { SearchInput } from "@/components/ui/search";
 import { 
   Plus, 
   Minus, 
-  Search, 
   ShoppingCart,
   DollarSign,
   Percent,
   X,
-  Package,
-  ChevronDown,
-  ChevronUp
+  Package
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -248,16 +245,15 @@ CartItemComponent.displayName = "CartItemComponent";
 export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete, onCancel }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showSearch, setShowSearch] = useState(false);
   const { toast } = useToast();
 
   // Filter products based on search with smart suggestions
   const filteredProducts = useMemo(() => {
-    if (!searchQuery) return inventory.slice(0, 5); // Show top 5 when no search
+    if (!searchQuery) return []; // Show nothing when no search
     
     return inventory.filter(product =>
       product.name.toLowerCase().includes(searchQuery.toLowerCase())
-    ).slice(0, 10); // Limit results for performance
+    ).slice(0, 8); // Limit results for performance
   }, [inventory, searchQuery]);
 
   const addToCart = useCallback((product: InventoryItem) => {
@@ -285,7 +281,6 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
     
     // Clear search after adding - NO NOTIFICATION
     setSearchQuery("");
-    setShowSearch(false);
   }, []);
 
   const updateCartItem = useCallback((id: number, updates: Partial<CartItem>) => {
@@ -361,73 +356,58 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
 
   return (
     <div className="flex flex-col h-full">
-      {/* MINIMAL Header - Only 5% */}
-      <div className="h-[5%] min-h-[60px] p-3 border-b border-gray-100 bg-gray-50 flex items-center gap-3">
-        <Button
-          variant={showSearch ? "default" : "outline"}
-          onClick={() => setShowSearch(!showSearch)}
-          size="sm"
-          className="gap-2 h-8"
-        >
-          <Search className="h-3 w-3" />
-          {showSearch ? "Hide" : "Add Items"}
-        </Button>
+      {/* SIMPLIFIED Header - Just search bar with proper spacing */}
+      <div className="p-4 border-b border-gray-100 bg-white">
+        <SearchInput
+          placeholder="Search products to add..."
+          value={searchQuery}
+          onSearch={setSearchQuery}
+          className="h-10 rounded-full bg-gray-100 border-0 text-sm"
+        />
         
+        {/* Cart summary in header when items exist */}
         {cart.length > 0 && (
-          <div className="flex items-center gap-2 text-xs text-gray-600">
-            <ShoppingCart className="h-3 w-3" />
-            <span>{cart.length} items • ${calculations.finalTotal.toFixed(2)}</span>
+          <div className="flex items-center justify-between mt-3 text-xs text-gray-600">
+            <div className="flex items-center gap-2">
+              <ShoppingCart className="h-3 w-3" />
+              <span>{cart.length} items</span>
+            </div>
+            <span className="font-semibold">${calculations.finalTotal.toFixed(2)}</span>
           </div>
         )}
       </div>
 
-      {/* Search Section - Collapsible - Max 10% when open */}
-      {showSearch && (
-        <div className="max-h-[10%] min-h-[120px] p-3 border-b border-gray-100 bg-white">
-          <SearchInput
-            placeholder="Search products..."
-            value={searchQuery}
-            onSearch={setSearchQuery}
-            className="h-8 rounded-full bg-gray-100 border-0 mb-2 text-sm"
-          />
-          
-          {searchQuery && (
-            <div className="space-y-1 max-h-16 overflow-y-auto">
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
-                  <ProductSearchItem
-                    key={product.id}
-                    product={product}
-                    onAdd={addToCart}
-                    searchQuery={searchQuery}
-                  />
-                ))
-              ) : (
-                <div className="text-center py-2">
-                  <p className="text-gray-500 text-xs">No products found</p>
-                </div>
-              )}
+      {/* Search Results - Only show when searching */}
+      {searchQuery && (
+        <div className="max-h-[25%] p-3 border-b border-gray-100 bg-gray-50 overflow-y-auto">
+          {filteredProducts.length > 0 ? (
+            <div className="space-y-2">
+              {filteredProducts.map((product) => (
+                <ProductSearchItem
+                  key={product.id}
+                  product={product}
+                  onAdd={addToCart}
+                  searchQuery={searchQuery}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-4">
+              <p className="text-gray-500 text-sm">No products found for "{searchQuery}"</p>
             </div>
           )}
         </div>
       )}
 
-      {/* CART ITEMS - 80% OF SCREEN HEIGHT */}
-      <div className={cn(
-        "overflow-y-auto p-3",
-        showSearch ? "h-[65%]" : "h-[80%]"
-      )}>
+      {/* CART ITEMS - Takes remaining space */}
+      <div className="flex-1 overflow-y-auto p-3">
         {cart.length === 0 ? (
-          <div className="text-center py-8">
-            <div className="p-3 bg-gray-100 rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-              <ShoppingCart className="h-6 w-6 text-gray-400" />
+          <div className="text-center py-12">
+            <div className="p-4 bg-gray-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              <ShoppingCart className="h-8 w-8 text-gray-400" />
             </div>
-            <p className="text-gray-500 mb-2 text-sm">Your cart is empty</p>
-            <p className="text-xs text-gray-400 mb-3">Add products to start creating a sale</p>
-            <Button onClick={() => setShowSearch(true)} size="sm" className="gap-2">
-              <Search className="h-3 w-3" />
-              Search Products
-            </Button>
+            <h3 className="font-semibold text-gray-900 mb-2">Start adding products</h3>
+            <p className="text-gray-500 text-sm mb-4">Use the search bar above to find and add products to your sale</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -443,39 +423,39 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
         )}
       </div>
 
-      {/* BOTTOM SUMMARY - Only 15% */}
+      {/* BOTTOM SUMMARY - Fixed height */}
       {cart.length > 0 && (
-        <div className="h-[15%] min-h-[120px] border-t border-gray-200 bg-white p-3">
+        <div className="border-t border-gray-200 bg-white p-4">
           {/* Compact Summary */}
-          <div className="space-y-2 mb-3 p-2 bg-gray-50 rounded-lg">
-            <div className="flex justify-between text-xs">
+          <div className="space-y-2 mb-4 p-3 bg-gray-50 rounded-xl">
+            <div className="flex justify-between text-sm">
               <span>Subtotal:</span>
               <span>${calculations.subtotal.toFixed(2)}</span>
             </div>
             {calculations.totalDiscount > 0 && (
-              <div className="flex justify-between text-xs text-success-600">
+              <div className="flex justify-between text-sm text-success-600">
                 <span>Discount:</span>
                 <span>-${calculations.totalDiscount.toFixed(2)}</span>
               </div>
             )}
-            <div className="flex justify-between font-bold text-sm border-t pt-1">
+            <div className="flex justify-between font-bold text-lg border-t pt-2">
               <span>Total:</span>
               <span className="text-primary-600">${calculations.finalTotal.toFixed(2)}</span>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <Button
               variant="outline"
               onClick={onCancel}
-              className="flex-1 h-10 rounded-full text-sm"
+              className="flex-1 h-11 rounded-full"
             >
               Cancel
             </Button>
             <Button
               onClick={handleCompleteSale}
-              className="flex-1 h-10 bg-primary-600 hover:bg-primary-700 rounded-full text-sm font-semibold"
+              className="flex-1 h-11 bg-primary-600 hover:bg-primary-700 rounded-full font-semibold"
             >
               Complete
             </Button>
