@@ -302,6 +302,7 @@ export const VirtualizedInventoryList = ({
   return (
     <List
       height={height}
+      width="100%"
       itemCount={items.length}
       itemSize={isMobile ? 140 : 160}
       itemData={itemData}
