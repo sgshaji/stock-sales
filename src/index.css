@@ -2,118 +2,52 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design System Foundation - Modern Mobile-First Design */
+/* Mobile-First Design System */
 
 @layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-
     --primary: 213.3 93.9% 67.8%;
     --primary-foreground: 210 40% 98%;
-
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
-
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 213.3 93.9% 67.8%;
-
     --radius: 16px;
-
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-
-    /* Enhanced Typography Scale */
-    --font-size-xs: 0.75rem;    /* 12px */
-    --font-size-sm: 0.875rem;   /* 14px */
-    --font-size-base: 1rem;     /* 16px */
-    --font-size-lg: 1.125rem;   /* 18px */
-    --font-size-xl: 1.25rem;    /* 20px */
-    --font-size-2xl: 1.5rem;    /* 24px */
-    --font-size-3xl: 1.875rem;  /* 30px */
-
-    /* Refined Spacing Scale - 4px base grid */
-    --space-0: 0px;
-    --space-1: 4px;
-    --space-2: 8px;
-    --space-3: 12px;
-    --space-4: 16px;
-    --space-5: 20px;
-    --space-6: 24px;
-    --space-8: 32px;
-    --space-10: 40px;
-    --space-12: 48px;
-    --space-16: 64px;
-    --space-20: 80px;
-    --space-24: 96px;
-
-    /* Enhanced Shadow System */
-    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.03);
-    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
-    --shadow-base: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
-    --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08);
-    --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-    --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.15);
   }
 
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
-
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
-
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-
     --primary: 213.3 93.9% 67.8%;
     --primary-foreground: 222.2 47.4% 11.2%;
-
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
-
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
-
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -123,251 +57,33 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased leading-relaxed;
+    @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Prevent zoom on iOS */
+    -webkit-text-size-adjust: 100%;
   }
 
-  /* Enhanced Typography Hierarchy */
-  .text-display-large {
-    @apply text-3xl font-bold tracking-tight leading-none;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-  }
-
-  .text-display-medium {
-    @apply text-2xl font-bold tracking-tight leading-tight;
-    font-weight: 700;
-    letter-spacing: -0.015em;
-  }
-
-  .text-display-small {
-    @apply text-xl font-semibold tracking-tight leading-tight;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-  }
-
-  .text-headline-large {
-    @apply text-lg font-semibold leading-snug;
-    font-weight: 600;
-  }
-
-  .text-headline-medium {
-    @apply text-base font-semibold leading-normal;
-    font-weight: 600;
-  }
-
-  .text-headline-small {
-    @apply text-sm font-semibold leading-normal;
-    font-weight: 600;
-  }
-
-  .text-title-large {
-    @apply text-lg font-medium leading-snug;
-    font-weight: 500;
-  }
-
-  .text-title-medium {
-    @apply text-base font-medium leading-normal;
-    font-weight: 500;
-  }
-
-  .text-title-small {
-    @apply text-sm font-medium leading-normal;
-    font-weight: 500;
-  }
-
-  .text-body-large {
-    @apply text-base font-normal leading-relaxed;
-    font-weight: 400;
-  }
-
-  .text-body-medium {
-    @apply text-sm font-normal leading-relaxed;
-    font-weight: 400;
-  }
-
-  .text-body-small {
-    @apply text-xs font-normal leading-normal;
-    font-weight: 400;
-  }
-
-  .text-label-large {
-    @apply text-sm font-medium leading-normal;
-    font-weight: 500;
-  }
-
-  .text-label-medium {
-    @apply text-xs font-medium leading-normal;
-    font-weight: 500;
-  }
-
-  .text-label-small {
-    @apply text-xs font-medium leading-tight tracking-wide;
-    font-weight: 500;
-    letter-spacing: 0.025em;
-  }
-
-  /* Override default heading styles */
-  h1 { @apply text-display-medium; }
-  h2 { @apply text-display-small; }
-  h3 { @apply text-headline-large; }
-  h4 { @apply text-headline-medium; }
-  h5 { @apply text-headline-small; }
-  h6 { @apply text-label-large; }
+  /* Mobile-First Typography */
+  h1 { @apply text-2xl font-bold leading-tight; }
+  h2 { @apply text-xl font-semibold leading-tight; }
+  h3 { @apply text-lg font-medium leading-snug; }
+  h4 { @apply text-base font-medium leading-normal; }
+  h5 { @apply text-sm font-medium leading-normal; }
+  h6 { @apply text-xs font-medium leading-normal; }
 }
 
 @layer components {
-  /* Modern Card System */
-  .card-elevated {
-    @apply bg-card/95 backdrop-blur-sm border border-border/40 rounded-2xl shadow-lg;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
-  }
-
-  .card-interactive {
-    @apply transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-0.5 cursor-pointer;
-  }
-
-  .card-hover {
-    @apply transition-all duration-200 ease-out hover:shadow-md hover:border-border/60;
-  }
-
-  /* Enhanced Button System */
-  .button-press {
-    @apply transition-all duration-150 ease-out active:scale-[0.97] active:shadow-sm;
-    transform-origin: center;
-  }
-
-  .button-smooth {
-    @apply transition-all duration-200 ease-out;
-  }
-
-  /* Modern Animation System */
-  .animate-smooth {
-    @apply transition-all duration-300 ease-out;
-  }
-
-  .animate-quick {
-    @apply transition-all duration-150 ease-out;
-  }
-
-  .animate-bounce-subtle {
-    animation: bounce-subtle 0.6s ease-out;
-  }
-
-  /* Interactive Elements */
-  .interactive-hover {
-    @apply transition-all duration-200 ease-out hover:bg-accent/50 hover:shadow-sm active:bg-accent/70 active:scale-[0.98];
-  }
-
-  .touch-feedback {
-    @apply transition-all duration-150 ease-out active:scale-95 active:bg-primary-50 dark:active:bg-primary-950/20;
-  }
-
-  /* Status System with Better Colors */
-  .status-success {
-    @apply bg-success-50 text-success-700 border-success-200 dark:bg-success-950/20 dark:text-success-400 dark:border-success-800;
-  }
-
-  .status-warning {
-    @apply bg-warning-50 text-warning-700 border-warning-200 dark:bg-warning-950/20 dark:text-warning-400 dark:border-warning-800;
-  }
-
-  .status-error {
-    @apply bg-error-50 text-error-700 border-error-200 dark:bg-error-950/20 dark:text-error-400 dark:border-error-800;
-  }
-
-  .status-info {
-    @apply bg-info-50 text-info-700 border-info-200 dark:bg-info-950/20 dark:text-info-400 dark:border-info-800;
-  }
-
-  /* Enhanced Spacing System */
-  .content-spacing-tight {
-    @apply space-y-3;
-  }
-
-  .content-spacing-normal {
-    @apply space-y-4;
-  }
-
-  .content-spacing-relaxed {
-    @apply space-y-6;
-  }
-
-  .content-spacing-loose {
-    @apply space-y-8;
-  }
-
-  /* Container System */
-  .container-content {
-    @apply max-w-md mx-auto px-4;
-  }
-
-  .container-wide {
-    @apply max-w-4xl mx-auto px-6;
-  }
-
-  /* Enhanced Focus States */
-  .focus-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background;
-  }
-
   /* Mobile Touch Optimizations */
   .touch-target {
     @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
   }
 
-  .swipe-indicator {
-    @apply relative overflow-hidden;
-  }
-
-  .swipe-indicator::after {
-    content: '';
-    @apply absolute inset-y-0 right-0 w-1 bg-gradient-to-b from-transparent via-primary-300 to-transparent opacity-0 transition-opacity duration-200;
-  }
-
-  .swipe-indicator:hover::after {
-    @apply opacity-100;
-  }
-
-  /* Glass Morphism Effects */
-  .glass-effect {
-    @apply bg-background/80 backdrop-blur-md border border-border/40;
-  }
-
-  .glass-card {
-    @apply bg-card/90 backdrop-blur-lg border border-border/30 shadow-lg;
-  }
-
-  /* Modern List Styles */
-  .list-modern {
-    @apply divide-y divide-border/20;
-  }
-
-  .list-item-modern {
-    @apply p-4 hover:bg-accent/30 transition-colors duration-200 cursor-pointer;
-  }
-
-  /* Enhanced Gradients */
-  .gradient-primary {
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)) 100%);
-  }
-
-  .gradient-subtle {
-    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--accent)) 100%);
-  }
-}
-
-@layer utilities {
-  /* Enhanced Animations */
+  /* Mobile-First Animations */
   .animate-fade-in {
-    animation: fade-in 0.4s ease-out;
-  }
-
-  .animate-scale-in {
-    animation: scale-in 0.3s ease-out;
+    animation: fade-in 0.3s ease-out;
   }
 
   .animate-slide-up {
@@ -375,27 +91,11 @@
   }
 
   .animate-slide-down {
-    animation: slide-down 0.4s ease-out;
+    animation: slide-down 0.3s ease-out;
   }
 
-  /* Scroll Enhancements */
-  .scroll-smooth {
-    scroll-behavior: smooth;
-  }
-
-  .scroll-touch {
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Mobile Optimizations */
-  .tap-highlight-none {
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .select-none-mobile {
-    @media (max-width: 768px) {
-      user-select: none;
-    }
+  .animate-slide-in-from-right {
+    animation: slide-in-from-right 0.3s ease-out;
   }
 
   /* Safe Area Support */
@@ -415,17 +115,43 @@
     padding-right: env(safe-area-inset-right);
   }
 
-  /* Grid Utilities */
-  .grid-auto-fit {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  /* Mobile Scroll Optimization */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .grid-auto-fill {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  /* Remove tap highlights */
+  .tap-highlight-none {
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
-/* Enhanced Keyframes */
+@layer utilities {
+  /* Line Clamping */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+}
+
+/* Mobile-Optimized Keyframes */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -437,21 +163,10 @@
   }
 }
 
-@keyframes scale-in {
-  from {
-    transform: scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
 @keyframes slide-up {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(100%);
   }
   to {
     opacity: 1;
@@ -462,7 +177,7 @@
 @keyframes slide-down {
   from {
     opacity: 0;
-    transform: translateY(-12px);
+    transform: translateY(-20px);
   }
   to {
     opacity: 1;
@@ -470,59 +185,14 @@
   }
 }
 
-@keyframes bounce-subtle {
-  0%, 20%, 53%, 80%, 100% {
-    transform: translate3d(0, 0, 0);
+@keyframes slide-in-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
   }
-  40%, 43% {
-    transform: translate3d(0, -4px, 0);
-  }
-  70% {
-    transform: translate3d(0, -2px, 0);
-  }
-  90% {
-    transform: translate3d(0, -1px, 0);
-  }
-}
-
-/* Enhanced Loading States */
-.loading-shimmer {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.3) 20%,
-    rgba(255, 255, 255, 0.6) 60%,
-    rgba(255, 255, 255, 0)
-  );
-  animation: shimmer 2s infinite;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -468px 0;
-  }
-  100% {
-    background-position: 468px 0;
-  }
-}
-
-/* Print Styles */
-@media print {
-  .no-print {
-    display: none !important;
-  }
-}
-
-/* Dark Mode Enhancements */
-@media (prefers-color-scheme: dark) {
-  .loading-shimmer {
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.1) 20%,
-      rgba(255, 255, 255, 0.2) 60%,
-      rgba(255, 255, 255, 0)
-    );
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -535,5 +205,12 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Mobile Viewport Fix */
+@supports (-webkit-touch-callout: none) {
+  .h-screen {
+    height: -webkit-fill-available;
   }
 }
