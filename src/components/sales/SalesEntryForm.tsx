@@ -1,0 +1,527 @@
+import { useState, useMemo, useCallback, memo } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { SearchInput } from "@/components/ui/search";
+import { 
+  Plus, 
+  Minus, 
+  Scan, 
+  Search, 
+  ShoppingCart,
+  User,
+  DollarSign,
+  Percent,
+  X,
+  Package
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
+
+interface InventoryItem {
+  id: number;
+  name: string;
+  price: number;
+  stock: number;
+}
+
+interface CartItem extends InventoryItem {
+  quantity: number;
+  discount: number; // percentage
+}
+
+interface SalesEntryFormProps {
+  inventory: InventoryItem[];
+  onComplete: (saleData: any) => void;
+  onCancel: () => void;
+}
+
+const ProductSearchItem = memo<{
+  product: InventoryItem;
+  onAdd: (product: InventoryItem) => void;
+  searchQuery: string;
+}>(({ product, onAdd, searchQuery }) => {
+  const handleAdd = useCallback(() => onAdd(product), [onAdd, product]);
+  
+  // Highlight matching text
+  const highlightText = (text: string, query: string) => {
+    if (!query) return text;
+    const regex = new RegExp(`(${query})`, 'gi');
+    const parts = text.split(regex);
+    return parts.map((part, index) => 
+      regex.test(part) ? <mark key={index} className="bg-yellow-200">{part}</mark> : part
+    );
+  };
+
+  return (
+    <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={handleAdd}>
+      <CardContent className="p-3">
+        <div className="flex items-center justify-between">
+          <div className="flex-1 min-w-0">
+            <h3 className="font-medium text-gray-900 truncate">
+              {highlightText(product.name, searchQuery)}
+            </h3>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-sm font-semibold text-primary-600">
+                ${product.price.toFixed(2)}
+              </span>
+              <span className="text-xs text-gray-500">
+                {product.stock} in stock
+              </span>
+            </div>
+          </div>
+          <Button size="sm" className="h-8 w-8 rounded-full p-0 ml-2">
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+});
+
+ProductSearchItem.displayName = "ProductSearchItem";
+
+const CartItemComponent = memo<{
+  item: CartItem;
+  onUpdateQuantity: (id: number, quantity: number) => void;
+  onUpdateDiscount: (id: number, discount: number) => void;
+  onRemove: (id: number) => void;
+}>(({ item, onUpdateQuantity, onUpdateDiscount, onRemove }) => {
+  const [discountInput, setDiscountInput] = useState(item.discount.toString());
+  
+  const handleQuantityChange = useCallback((change: number) => {
+    const newQuantity = Math.max(0, item.quantity + change);
+    if (newQuantity === 0) {
+      onRemove(item.id);
+    } else {
+      onUpdateQuantity(item.id, newQuantity);
+    }
+  }, [item.id, item.quantity, onUpdateQuantity, onRemove]);
+
+  const handleDiscountChange = useCallback((value: string) => {
+    setDiscountInput(value);
+    const discount = Math.max(0, Math.min(100, parseFloat(value) || 0));
+    onUpdateDiscount(item.id, discount);
+  }, [item.id, onUpdateDiscount]);
+
+  const itemTotal = item.price * item.quantity;
+  const discountAmount = itemTotal * (item.discount / 100);
+  const finalPrice = itemTotal - discountAmount;
+
+  return (
+    <Card className="bg-white">
+      <CardContent className="p-4">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <Package className="h-5 w-5 text-gray-600" />
+          </div>
+          
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between mb-2">
+              <h3 className="font-medium text-gray-900 truncate pr-2">{item.name}</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onRemove(item.id)}
+                className="h-6 w-6 p-0 rounded-full text-gray-400 hover:text-red-500"
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+            
+            <div className="space-y-3">
+              {/* Quantity Controls */}
+              <div className="flex items-center gap-3">
+                <Label className="text-xs text-gray-500 w-12">Qty:</Label>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleQuantityChange(-1)}
+                    className="h-8 w-8 rounded-full p-0"
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <span className="w-8 text-center font-medium">{item.quantity}</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleQuantityChange(1)}
+                    className="h-8 w-8 rounded-full p-0"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Discount Input */}
+              <div className="flex items-center gap-3">
+                <Label className="text-xs text-gray-500 w-12">Disc:</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    value={discountInput}
+                    onChange={(e) => handleDiscountChange(e.target.value)}
+                    className="w-16 h-8 text-sm"
+                    min="0"
+                    max="100"
+                  />
+                  <span className="text-xs text-gray-500">%</span>
+                </div>
+              </div>
+
+              {/* Price Breakdown */}
+              <div className="space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">
+                    ${item.price.toFixed(2)} × {item.quantity}
+                  </span>
+                  <span>${itemTotal.toFixed(2)}</span>
+                </div>
+                {item.discount > 0 && (
+                  <div className="flex justify-between text-sm text-success-600">
+                    <span>Discount ({item.discount}%)</span>
+                    <span>-${discountAmount.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between font-semibold text-primary-600 border-t pt-1">
+                  <span>Total</span>
+                  <span>${finalPrice.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+});
+
+CartItemComponent.displayName = "CartItemComponent";
+
+export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete, onCancel }) => {
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [scanMode, setScanMode] = useState(false);
+  const [overallDiscount, setOverallDiscount] = useState(0); // percentage
+  const { toast } = useToast();
+
+  // Filter products based on search with smart suggestions
+  const filteredProducts = useMemo(() => {
+    if (!searchQuery) return inventory.slice(0, 5); // Show top 5 when no search
+    
+    return inventory.filter(product =>
+      product.name.toLowerCase().includes(searchQuery.toLowerCase())
+    ).slice(0, 10); // Limit results for performance
+  }, [inventory, searchQuery]);
+
+  const addToCart = useCallback((product: InventoryItem) => {
+    setCart(prev => {
+      const existing = prev.find(item => item.id === product.id);
+      if (existing) {
+        return prev.map(item =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...prev, { ...product, quantity: 1, discount: 0 }];
+    });
+    
+    // Clear search after adding
+    setSearchQuery("");
+    
+    toast({
+      title: "Added to cart",
+      description: `${product.name} added to cart`,
+    });
+  }, [toast]);
+
+  const updateQuantity = useCallback((id: number, quantity: number) => {
+    setCart(prev => prev.map(item =>
+      item.id === id ? { ...item, quantity } : item
+    ));
+  }, []);
+
+  const updateDiscount = useCallback((id: number, discount: number) => {
+    setCart(prev => prev.map(item =>
+      item.id === id ? { ...item, discount } : item
+    ));
+  }, []);
+
+  const removeFromCart = useCallback((id: number) => {
+    setCart(prev => prev.filter(item => item.id !== id));
+  }, []);
+
+  // Calculate totals
+  const calculations = useMemo(() => {
+    const subtotal = cart.reduce((sum, item) => {
+      const itemTotal = item.price * item.quantity;
+      const itemDiscount = itemTotal * (item.discount / 100);
+      return sum + (itemTotal - itemDiscount);
+    }, 0);
+    
+    const overallDiscountAmount = subtotal * (overallDiscount / 100);
+    const finalTotal = subtotal - overallDiscountAmount;
+    const totalItemDiscount = cart.reduce((sum, item) => {
+      const itemTotal = item.price * item.quantity;
+      return sum + (itemTotal * (item.discount / 100));
+    }, 0);
+    const totalDiscount = totalItemDiscount + overallDiscountAmount;
+    
+    return {
+      subtotal: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+      totalDiscount,
+      finalTotal
+    };
+  }, [cart, overallDiscount]);
+
+  const handleCompleteSale = useCallback(() => {
+    if (cart.length === 0) {
+      toast({
+        title: "Empty Cart",
+        description: "Please add items to complete the sale",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check stock availability
+    const stockIssues = cart.filter(item => item.quantity > item.stock);
+    if (stockIssues.length > 0) {
+      toast({
+        title: "Insufficient Stock",
+        description: `Not enough stock for: ${stockIssues.map(item => item.name).join(', ')}`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const saleData = {
+      customerName: customerName.trim() || undefined,
+      items: cart.map(item => ({
+        name: item.name,
+        quantity: item.quantity,
+        unitPrice: item.price,
+        discount: item.discount
+      })),
+      subtotal: calculations.subtotal,
+      totalDiscount: calculations.totalDiscount,
+      finalTotal: calculations.finalTotal,
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toLocaleTimeString('en-US', { 
+        hour12: false, 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      }),
+      status: 'completed'
+    };
+
+    onComplete(saleData);
+  }, [cart, customerName, calculations, onComplete, toast]);
+
+  const handleBarcodeSearch = useCallback((barcode: string) => {
+    // Mock barcode search - in real app this would match against product barcodes
+    const product = inventory.find(p => p.id.toString() === barcode);
+    if (product) {
+      addToCart(product);
+      toast({
+        title: "Product Found",
+        description: `${product.name} added to cart`,
+      });
+    } else {
+      toast({
+        title: "Product Not Found",
+        description: "No product found with this barcode",
+        variant: "destructive",
+      });
+    }
+  }, [inventory, addToCart, toast]);
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Customer Info */}
+      <div className="p-4 border-b border-gray-100">
+        <Label htmlFor="customer" className="text-sm font-medium text-gray-700 mb-2 block">
+          Customer Name (Optional)
+        </Label>
+        <Input
+          id="customer"
+          placeholder="Enter customer name..."
+          value={customerName}
+          onChange={(e) => setCustomerName(e.target.value)}
+          className="h-10 rounded-xl"
+        />
+      </div>
+
+      {/* Search/Scan Toggle */}
+      <div className="p-4 border-b border-gray-100">
+        <div className="flex gap-2 mb-3">
+          <Button
+            variant={!scanMode ? "default" : "outline"}
+            onClick={() => setScanMode(false)}
+            className="flex-1 h-10 rounded-full"
+          >
+            <Search className="h-4 w-4 mr-2" />
+            Search
+          </Button>
+          <Button
+            variant={scanMode ? "default" : "outline"}
+            onClick={() => setScanMode(true)}
+            className="flex-1 h-10 rounded-full"
+          >
+            <Scan className="h-4 w-4 mr-2" />
+            Scan
+          </Button>
+        </div>
+
+        {scanMode ? (
+          <div className="bg-gray-100 rounded-2xl p-6 text-center">
+            <Scan className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+            <p className="text-sm text-gray-600 mb-3">Point camera at barcode</p>
+            <Input
+              placeholder="Or enter barcode manually..."
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleBarcodeSearch(e.currentTarget.value);
+                  e.currentTarget.value = '';
+                }
+              }}
+              className="h-10 rounded-xl"
+            />
+          </div>
+        ) : (
+          <SearchInput
+            placeholder="Search products... (start typing for suggestions)"
+            value={searchQuery}
+            onSearch={setSearchQuery}
+            className="h-12 rounded-full bg-gray-100 border-0"
+          />
+        )}
+      </div>
+
+      {/* Product Search Results */}
+      {!scanMode && searchQuery && (
+        <div className="p-4 border-b border-gray-100">
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
+                <ProductSearchItem
+                  key={product.id}
+                  product={product}
+                  onAdd={addToCart}
+                  searchQuery={searchQuery}
+                />
+              ))
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-gray-500">No products found for "{searchQuery}"</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Cart */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-4">
+          <div className="flex items-center gap-2 mb-4">
+            <ShoppingCart className="h-5 w-5 text-gray-600" />
+            <h3 className="font-semibold text-gray-900">
+              Cart ({cart.length} {cart.length === 1 ? 'item' : 'items'})
+            </h3>
+          </div>
+
+          {cart.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="p-4 bg-gray-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <ShoppingCart className="h-8 w-8 text-gray-400" />
+              </div>
+              <p className="text-gray-500 mb-2">Your cart is empty</p>
+              <p className="text-sm text-gray-400">Search for products to add them to your cart</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {cart.map((item) => (
+                <CartItemComponent
+                  key={item.id}
+                  item={item}
+                  onUpdateQuantity={updateQuantity}
+                  onUpdateDiscount={updateDiscount}
+                  onRemove={removeFromCart}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Total and Complete Sale */}
+      {cart.length > 0 && (
+        <div className="border-t border-gray-200 bg-white p-4">
+          {/* Overall Discount */}
+          <div className="mb-4">
+            <Label className="text-sm font-medium text-gray-700 mb-2 block">
+              Overall Discount (Optional)
+            </Label>
+            <div className="flex items-center gap-2">
+              <Input
+                type="number"
+                value={overallDiscount}
+                onChange={(e) => setOverallDiscount(Math.max(0, Math.min(100, parseFloat(e.target.value) || 0)))}
+                className="w-20 h-10"
+                min="0"
+                max="100"
+              />
+              <span className="text-sm text-gray-500">% off total</span>
+            </div>
+          </div>
+
+          {/* Price Summary */}
+          <Card className="mb-4">
+            <CardContent className="p-4">
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Subtotal:</span>
+                  <span>${calculations.subtotal.toFixed(2)}</span>
+                </div>
+                {calculations.totalDiscount > 0 && (
+                  <div className="flex justify-between text-sm text-success-600">
+                    <span>Total Discount:</span>
+                    <span>-${calculations.totalDiscount.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between font-bold text-lg border-t pt-2">
+                  <span>Final Total:</span>
+                  <span className="text-primary-600">${calculations.finalTotal.toFixed(2)}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={onCancel}
+              className="flex-1 h-12 rounded-full"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCompleteSale}
+              className="flex-1 h-12 bg-primary-600 hover:bg-primary-700 rounded-full text-lg font-semibold"
+            >
+              Complete Sale
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+});
+
+SalesEntryForm.displayName = "SalesEntryForm";
