@@ -5,7 +5,6 @@ import { Label } from "@/components/ui/label";
 import { SearchInput } from "@/components/ui/search";
 import { 
   Plus, 
-  Minus, 
   ShoppingCart,
   DollarSign,
   X,
@@ -229,11 +228,6 @@ const CartItemComponent = memo<{
     });
   }, [item.id, quantity, calculateTotal, onUpdate]);
 
-  const handleQuantityAdjust = useCallback((change: number) => {
-    const newQty = Math.max(1, (parseInt(quantity) || 1) + change);
-    handleQuantityChange(newQty.toString());
-  }, [quantity, handleQuantityChange]);
-
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-3">
       {/* Item Header - Compact */}
@@ -254,59 +248,41 @@ const CartItemComponent = memo<{
         </Button>
       </div>
       
-      {/* Input Fields - 3 column grid (removed discount) */}
-      <div className="grid grid-cols-3 gap-3">
-        {/* Quantity - Takes 1 column */}
-        <div className="col-span-1">
+      {/* Input Fields - 3 column grid with more space */}
+      <div className="grid grid-cols-3 gap-4">
+        {/* Quantity - Simple input field only */}
+        <div>
           <Label className="text-xs font-medium text-gray-700 mb-1 block">Qty</Label>
-          <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleQuantityAdjust(-1)}
-              className="h-7 w-6 rounded p-0 flex-shrink-0"
-            >
-              <Minus className="h-2 w-2" />
-            </Button>
-            <Input
-              type="number"
-              value={quantity}
-              onChange={(e) => handleQuantityChange(e.target.value)}
-              className="h-7 text-center text-xs font-medium min-w-0"
-              min="1"
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleQuantityAdjust(1)}
-              className="h-7 w-6 rounded p-0 flex-shrink-0"
-            >
-              <Plus className="h-2 w-2" />
-            </Button>
-          </div>
+          <Input
+            type="number"
+            value={quantity}
+            onChange={(e) => handleQuantityChange(e.target.value)}
+            className="h-9 text-center text-sm font-medium"
+            min="1"
+          />
         </div>
 
-        {/* Price Per Unit - Takes 1 column */}
-        <div className="col-span-1">
+        {/* Price Per Unit */}
+        <div>
           <Label className="text-xs font-medium text-gray-700 mb-1 block">Price</Label>
           <div className="relative">
-            <DollarSign className="absolute left-1 top-1/2 h-2 w-2 -translate-y-1/2 text-gray-400" />
+            <DollarSign className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-gray-400" />
             <Input
               type="number"
               value={pricePerUnit}
               onChange={(e) => handlePriceChange(e.target.value)}
-              className="pl-4 h-7 text-xs"
+              className="pl-6 h-9 text-sm"
               min="0"
               step="0.01"
             />
           </div>
         </div>
 
-        {/* Total - Takes 1 column */}
-        <div className="col-span-1">
+        {/* Total */}
+        <div>
           <Label className="text-xs font-medium text-gray-700 mb-1 block">Total</Label>
-          <div className="h-7 px-2 bg-primary-50 border border-primary-200 rounded-lg flex items-center justify-center">
-            <span className="text-xs font-bold text-primary-700">
+          <div className="h-9 px-3 bg-primary-50 border border-primary-200 rounded-lg flex items-center justify-center">
+            <span className="text-sm font-bold text-primary-700">
               ${item.total.toFixed(2)}
             </span>
           </div>
