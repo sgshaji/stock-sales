@@ -57,6 +57,7 @@ const getCategoryColor = (category?: string) => {
     plastic: "bg-blue-500",
     cement: "bg-gray-500",
     accessories: "bg-purple-500",
+    ceramic: "bg-teal-500",
     default: "bg-slate-500"
   };
   return colors[category as keyof typeof colors] || colors.default;
@@ -114,8 +115,7 @@ export const WhatsAppStyleInventoryList = ({
             <div
               key={item.id}
               className={cn(
-                "flex items-center gap-3 p-4 hover:bg-accent/30 active:bg-accent/50 border-b border-border/5 transition-colors",
-                "group cursor-pointer"
+                "flex items-center gap-4 p-4 hover:bg-accent/30 active:bg-accent/50 border-b border-border/5 transition-colors cursor-pointer"
               )}
               onClick={() => onEdit(item)}
             >
@@ -136,14 +136,14 @@ export const WhatsAppStyleInventoryList = ({
                 </div>
               </div>
 
-              {/* Product Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="font-medium text-foreground truncate text-base">
+              {/* Product Info - Main Content */}
+              <div className="flex-1 min-w-0 pr-2">
+                <div className="flex items-start justify-between mb-1">
+                  <h3 className="font-medium text-foreground text-base leading-tight line-clamp-2 pr-2">
                     {item.name}
                   </h3>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className="text-xs text-muted-foreground">
+                  <div className="flex flex-col items-end gap-1 flex-shrink-0 ml-2">
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">
                       {formatTime(item.lastSold)}
                     </span>
                     {item.velocity === 'fast' && (
@@ -153,94 +153,108 @@ export const WhatsAppStyleInventoryList = ({
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-sm text-muted-foreground truncate">
                       {item.sku}
                     </span>
-                    <span className="text-sm font-medium">
-                      Stock: {item.stock}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm font-semibold text-primary">
+                    <span className="text-sm font-medium text-primary">
                       ${item.price.toFixed(2)}
                     </span>
-                    {item.stock <= (item.reorderPoint || 5) && (
-                      <div className="w-2 h-2 rounded-full bg-orange-500" />
-                    )}
+                  </div>
+                  
+                  {/* Stock quantity - prominently displayed on right */}
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-foreground">
+                        {item.stock}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        units
+                      </div>
+                    </div>
+                    
+                    {/* Quick adjust buttons - only show on hover/mobile */}
+                    <div className="hidden group-hover:flex items-center gap-1 ml-2">
+                      <TouchTarget minHeight={32}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onQuickAdjust(item, -1);
+                          }}
+                          className="h-7 w-7 p-0 rounded-full hover:bg-accent/50"
+                        >
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                      </TouchTarget>
+                      
+                      <TouchTarget minHeight={32}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onQuickAdjust(item, 1);
+                          }}
+                          className="h-7 w-7 p-0 rounded-full hover:bg-accent/50"
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </TouchTarget>
+
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <TouchTarget minHeight={32}>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => e.stopPropagation()}
+                              className="h-7 w-7 p-0 rounded-full hover:bg-accent/50"
+                            >
+                              <MoreVertical className="h-3 w-3" />
+                            </Button>
+                          </TouchTarget>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuItem onClick={() => onEdit(item)} className="gap-2">
+                            <Edit className="h-4 w-4" />
+                            Edit Details
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => onQuickAdjust(item, 5)} className="gap-2">
+                            <Plus className="h-4 w-4" />
+                            Quick Restock (+5)
+                          </DropdownMenuItem>
+                          <ConfirmationDialog
+                            title="Delete Item"
+                            description={`Are you sure you want to delete "${item.name}"?`}
+                            confirmText="Delete"
+                            variant="destructive"
+                            onConfirm={() => onDelete(item)}
+                          >
+                            <DropdownMenuItem 
+                              className="text-destructive focus:text-destructive gap-2"
+                              onSelect={(e) => e.preventDefault()}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              Delete Item
+                            </DropdownMenuItem>
+                          </ConfirmationDialog>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Quick Actions (shown on hover/mobile) */}
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <TouchTarget minHeight={32}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onQuickAdjust(item, -1);
-                    }}
-                    className="h-8 w-8 p-0 rounded-full hover:bg-accent/50"
-                  >
-                    <Minus className="h-3 w-3" />
-                  </Button>
-                </TouchTarget>
-                
-                <TouchTarget minHeight={32}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onQuickAdjust(item, 1);
-                    }}
-                    className="h-8 w-8 p-0 rounded-full hover:bg-accent/50"
-                  >
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                </TouchTarget>
-
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <TouchTarget minHeight={32}>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => e.stopPropagation()}
-                        className="h-8 w-8 p-0 rounded-full hover:bg-accent/50"
-                      >
-                        <MoreVertical className="h-3 w-3" />
-                      </Button>
-                    </TouchTarget>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem onClick={() => onEdit(item)} className="gap-2">
-                      <Edit className="h-4 w-4" />
-                      Edit Details
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onQuickAdjust(item, 5)} className="gap-2">
-                      <Plus className="h-4 w-4" />
-                      Quick Restock (+5)
-                    </DropdownMenuItem>
-                    <ConfirmationDialog
-                      title="Delete Item"
-                      description={`Are you sure you want to delete "${item.name}"?`}
-                      confirmText="Delete"
-                      variant="destructive"
-                      onConfirm={() => onDelete(item)}
-                    >
-                      <DropdownMenuItem 
-                        className="text-destructive focus:text-destructive gap-2"
-                        onSelect={(e) => e.preventDefault()}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        Delete Item
-                      </DropdownMenuItem>
-                    </ConfirmationDialog>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                {/* Low stock warning */}
+                {item.stock <= (item.reorderPoint || 5) && (
+                  <div className="mt-2 flex items-center gap-1">
+                    <div className="w-2 h-2 rounded-full bg-orange-500" />
+                    <span className="text-xs text-orange-600 dark:text-orange-400">
+                      Low stock - Reorder at {item.reorderPoint || 5} units
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           );
