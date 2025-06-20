@@ -1,75 +1,67 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { ThemeProvider } from "next-themes";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
-import ProtectedRoute from "@/components/ProtectedRoute";
-import { Suspense, lazy } from "react";
-import { LoadingCard } from "@/components/ui/loading-skeleton";
 
-// Lazy load all route components for better performance
-const Index = lazy(() => import("./pages/Index"));
-const Auth = lazy(() => import("./pages/Auth"));
-const Sales = lazy(() => import("./pages/Sales"));
-const Inventory = lazy(() => import("./pages/Inventory"));
-const Analytics = lazy(() => import("./pages/Analytics"));
-const Settings = lazy(() => import("./pages/Settings"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
+import { ThemeProvider } from "next-themes";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import Index from "@/pages/Index";
+import Auth from "@/pages/Auth";
+import Inventory from "@/pages/Inventory";
+import Sales from "@/pages/Sales";
+import Analytics from "@/pages/Analytics";
+import Settings from "@/pages/Settings";
+import NotFound from "@/pages/NotFound";
+import "./App.css";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
         <AuthProvider>
-          <BrowserRouter>
-            <Suspense fallback={<LoadingCard count={3} />}>
-              <Routes>
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/" element={
-                  <ProtectedRoute>
-                    <Index />
-                  </ProtectedRoute>
-                } />
-                <Route path="/sales" element={
-                  <ProtectedRoute>
-                    <Sales />
-                  </ProtectedRoute>
-                } />
-                <Route path="/inventory" element={
-                  <ProtectedRoute>
-                    <Inventory />
-                  </ProtectedRoute>
-                } />
-                <Route path="/analytics" element={
-                  <ProtectedRoute>
-                    <Analytics />
-                  </ProtectedRoute>
-                } />
-                <Route path="/settings" element={
-                  <ProtectedRoute>
-                    <Settings />
-                  </ProtectedRoute>
-                } />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-          </BrowserRouter>
+          <CurrencyProvider>
+            <Router>
+              <div className="App">
+                <Routes>
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/" element={
+                    <ProtectedRoute>
+                      <Index />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/inventory" element={
+                    <ProtectedRoute>
+                      <Inventory />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/sales" element={
+                    <ProtectedRoute>
+                      <Sales />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/analytics" element={
+                    <ProtectedRoute>
+                      <Analytics />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/settings" element={
+                    <ProtectedRoute>
+                      <Settings />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+                <Toaster />
+              </div>
+            </Router>
+          </CurrencyProvider>
         </AuthProvider>
-      </TooltipProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;

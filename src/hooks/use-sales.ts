@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import type { Database } from '@/integrations/supabase/types';
 
 type Sale = Database['public']['Tables']['sales']['Row'];
@@ -33,6 +34,7 @@ export const useSales = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { formatPrice } = useCurrency();
 
   // Fetch sales from database
   const fetchSales = async () => {
@@ -120,7 +122,7 @@ export const useSales = () => {
 
       toast({
         title: "Success",
-        description: `Sale recorded successfully - $${saleData.finalTotal.toFixed(2)}`,
+        description: `Sale recorded successfully - ${formatPrice(saleData.finalTotal)}`,
       });
 
       return { success: true };

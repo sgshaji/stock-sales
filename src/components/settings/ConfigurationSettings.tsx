@@ -1,19 +1,12 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Settings, Currency, Edit, Check, X, Globe, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-const currencies = [
-  { value: "USD", label: "US Dollar ($)", symbol: "$" },
-  { value: "EUR", label: "Euro (€)", symbol: "€" },
-  { value: "GBP", label: "British Pound (£)", symbol: "£" },
-  { value: "INR", label: "Indian Rupee (₹)", symbol: "₹" },
-  { value: "CAD", label: "Canadian Dollar (C$)", symbol: "C$" },
-  { value: "AUD", label: "Australian Dollar (A$)", symbol: "A$" },
-];
+import { useCurrency, currencies } from "@/contexts/CurrencyContext";
 
 const timezones = [
   { value: "UTC", label: "UTC (Coordinated Universal Time)" },
@@ -29,11 +22,19 @@ const timezones = [
 
 export const ConfigurationSettings = () => {
   const { toast } = useToast();
+  const { selectedCurrency, setCurrency } = useCurrency();
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedCurrency, setSelectedCurrency] = useState("USD");
+  const [tempCurrency, setTempCurrency] = useState(selectedCurrency);
   const [selectedTimezone, setSelectedTimezone] = useState("UTC");
 
+  useEffect(() => {
+    setTempCurrency(selectedCurrency);
+  }, [selectedCurrency]);
+
   const handleSave = () => {
+    // Save currency setting
+    setCurrency(tempCurrency);
+    
     // TODO: Save to Supabase user profile
     toast({
       title: "Success",
@@ -44,7 +45,7 @@ export const ConfigurationSettings = () => {
 
   const handleCancel = () => {
     // Reset changes
-    setSelectedCurrency("USD");
+    setTempCurrency(selectedCurrency);
     setSelectedTimezone("UTC");
     setIsEditing(false);
   };
@@ -60,8 +61,8 @@ export const ConfigurationSettings = () => {
             <Settings className="h-5 w-5 text-warning-600" />
           </div>
           <div>
-            <CardTitle className="text-headline-large">App Configuration</CardTitle>
-            <p className="text-body-small text-muted-foreground mt-1">
+            <CardTitle className="text-xl font-semibold">App Configuration</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">
               Regional settings and app preferences
             </p>
           </div>
@@ -98,12 +99,12 @@ export const ConfigurationSettings = () => {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
-          <Label className="flex items-center gap-2 text-label-large">
+          <Label className="flex items-center gap-2 text-sm font-medium">
             <Currency className="h-4 w-4" />
             Currency
           </Label>
           {isEditing ? (
-            <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
+            <Select value={tempCurrency} onValueChange={setTempCurrency}>
               <SelectTrigger className="h-11">
                 <SelectValue placeholder="Select currency" />
               </SelectTrigger>
@@ -121,16 +122,16 @@ export const ConfigurationSettings = () => {
           ) : (
             <div className="flex items-center gap-2 py-2 px-3 bg-accent/30 rounded-xl">
               <span className="font-medium text-lg">{currentCurrency?.symbol}</span>
-              <span className="text-body-large">{currentCurrency?.label}</span>
+              <span className="text-base">{currentCurrency?.label}</span>
             </div>
           )}
-          <p className="text-label-small text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             This currency will be used throughout the app for pricing and reports
           </p>
         </div>
 
         <div className="space-y-2">
-          <Label className="flex items-center gap-2 text-label-large">
+          <Label className="flex items-center gap-2 text-sm font-medium">
             <Clock className="h-4 w-4" />
             Timezone
           </Label>
@@ -149,10 +150,10 @@ export const ConfigurationSettings = () => {
             </Select>
           ) : (
             <div className="py-2 px-3 bg-accent/30 rounded-xl">
-              <span className="text-body-large">{currentTimezone?.label}</span>
+              <span className="text-base">{currentTimezone?.label}</span>
             </div>
           )}
-          <p className="text-label-small text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             Used for timestamps and scheduling features
           </p>
         </div>
@@ -160,14 +161,14 @@ export const ConfigurationSettings = () => {
         {/* App Information */}
         <div className="pt-4 border-t border-border/20 space-y-4">
           <div className="space-y-2">
-            <Label className="flex items-center gap-2 text-label-large">
+            <Label className="flex items-center gap-2 text-sm font-medium">
               <Globe className="h-4 w-4" />
               App Version
             </Label>
             <div className="py-2 px-3 bg-accent/30 rounded-xl">
-              <span className="text-body-large">StockFlow v1.0.0</span>
+              <span className="text-base">StockFlow v1.0.0</span>
             </div>
-            <p className="text-label-small text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               Current version of the inventory management app
             </p>
           </div>
