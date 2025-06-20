@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, TrendingUp, Package, DollarSign, ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MonthlyProfitTile } from "@/components/dashboard/MonthlyProfitTile";
+import { DailyProfitTile } from "@/components/dashboard/DailyProfitTile";
 import { LowStockTile } from "@/components/dashboard/LowStockTile";
 import { FastMovingTile } from "@/components/dashboard/FastMovingTile";
 
@@ -23,7 +24,8 @@ const Index = () => {
         </div>
 
         {/* Analytics Tiles */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <DailyProfitTile />
           <MonthlyProfitTile />
           <LowStockTile />
           <FastMovingTile />

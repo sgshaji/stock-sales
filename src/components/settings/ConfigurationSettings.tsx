@@ -1,11 +1,15 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Settings, Currency, Edit, Check, X, Globe, Clock } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Settings, Currency, Edit, Check, X, Globe, Clock, Bell, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useCurrency, currencies } from "@/contexts/CurrencyContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const timezones = [
   { value: "UTC", label: "UTC (Coordinated Universal Time)" },
@@ -25,21 +29,71 @@ export const ConfigurationSettings = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempCurrency, setTempCurrency] = useState(selectedCurrency);
   const [selectedTimezone, setSelectedTimezone] = useState("UTC");
+  const [notificationEmail, setNotificationEmail] = useState("");
+  const [reminderTime, setReminderTime] = useState("18:00");
+  const [emailNotificationsEnabled, setEmailNotificationsEnabled] = useState(false);
 
   useEffect(() => {
     setTempCurrency(selectedCurrency);
+    loadUserSettings();
   }, [selectedCurrency]);
 
-  const handleSave = () => {
-    // Save currency setting
-    setCurrency(tempCurrency);
-    
-    // TODO: Save to Supabase user profile
-    toast({
-      title: "Success",
-      description: "Configuration settings updated successfully!",
-    });
-    setIsEditing(false);
+  const loadUserSettings = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (profile) {
+        setSelectedTimezone(profile.timezone || 'UTC');
+        setNotificationEmail(profile.email || '');
+        // These would need to be added to the profiles table
+        // setReminderTime(profile.reminder_time || '18:00');
+        // setEmailNotificationsEnabled(profile.email_notifications_enabled || false);
+      }
+    } catch (error) {
+      console.error('Error loading user settings:', error);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      // Save currency setting
+      setCurrency(tempCurrency);
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      // Update user profile
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          timezone: selectedTimezone,
+          currency: tempCurrency,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Configuration settings updated successfully!",
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save settings. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleCancel = () => {
@@ -153,6 +207,72 @@ export const ConfigurationSettings = () => {
           <p className="text-xs text-muted-foreground">
             Used for timestamps and scheduling features
           </p>
+        </div>
+
+        {/* Email Notifications Section */}
+        <div className="pt-4 border-t border-border/20 space-y-4">
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2 text-sm font-medium">
+              <Bell className="h-4 w-4" />
+              Daily Sales Reminder
+            </Label>
+            <div className="flex items-center space-x-2">
+              <Switch 
+                checked={emailNotificationsEnabled} 
+                onCheckedChange={setEmailNotificationsEnabled}
+                disabled={!isEditing}
+              />
+              <span className="text-sm">Enable email notifications</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Get reminded to enter daily sales if no entries are recorded
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2 text-sm font-medium">
+              <Mail className="h-4 w-4" />
+              Notification Email
+            </Label>
+            {isEditing ? (
+              <Input
+                type="email"
+                value={notificationEmail}
+                onChange={(e) => setNotificationEmail(e.target.value)}
+                placeholder="Enter email address for notifications"
+                className="h-11"
+              />
+            ) : (
+              <div className="py-2 px-3 bg-accent/30 rounded-xl">
+                <span className="text-base">{notificationEmail || 'No email set'}</span>
+              </div>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Email address where reminders will be sent
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2 text-sm font-medium">
+              <Clock className="h-4 w-4" />
+              Reminder Time
+            </Label>
+            {isEditing ? (
+              <Input
+                type="time"
+                value={reminderTime}
+                onChange={(e) => setReminderTime(e.target.value)}
+                className="h-11"
+              />
+            ) : (
+              <div className="py-2 px-3 bg-accent/30 rounded-xl">
+                <span className="text-base">{reminderTime}</span>
+              </div>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Time when reminder emails will be sent if no sales recorded
+            </p>
+          </div>
         </div>
 
         {/* App Information */}
