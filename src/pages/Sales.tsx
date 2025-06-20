@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { BottomTabs } from "@/components/navigation/BottomTabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +9,7 @@ import { useSales } from "@/hooks/use-sales";
 import { useInventory } from "@/hooks/use-inventory";
 import { format } from "date-fns";
 import { SalesDateFilter } from "@/components/sales/SalesDateFilter";
+import { transformInventoryItem } from "@/types/inventory";
 
 const Sales = () => {
   const [showFullForm, setShowFullForm] = useState(false);
@@ -17,7 +17,10 @@ const Sales = () => {
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const { sales, loading, createSale } = useSales();
-  const { items: inventory } = useInventory(); // Use 'items' property and alias it as 'inventory'
+  const { items } = useInventory();
+
+  // Transform inventory items to include the stock property
+  const inventory = items.map(transformInventoryItem);
 
   // Filter sales by selected date
   const filteredSales = sales.filter(sale => 
