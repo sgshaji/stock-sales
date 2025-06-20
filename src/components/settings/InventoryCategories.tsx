@@ -1,10 +1,10 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Package, Plus, X, Edit, Check, Sparkles } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
 export const InventoryCategories = () => {
@@ -64,8 +64,8 @@ export const InventoryCategories = () => {
             <Package className="h-5 w-5 text-success-600" />
           </div>
           <div>
-            <CardTitle className="text-headline-large">Inventory Categories</CardTitle>
-            <p className="text-body-small text-muted-foreground mt-1">
+            <CardTitle className="text-lg font-semibold">Inventory Categories</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">
               Organize your products into categories for better management
             </p>
           </div>
@@ -86,7 +86,7 @@ export const InventoryCategories = () => {
             <Badge
               key={index}
               variant="secondary"
-              className="flex items-center gap-2 px-3 py-2 text-body-small bg-accent/50 hover:bg-accent/70 transition-colors"
+              className="flex items-center gap-2 px-3 py-2 text-sm bg-accent/50 hover:bg-accent/70 transition-colors"
             >
               {category}
               <Button
@@ -137,7 +137,7 @@ export const InventoryCategories = () => {
         {/* Quick Add Suggestions */}
         {suggestedCategories.length > 0 && (
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-label-medium text-muted-foreground">
+            <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
               <Sparkles className="h-3 w-3" />
               <span>Quick Add</span>
             </div>
@@ -168,7 +168,7 @@ export const InventoryCategories = () => {
         {categories.length === 0 && !isAdding && (
           <div className="text-center py-8">
             <Package className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
-            <p className="text-body-medium text-muted-foreground mb-4">
+            <p className="text-base text-muted-foreground mb-4">
               No categories added yet. Start organizing your inventory!
             </p>
             <Button onClick={() => setIsAdding(true)} className="gap-2">
@@ -181,7 +181,7 @@ export const InventoryCategories = () => {
         {/* Category Count */}
         {categories.length > 0 && (
           <div className="pt-4 border-t border-border/20">
-            <p className="text-label-small text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {categories.length} {categories.length === 1 ? 'category' : 'categories'} configured
             </p>
           </div>

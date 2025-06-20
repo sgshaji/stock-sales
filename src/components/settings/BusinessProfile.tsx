@@ -1,10 +1,10 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Store, Phone, Mail, Edit, Check, X } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { getShopName } from "@/lib/config/shop";
@@ -45,7 +45,7 @@ export const BusinessProfile = () => {
           <div className="p-2 rounded-xl bg-primary/10">
             <Store className="h-5 w-5 text-primary" />
           </div>
-          <CardTitle className="text-headline-large">Business Profile</CardTitle>
+          <CardTitle className="text-lg font-semibold">Business Profile</CardTitle>
         </div>
         {!isEditing ? (
           <Button
@@ -79,7 +79,7 @@ export const BusinessProfile = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="businessName" className="flex items-center gap-2 text-label-large">
+          <Label htmlFor="businessName" className="flex items-center gap-2 text-sm font-medium">
             <Store className="h-4 w-4" />
             Shop Name
           </Label>
@@ -92,17 +92,17 @@ export const BusinessProfile = () => {
               placeholder="Enter your shop name"
             />
           ) : (
-            <p className="text-body-large py-2 px-3 bg-accent/30 rounded-xl">
+            <p className="text-base py-2 px-3 bg-accent/30 rounded-xl">
               {formData.businessName}
             </p>
           )}
-          <p className="text-label-small text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             This name appears in the header and throughout the app
           </p>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="phone" className="flex items-center gap-2 text-label-large">
+          <Label htmlFor="phone" className="flex items-center gap-2 text-sm font-medium">
             <Phone className="h-4 w-4" />
             Contact Number
           </Label>
@@ -114,14 +114,14 @@ export const BusinessProfile = () => {
               className="h-11"
             />
           ) : (
-            <p className="text-body-large py-2 px-3 bg-accent/30 rounded-xl">
+            <p className="text-base py-2 px-3 bg-accent/30 rounded-xl">
               {formData.phone}
             </p>
           )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="email" className="flex items-center gap-2 text-label-large">
+          <Label htmlFor="email" className="flex items-center gap-2 text-sm font-medium">
             <Mail className="h-4 w-4" />
             Email Address
           </Label>
@@ -134,7 +134,7 @@ export const BusinessProfile = () => {
               className="h-11"
             />
           ) : (
-            <p className="text-body-large py-2 px-3 bg-accent/30 rounded-xl">
+            <p className="text-base py-2 px-3 bg-accent/30 rounded-xl">
               {formData.email}
             </p>
           )}
@@ -143,14 +143,14 @@ export const BusinessProfile = () => {
         {/* Brand Information */}
         <div className="pt-4 border-t border-border/20">
           <div className="space-y-2">
-            <Label className="flex items-center gap-2 text-label-large">
+            <Label className="flex items-center gap-2 text-sm font-medium">
               <Store className="h-4 w-4" />
               App Brand
             </Label>
-            <p className="text-body-large py-2 px-3 bg-accent/30 rounded-xl">
+            <p className="text-base py-2 px-3 bg-accent/30 rounded-xl">
               StockFlow - Smart Inventory Management
             </p>
-            <p className="text-label-small text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               The app brand name and description (not editable)
             </p>
           </div>
