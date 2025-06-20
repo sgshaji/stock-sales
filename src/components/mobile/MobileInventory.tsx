@@ -1,8 +1,11 @@
+
 import { useState } from "react";
 import { WhatsAppStyleInventoryList } from "@/components/inventory/WhatsAppStyleInventoryList";
+import { InventoryItemForm } from "@/components/inventory/InventoryItemForm";
 import { useInventory } from "@/hooks/use-inventory";
 import { transformInventoryItem } from "@/types/inventory";
 import { MobileBottomSheet } from "./MobileBottomSheet";
+import { FloatingAction } from "@/components/ui/floating-action";
 import { LoadingSpinner } from "@/components/ui/loading-skeleton";
 
 export const MobileInventory = () => {
@@ -33,6 +36,21 @@ export const MobileInventory = () => {
     deleteItem(item.id);
   };
 
+  const handleAddStock = () => {
+    console.log("Add stock button clicked");
+    setShowAddItem(true);
+  };
+
+  const handleCloseAddForm = () => {
+    console.log("Closing add form");
+    setShowAddItem(false);
+  };
+
+  const handleAddSuccess = () => {
+    console.log("Add success - closing form");
+    setShowAddItem(false);
+  };
+
   if (isLoading) {
     return (
       <div className="h-full flex items-center justify-center">
@@ -53,7 +71,7 @@ export const MobileInventory = () => {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col relative">
       <WhatsAppStyleInventoryList
         items={filteredItems}
         onEdit={handleEdit}
@@ -63,15 +81,20 @@ export const MobileInventory = () => {
         onSearch={setLocalSearch}
       />
 
+      {/* Floating Action Button for Adding Stock */}
+      <FloatingAction variant="stock" onClick={handleAddStock} />
+
       {/* Add Item Bottom Sheet */}
       <MobileBottomSheet
         isOpen={showAddItem}
-        onClose={() => setShowAddItem(false)}
+        onClose={handleCloseAddForm}
         title="Add New Item"
+        className="h-[90vh]"
       >
-        <div className="p-4">
-          <p className="text-gray-600">Add item form will go here...</p>
-        </div>
+        <InventoryItemForm
+          onClose={handleCloseAddForm}
+          onSuccess={handleAddSuccess}
+        />
       </MobileBottomSheet>
     </div>
   );
