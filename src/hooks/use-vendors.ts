@@ -48,7 +48,13 @@ export const useVendors = () => {
         throw fetchError;
       }
 
-      setVendors(data || []);
+      // Type assertion to ensure status field matches our interface
+      const typedVendors: Vendor[] = (data || []).map(vendor => ({
+        ...vendor,
+        status: vendor.status as 'active' | 'pending' | 'inactive'
+      }));
+
+      setVendors(typedVendors);
     } catch (err) {
       console.error('Error fetching vendors:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch vendors');
@@ -64,21 +70,33 @@ export const useVendors = () => {
 
   const addVendor = async (vendorData: Omit<Vendor, 'id' | 'created_at' | 'updated_at'>) => {
     try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
       const { data, error } = await supabase
         .from('vendors')
-        .insert([vendorData])
+        .insert([{ ...vendorData, user_id: user.id }])
         .select()
         .single();
 
       if (error) throw error;
 
-      setVendors(prev => [data, ...prev]);
+      // Type assertion for the returned data
+      const typedVendor: Vendor = {
+        ...data,
+        status: data.status as 'active' | 'pending' | 'inactive'
+      };
+
+      setVendors(prev => [typedVendor, ...prev]);
       toast({
         title: "Success",
         description: "Vendor added successfully",
       });
       
-      return data;
+      return typedVendor;
     } catch (err) {
       console.error('Error adding vendor:', err);
       toast({
@@ -101,8 +119,14 @@ export const useVendors = () => {
 
       if (error) throw error;
 
+      // Type assertion for the returned data
+      const typedVendor: Vendor = {
+        ...data,
+        status: data.status as 'active' | 'pending' | 'inactive'
+      };
+
       setVendors(prev => 
-        prev.map(vendor => vendor.id === id ? data : vendor)
+        prev.map(vendor => vendor.id === id ? typedVendor : vendor)
       );
       
       toast({
@@ -110,7 +134,7 @@ export const useVendors = () => {
         description: "Vendor updated successfully",
       });
       
-      return data;
+      return typedVendor;
     } catch (err) {
       console.error('Error updating vendor:', err);
       toast({

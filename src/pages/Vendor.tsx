@@ -1,11 +1,10 @@
-
 import { useState } from "react";
 import { BottomTabs } from "@/components/navigation/BottomTabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/search";
 import { Plus, Phone, MapPin, Package, Edit, Trash2, Building2 } from "lucide-react";
-import { useVendors, Vendor } from "@/hooks/use-vendors";
+import { useVendors, type Vendor } from "@/hooks/use-vendors";
 import { VendorForm } from "@/components/vendors/VendorForm";
 
 const Vendor = () => {
