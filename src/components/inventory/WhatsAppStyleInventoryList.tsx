@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -81,10 +82,9 @@ export const WhatsAppStyleInventoryList = ({
   const isMobile = useIsMobile();
 
   const handleItemClick = (item: InventoryItem) => {
+    console.log("Item clicked:", item.name);
     if (onItemClick) {
       onItemClick(item);
-    } else {
-      onEdit(item);
     }
   };
 
@@ -238,11 +238,23 @@ export const WhatsAppStyleInventoryList = ({
                           </TouchTarget>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
-                          <DropdownMenuItem onClick={() => onEdit(item)} className="gap-2">
+                          <DropdownMenuItem 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEdit(item);
+                            }} 
+                            className="gap-2"
+                          >
                             <Edit className="h-4 w-4" />
                             Edit Details
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => onQuickAdjust(item, 5)} className="gap-2">
+                          <DropdownMenuItem 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onQuickAdjust(item, 5);
+                            }} 
+                            className="gap-2"
+                          >
                             <ChevronUp className="h-4 w-4" />
                             Quick Restock (+5)
                           </DropdownMenuItem>
@@ -256,6 +268,7 @@ export const WhatsAppStyleInventoryList = ({
                             <DropdownMenuItem 
                               className="text-destructive focus:text-destructive gap-2"
                               onSelect={(e) => e.preventDefault()}
+                              onClick={(e) => e.stopPropagation()}
                             >
                               <Trash2 className="h-4 w-4" />
                               Delete Item

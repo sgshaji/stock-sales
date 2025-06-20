@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { WhatsAppStyleInventoryList } from "./WhatsAppStyleInventoryList";
 import { InventoryItemForm } from "./InventoryItemForm";
@@ -58,8 +59,11 @@ export const InventoryManagement = ({
 
   const handleEdit = (item: any) => {
     console.log("Edit item:", item.name);
-    setEditingItem(item);
-    setSelectedItem(null);
+    const dbItem = dbItems.find(dbItem => dbItem.id === item.id);
+    if (dbItem) {
+      setEditingItem(dbItem);
+      setSelectedItem(null);
+    }
   };
 
   const handleDelete = (item: any) => {
@@ -68,8 +72,11 @@ export const InventoryManagement = ({
   };
 
   const handleItemClick = (item: any) => {
-    console.log("Item clicked:", item.name);
-    setSelectedItem(item);
+    console.log("Item clicked for detail view:", item.name);
+    const dbItem = dbItems.find(dbItem => dbItem.id === item.id);
+    if (dbItem) {
+      setSelectedItem(dbItem);
+    }
   };
 
   const handleEditSuccess = () => {
@@ -138,7 +145,7 @@ export const InventoryManagement = ({
       <MobileBottomSheet
         isOpen={showAddForm}
         onClose={onCloseAddForm || (() => {})}
-        title="Add New Item"
+        showHeader={false}
         className="h-[90vh]"
       >
         <InventoryItemForm
@@ -154,7 +161,7 @@ export const InventoryManagement = ({
       <MobileBottomSheet
         isOpen={!!editingItem}
         onClose={() => setEditingItem(null)}
-        title="Edit Item"
+        showHeader={false}
         className="h-[90vh]"
       >
         <InventoryItemForm
