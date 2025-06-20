@@ -14,9 +14,10 @@ import { SalesDateFilter } from "@/components/sales/SalesDateFilter";
 const Sales = () => {
   const [showFullForm, setShowFullForm] = useState(false);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
+  const [showDateFilter, setShowDateFilter] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const { sales, loading, createSale } = useSales();
-  const { inventory } = useInventory();
+  const { items: inventory } = useInventory(); // Use 'items' property and alias it as 'inventory'
 
   // Filter sales by selected date
   const filteredSales = sales.filter(sale => 
@@ -34,6 +35,7 @@ const Sales = () => {
 
   const handleDateChange = (dateString: string) => {
     setSelectedDate(new Date(dateString));
+    setShowDateFilter(false); // Close the date filter after selection
   };
 
   if (showFullForm) {
@@ -71,10 +73,26 @@ const Sales = () => {
 
         {/* Date Filter */}
         <div className="mb-6">
-          <SalesDateFilter 
-            selectedDate={format(selectedDate, 'yyyy-MM-dd')} 
-            onDateChange={handleDateChange} 
-          />
+          <Button 
+            variant="outline" 
+            onClick={() => setShowDateFilter(true)}
+            className="gap-2"
+          >
+            <Calendar className="h-4 w-4" />
+            {format(selectedDate, 'MMM d, yyyy')}
+          </Button>
+          
+          {showDateFilter && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+              <div className="bg-white rounded-lg max-w-sm w-full">
+                <SalesDateFilter 
+                  selectedDate={format(selectedDate, 'yyyy-MM-dd')} 
+                  onDateChange={handleDateChange} 
+                  onClose={() => setShowDateFilter(false)}
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Daily Summary */}
