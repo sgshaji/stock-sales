@@ -12,16 +12,10 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-
-interface InventoryItem {
-  id: number;
-  name: string;
-  price: number;
-  stock: number;
-}
+import type { InventoryItem } from "@/types/inventory";
 
 interface CartItem {
-  id: number;
+  id: string; // Changed from number to string to match database
   name: string;
   quantity: number;
   pricePerUnit: number;
@@ -193,8 +187,8 @@ ProductSearchItem.displayName = "ProductSearchItem";
 
 const CartItemComponent = memo<{
   item: CartItem;
-  onUpdate: (id: number, updates: Partial<CartItem>) => void;
-  onRemove: (id: number) => void;
+  onUpdate: (id: string, updates: Partial<CartItem>) => void;
+  onRemove: (id: string) => void;
 }>(({ item, onUpdate, onRemove }) => {
   const [quantity, setQuantity] = useState(item.quantity.toString());
   const [pricePerUnit, setPricePerUnit] = useState(item.pricePerUnit.toString());
@@ -335,13 +329,13 @@ export const SalesEntryForm = memo<SalesEntryFormProps>(({ inventory, onComplete
     setSearchQuery("");
   }, []);
 
-  const updateCartItem = useCallback((id: number, updates: Partial<CartItem>) => {
+  const updateCartItem = useCallback((id: string, updates: Partial<CartItem>) => {
     setCart(prev => prev.map(item =>
       item.id === id ? { ...item, ...updates } : item
     ));
   }, []);
 
-  const removeFromCart = useCallback((id: number) => {
+  const removeFromCart = useCallback((id: string) => {
     setCart(prev => prev.filter(item => item.id !== id));
   }, []);
 
