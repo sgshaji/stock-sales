@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { BottomTabs } from "@/components/navigation/BottomTabs";
 import InventoryManagement from "@/components/inventory/InventoryManagement";
 import { FloatingAction } from "@/components/ui/floating-action";
@@ -10,12 +11,14 @@ import { Plus } from "lucide-react";
 const Inventory = () => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const [showAddForm, setShowAddForm] = useState(false);
 
   const handleAddStock = () => {
-    toast({
-      title: "Add Stock",
-      description: "Opening stock addition form...",
-    });
+    setShowAddForm(true);
+  };
+
+  const handleCloseAddForm = () => {
+    setShowAddForm(false);
   };
 
   return (
@@ -36,7 +39,10 @@ const Inventory = () => {
             </Button>
           )}
         </div>
-        <InventoryManagement />
+        <InventoryManagement 
+          showAddForm={showAddForm}
+          onCloseAddForm={handleCloseAddForm}
+        />
       </div>
       {isMobile && <FloatingAction variant="stock" onClick={handleAddStock} />}
       <BottomTabs />

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -289,17 +288,6 @@ export const WhatsAppStyleInventoryList = ({
             </div>
           );
         })}
-      </div>
-
-      {/* Floating Action Button - MATCHING SALES DESIGN */}
-      <div className="fixed bottom-20 right-4 z-20">
-        <Button
-          size="lg"
-          className="h-14 w-14 rounded-full shadow-lg bg-green-500 hover:bg-green-600 text-white"
-          title="Add new item"
-        >
-          <Package className="h-6 w-6" />
-        </Button>
       </div>
     </div>
   );

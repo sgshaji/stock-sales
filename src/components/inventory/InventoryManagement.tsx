@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { WhatsAppStyleInventoryList } from "./WhatsAppStyleInventoryList";
+import { InventoryItemForm } from "./InventoryItemForm";
 import { useInventory } from "@/hooks/use-inventory";
 import { transformInventoryItem } from "@/types/inventory";
 import { MobileBottomSheet } from "@/components/mobile/MobileBottomSheet";
@@ -21,12 +22,19 @@ import type { Tables } from "@/integrations/supabase/types";
 
 interface InventoryManagementProps {
   searchQuery?: string;
+  showAddForm?: boolean;
+  onCloseAddForm?: () => void;
 }
 
-export const InventoryManagement = ({ searchQuery }: InventoryManagementProps) => {
+export const InventoryManagement = ({ 
+  searchQuery, 
+  showAddForm = false, 
+  onCloseAddForm 
+}: InventoryManagementProps) => {
   const { items: dbItems, isLoading, error, updateItem, deleteItem, adjustStock } = useInventory();
   const [localSearch, setLocalSearch] = useState("");
   const [selectedItem, setSelectedItem] = useState<Tables<"inventory_items"> | null>(null);
+  const [editingItem, setEditingItem] = useState<Tables<"inventory_items"> | null>(null);
 
   // Transform database items to component format
   const items = dbItems.map(transformInventoryItem);
@@ -44,8 +52,8 @@ export const InventoryManagement = ({ searchQuery }: InventoryManagementProps) =
   };
 
   const handleEdit = (item: any) => {
-    console.log("Edit item:", item);
-    // TODO: Implement edit form
+    setEditingItem(item);
+    setSelectedItem(null);
   };
 
   const handleDelete = (item: any) => {
@@ -112,6 +120,37 @@ export const InventoryManagement = ({ searchQuery }: InventoryManagementProps) =
         searchQuery={effectiveSearch}
         onSearch={!searchQuery ? setLocalSearch : undefined}
       />
+
+      {/* Add Item Form Bottom Sheet */}
+      <MobileBottomSheet
+        isOpen={showAddForm}
+        onClose={onCloseAddForm || (() => {})}
+        title="Add New Item"
+        className="h-[90vh]"
+      >
+        <InventoryItemForm
+          onClose={onCloseAddForm || (() => {})}
+          onSuccess={() => {
+            console.log("Item added successfully");
+          }}
+        />
+      </MobileBottomSheet>
+
+      {/* Edit Item Form Bottom Sheet */}
+      <MobileBottomSheet
+        isOpen={!!editingItem}
+        onClose={() => setEditingItem(null)}
+        title="Edit Item"
+        className="h-[90vh]"
+      >
+        <InventoryItemForm
+          item={editingItem}
+          onClose={() => setEditingItem(null)}
+          onSuccess={() => {
+            console.log("Item updated successfully");
+          }}
+        />
+      </MobileBottomSheet>
 
       {/* Item Details Bottom Sheet */}
       <MobileBottomSheet
@@ -242,8 +281,8 @@ export const InventoryManagement = ({ searchQuery }: InventoryManagementProps) =
                     <p className="text-sm text-muted-foreground">Sales Velocity</p>
                     <Badge 
                       variant={
-                        selectedItem.velocity === 'fast' ? 'success' : 
-                        selectedItem.velocity === 'medium' ? 'warning' : 'secondary'
+                        selectedItem.velocity === 'fast' ? 'default' : 
+                        selectedItem.velocity === 'medium' ? 'secondary' : 'outline'
                       }
                       className="capitalize"
                     >
