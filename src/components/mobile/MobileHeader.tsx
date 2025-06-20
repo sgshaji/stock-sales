@@ -1,10 +1,10 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bell, Search, Menu, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getShopName, getUserInitials } from "@/lib/config/shop";
-import { MobileDrawer } from "./MobileDrawer";
 
 interface MobileHeaderProps {
   activeTab: string;
@@ -13,7 +13,6 @@ interface MobileHeaderProps {
 
 export const MobileHeader = ({ activeTab, onTabChange }: MobileHeaderProps) => {
   const { user } = useAuth();
-  const [showDrawer, setShowDrawer] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   
   const shopName = getShopName(user);
@@ -50,18 +49,12 @@ export const MobileHeader = ({ activeTab, onTabChange }: MobileHeaderProps) => {
             <div className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full"></div>
           </Button>
 
-          <Button
-            variant="ghost"
-            onClick={() => setShowDrawer(true)}
-            className="h-10 w-10 p-0 rounded-full"
-          >
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={user?.user_metadata?.avatar_url} />
-              <AvatarFallback className="bg-primary-100 text-primary-700 text-sm font-semibold">
-                {userInitials}
-              </AvatarFallback>
-            </Avatar>
-          </Button>
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={user?.user_metadata?.avatar_url} />
+            <AvatarFallback className="bg-primary-100 text-primary-700 text-sm font-semibold">
+              {userInitials}
+            </AvatarFallback>
+          </Avatar>
         </div>
       </header>
 
@@ -79,14 +72,6 @@ export const MobileHeader = ({ activeTab, onTabChange }: MobileHeaderProps) => {
           </div>
         </div>
       )}
-
-      {/* Mobile Drawer */}
-      <MobileDrawer 
-        isOpen={showDrawer} 
-        onClose={() => setShowDrawer(false)}
-        activeTab={activeTab}
-        onTabChange={onTabChange}
-      />
     </>
   );
 };
