@@ -67,11 +67,14 @@ export type Database = {
           created_at: string
           currency: string | null
           email: string
+          email_notifications_enabled: boolean | null
           full_name: string | null
           id: string
           locale: string | null
+          notification_email: string | null
           onboarding_completed: boolean | null
           phone: string | null
+          reminder_time: string | null
           timezone: string | null
           updated_at: string
         }
@@ -81,11 +84,14 @@ export type Database = {
           created_at?: string
           currency?: string | null
           email: string
+          email_notifications_enabled?: boolean | null
           full_name?: string | null
           id: string
           locale?: string | null
+          notification_email?: string | null
           onboarding_completed?: boolean | null
           phone?: string | null
+          reminder_time?: string | null
           timezone?: string | null
           updated_at?: string
         }
@@ -95,11 +101,14 @@ export type Database = {
           created_at?: string
           currency?: string | null
           email?: string
+          email_notifications_enabled?: boolean | null
           full_name?: string | null
           id?: string
           locale?: string | null
+          notification_email?: string | null
           onboarding_completed?: boolean | null
           phone?: string | null
+          reminder_time?: string | null
           timezone?: string | null
           updated_at?: string
         }

@@ -10,6 +10,7 @@ import { useInventory } from "@/hooks/use-inventory";
 import { format } from "date-fns";
 import { SalesDateFilter } from "@/components/sales/SalesDateFilter";
 import { transformInventoryItem } from "@/types/inventory";
+import { Header } from "@/components/navigation/Header";
 
 const Sales = () => {
   const [showFullForm, setShowFullForm] = useState(false);
@@ -58,6 +59,7 @@ const Sales = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-brand-50/30 to-brand-100/40 dark:from-background dark:via-brand-950/30 dark:to-brand-900/40">
+      <Header />
       <div className="container mx-auto px-4 py-6 pb-20 md:pb-6 max-w-4xl">
         <div className="mb-6 flex items-center justify-between">
           <div>

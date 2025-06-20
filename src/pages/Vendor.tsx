@@ -6,6 +6,7 @@ import { SearchInput } from "@/components/ui/search";
 import { Plus, Phone, MapPin, Package, Edit, Trash2, Building2 } from "lucide-react";
 import { useVendors, type Vendor } from "@/hooks/use-vendors";
 import { VendorForm } from "@/components/vendors/VendorForm";
+import { Header } from "@/components/navigation/Header";
 
 const Vendor = () => {
   const { vendors, loading, addVendor, updateVendor, deleteVendor } = useVendors();
@@ -74,6 +75,7 @@ const Vendor = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-brand-50/30 to-brand-100/40 dark:from-background dark:via-brand-950/30 dark:to-brand-900/40">
+      <Header />
       <div className="container mx-auto px-4 py-6 pb-20 md:pb-6 max-w-4xl">
         <div className="mb-6 flex items-center justify-between">
           <div>
