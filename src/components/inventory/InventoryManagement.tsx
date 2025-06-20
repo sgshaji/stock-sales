@@ -24,12 +24,14 @@ interface InventoryManagementProps {
   searchQuery?: string;
   showAddForm?: boolean;
   onCloseAddForm?: () => void;
+  onAddSuccess?: () => void;
 }
 
 export const InventoryManagement = ({ 
   searchQuery, 
   showAddForm = false, 
-  onCloseAddForm 
+  onCloseAddForm,
+  onAddSuccess
 }: InventoryManagementProps) => {
   const { items: dbItems, isLoading, error, updateItem, deleteItem, adjustStock } = useInventory();
   const [localSearch, setLocalSearch] = useState("");
@@ -62,6 +64,10 @@ export const InventoryManagement = ({
 
   const handleItemClick = (item: any) => {
     setSelectedItem(item);
+  };
+
+  const handleEditSuccess = () => {
+    setEditingItem(null);
   };
 
   const calculateMargin = (sellingPrice: number, purchasePrice: number) => {
@@ -132,6 +138,7 @@ export const InventoryManagement = ({
           onClose={onCloseAddForm || (() => {})}
           onSuccess={() => {
             console.log("Item added successfully");
+            onAddSuccess?.();
           }}
         />
       </MobileBottomSheet>
@@ -148,6 +155,7 @@ export const InventoryManagement = ({
           onClose={() => setEditingItem(null)}
           onSuccess={() => {
             console.log("Item updated successfully");
+            handleEditSuccess();
           }}
         />
       </MobileBottomSheet>

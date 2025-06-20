@@ -96,21 +96,24 @@ export const InventoryItemForm = ({ item, onClose, onSuccess }: InventoryItemFor
       velocity: formData.velocity || null
     };
 
-    try {
-      if (isEditing && item) {
-        updateItem({ 
-          id: item.id, 
-          updates: itemData 
-        });
-      } else {
-        addItem(itemData);
-      }
-      
-      onSuccess?.();
-      onClose();
-    } catch (error) {
-      console.error("Error saving item:", error);
+    if (isEditing && item) {
+      updateItem({ 
+        id: item.id, 
+        updates: itemData 
+      });
+      toast({
+        title: "Item Updated",
+        description: `${itemData.name} has been updated successfully.`,
+      });
+    } else {
+      addItem(itemData);
+      toast({
+        title: "Item Added",
+        description: `${itemData.name} has been added to inventory.`,
+      });
     }
+    
+    onSuccess?.();
   };
 
   const handleInputChange = (field: string, value: string) => {
