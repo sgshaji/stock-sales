@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -51,10 +50,9 @@ export const ConfigurationSettings = () => {
 
       if (profile) {
         setSelectedTimezone(profile.timezone || 'UTC');
-        setNotificationEmail(profile.email || '');
-        // These would need to be added to the profiles table
-        // setReminderTime(profile.reminder_time || '18:00');
-        // setEmailNotificationsEnabled(profile.email_notifications_enabled || false);
+        setNotificationEmail(profile.notification_email || profile.email || '');
+        setReminderTime(profile.reminder_time || '18:00');
+        setEmailNotificationsEnabled(profile.email_notifications_enabled || false);
       }
     } catch (error) {
       console.error('Error loading user settings:', error);
@@ -63,6 +61,16 @@ export const ConfigurationSettings = () => {
 
   const handleSave = async () => {
     try {
+      // Validate email if notifications are enabled
+      if (emailNotificationsEnabled && !notificationEmail) {
+        toast({
+          title: "Error",
+          description: "Please enter a notification email address.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       // Save currency setting
       setCurrency(tempCurrency);
       
@@ -75,6 +83,9 @@ export const ConfigurationSettings = () => {
         .update({
           timezone: selectedTimezone,
           currency: tempCurrency,
+          notification_email: notificationEmail || null,
+          reminder_time: reminderTime,
+          email_notifications_enabled: emailNotificationsEnabled,
           updated_at: new Date().toISOString()
         })
         .eq('id', user.id);
@@ -97,9 +108,9 @@ export const ConfigurationSettings = () => {
   };
 
   const handleCancel = () => {
-    // Reset changes
+    // Reset changes to original values
     setTempCurrency(selectedCurrency);
-    setSelectedTimezone("UTC");
+    loadUserSettings(); // Reload original settings
     setIsEditing(false);
   };
 
@@ -241,6 +252,7 @@ export const ConfigurationSettings = () => {
                 onChange={(e) => setNotificationEmail(e.target.value)}
                 placeholder="Enter email address for notifications"
                 className="h-11"
+                disabled={!emailNotificationsEnabled}
               />
             ) : (
               <div className="py-2 px-3 bg-accent/30 rounded-xl">
@@ -263,6 +275,7 @@ export const ConfigurationSettings = () => {
                 value={reminderTime}
                 onChange={(e) => setReminderTime(e.target.value)}
                 className="h-11"
+                disabled={!emailNotificationsEnabled}
               />
             ) : (
               <div className="py-2 px-3 bg-accent/30 rounded-xl">

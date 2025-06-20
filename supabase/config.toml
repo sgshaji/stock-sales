@@ -1,1 +1,8 @@
+
 project_id = "upezjtqmtvhlsmmshbxx"
+
+[functions.check-daily-sales-notifications]
+verify_jwt = false
+
+[functions.send-test-notification]
+verify_jwt = false
