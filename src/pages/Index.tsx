@@ -1,11 +1,14 @@
 
 import { BottomTabs } from "@/components/navigation/BottomTabs";
+import { MobileHeader } from "@/components/mobile/MobileHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, DollarSign, Package, ShoppingCart } from "lucide-react";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary-50/30 to-primary-100/40 dark:from-background dark:via-primary-950/30 dark:to-primary-900/40">
+      <MobileHeader activeTab="dashboard" onTabChange={() => {}} />
+      
       <div className="container mx-auto px-4 py-6 pb-20 md:pb-6 max-w-4xl">
         <div className="mb-6">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent dark:from-primary-400 dark:to-primary-500">
