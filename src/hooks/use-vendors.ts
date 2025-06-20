@@ -13,6 +13,7 @@ export interface Vendor {
   website?: string;
   notes?: string;
   status: 'active' | 'pending' | 'inactive';
+  list_products: boolean;
   created_at: string;
   updated_at: string;
 }

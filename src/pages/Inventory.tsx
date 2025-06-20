@@ -1,59 +1,21 @@
 
-import { useState } from "react";
 import { BottomTabs } from "@/components/navigation/BottomTabs";
-import InventoryManagement from "@/components/inventory/InventoryManagement";
-import { FloatingAction } from "@/components/ui/floating-action";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { InventoryManagement } from "@/components/inventory/InventoryManagement";
 
 const Inventory = () => {
-  const isMobile = useIsMobile();
-  const [showAddForm, setShowAddForm] = useState(false);
-
-  const handleAddStock = () => {
-    console.log("Add stock button clicked");
-    setShowAddForm(true);
-  };
-
-  const handleCloseAddForm = () => {
-    console.log("Closing add form");
-    setShowAddForm(false);
-  };
-
-  const handleAddSuccess = () => {
-    console.log("Add success - closing form");
-    setShowAddForm(false);
-  };
-
-  console.log("Inventory page - showAddForm:", showAddForm);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-brand-50/30 to-brand-100/40 dark:from-background dark:via-brand-950/30 dark:to-brand-900/40">
-      <div className="container-content mx-auto px-space-4 py-space-6 pb-20 md:pb-6">
-        <div className="mb-space-6 flex justify-between items-center">
-          <div>
-            <h1 className="text-display-medium bg-gradient-to-r from-brand-600 to-brand-700 bg-clip-text text-transparent dark:from-brand-400 dark:to-brand-500">
-              Inventory Management
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              Track and manage your stock levels
-            </p>
-          </div>
-          {!isMobile && (
-            <Button onClick={handleAddStock} size="default" className="gap-2">
-              <Plus className="h-4 w-4" />
-              Add Item
-            </Button>
-          )}
+      <div className="container mx-auto px-4 py-6 pb-20 md:pb-6 max-w-4xl">
+        <div className="mb-6">
+          <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-brand-600 to-brand-700 bg-clip-text text-transparent dark:from-brand-400 dark:to-brand-500">
+            Inventory
+          </h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Manage your products and track stock levels
+          </p>
         </div>
-        <InventoryManagement 
-          showAddForm={showAddForm}
-          onCloseAddForm={handleCloseAddForm}
-          onAddSuccess={handleAddSuccess}
-        />
+        <InventoryManagement />
       </div>
-      {isMobile && <FloatingAction variant="stock" onClick={handleAddStock} />}
       <BottomTabs />
     </div>
   );

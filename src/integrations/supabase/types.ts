@@ -227,6 +227,7 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
+          list_products: boolean
           name: string
           notes: string | null
           phone: string | null
@@ -241,6 +242,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          list_products?: boolean
           name: string
           notes?: string | null
           phone?: string | null
@@ -255,6 +257,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          list_products?: boolean
           name?: string
           notes?: string | null
           phone?: string | null

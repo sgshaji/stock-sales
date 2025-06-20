@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { X, Save } from 'lucide-react';
 import { Vendor } from '@/hooks/use-vendors';
 
@@ -20,6 +21,7 @@ const vendorSchema = z.object({
   website: z.string().url('Invalid URL').optional().or(z.literal('')),
   notes: z.string().optional(),
   status: z.enum(['active', 'pending', 'inactive']),
+  list_products: z.boolean(),
 });
 
 type VendorFormData = z.infer<typeof vendorSchema>;
@@ -51,10 +53,12 @@ export const VendorForm = ({ vendor, onSubmit, onCancel, isLoading }: VendorForm
       website: vendor?.website || '',
       notes: vendor?.notes || '',
       status: vendor?.status || 'active',
+      list_products: vendor?.list_products ?? true,
     },
   });
 
   const status = watch('status');
+  const listProducts = watch('list_products');
 
   const handleFormSubmit = async (data: VendorFormData) => {
     try {
@@ -68,7 +72,9 @@ export const VendorForm = ({ vendor, onSubmit, onCancel, isLoading }: VendorForm
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-        <CardTitle>{vendor ? 'Edit Vendor' : 'Add New Vendor'}</CardTitle>
+        <CardTitle className="text-lg font-bold bg-gradient-to-r from-brand-600 to-brand-700 bg-clip-text text-transparent dark:from-brand-400 dark:to-brand-500">
+          {vendor ? 'Edit Vendor' : 'Add New Vendor'}
+        </CardTitle>
         <Button variant="ghost" size="icon" onClick={onCancel}>
           <X className="h-4 w-4" />
         </Button>
@@ -163,6 +169,17 @@ export const VendorForm = ({ vendor, onSubmit, onCancel, isLoading }: VendorForm
               className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               placeholder="Enter any additional notes..."
             />
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="list_products"
+              checked={listProducts}
+              onCheckedChange={(checked) => setValue('list_products', checked)}
+            />
+            <Label htmlFor="list_products" className="text-sm font-medium">
+              List products from this vendor
+            </Label>
           </div>
 
           <div className="flex gap-2 justify-end pt-4">
