@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { WhatsAppStyleInventoryList } from "./WhatsAppStyleInventoryList";
 import { InventoryItemForm } from "./InventoryItemForm";
@@ -38,6 +37,9 @@ export const InventoryManagement = ({
   const [selectedItem, setSelectedItem] = useState<Tables<"inventory_items"> | null>(null);
   const [editingItem, setEditingItem] = useState<Tables<"inventory_items"> | null>(null);
 
+  console.log("InventoryManagement - showAddForm:", showAddForm);
+  console.log("InventoryManagement - dbItems count:", dbItems.length);
+
   // Transform database items to component format
   const items = dbItems.map(transformInventoryItem);
 
@@ -50,23 +52,28 @@ export const InventoryManagement = ({
     : items;
 
   const handleQuickAdjust = (item: any, adjustment: number) => {
+    console.log("Quick adjust:", item.name, adjustment);
     adjustStock({ id: item.id, adjustment });
   };
 
   const handleEdit = (item: any) => {
+    console.log("Edit item:", item.name);
     setEditingItem(item);
     setSelectedItem(null);
   };
 
   const handleDelete = (item: any) => {
+    console.log("Delete item:", item.name);
     deleteItem(item.id);
   };
 
   const handleItemClick = (item: any) => {
+    console.log("Item clicked:", item.name);
     setSelectedItem(item);
   };
 
   const handleEditSuccess = () => {
+    console.log("Edit success");
     setEditingItem(null);
   };
 

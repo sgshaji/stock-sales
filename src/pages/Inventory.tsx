@@ -12,16 +12,21 @@ const Inventory = () => {
   const [showAddForm, setShowAddForm] = useState(false);
 
   const handleAddStock = () => {
+    console.log("Add stock button clicked");
     setShowAddForm(true);
   };
 
   const handleCloseAddForm = () => {
+    console.log("Closing add form");
     setShowAddForm(false);
   };
 
   const handleAddSuccess = () => {
+    console.log("Add success - closing form");
     setShowAddForm(false);
   };
+
+  console.log("Inventory page - showAddForm:", showAddForm);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-brand-50/30 to-brand-100/40 dark:from-background dark:via-brand-950/30 dark:to-brand-900/40">
@@ -36,8 +41,9 @@ const Inventory = () => {
             </p>
           </div>
           {!isMobile && (
-            <Button onClick={handleAddStock} size="icon" title="Add stock">
+            <Button onClick={handleAddStock} size="default" className="gap-2">
               <Plus className="h-4 w-4" />
+              Add Item
             </Button>
           )}
         </div>
