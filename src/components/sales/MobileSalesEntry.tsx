@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo, memo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,6 +29,7 @@ import { SalesDateFilter } from "./SalesDateFilter";
 import { cn } from "@/lib/utils";
 import { useSales, type SaleWithItems } from "@/hooks/use-sales";
 import { useInventory } from "@/hooks/use-inventory";
+import { transformInventoryItem } from "@/types/inventory";
 
 interface MobileSalesEntryProps {
   searchQuery?: string;
@@ -145,7 +145,13 @@ export const MobileSalesEntry = memo<MobileSalesEntryProps>(({ searchQuery }) =>
 
   // Use real data from database
   const { sales, loading, createSale, getSalesByDate, getSalesStats } = useSales();
-  const { items: inventory } = useInventory();
+  const { items: dbInventory } = useInventory();
+
+  // Transform database inventory items to component format
+  const inventory = useMemo(() => 
+    dbInventory.map(transformInventoryItem), 
+    [dbInventory]
+  );
 
   const effectiveSearch = searchQuery || localSearch;
 
