@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ImageUpload } from "@/components/ui/image-upload";
 import { useInventory } from "@/hooks/use-inventory";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/ui/loading-skeleton";
@@ -44,7 +45,8 @@ export const InventoryItemForm = ({ item, onClose, onSuccess }: InventoryItemFor
     stock_quantity: item?.stock_quantity?.toString() || "0",
     reorder_point: item?.reorder_point?.toString() || "10",
     category: item?.category || "",
-    velocity: item?.velocity || ""
+    velocity: item?.velocity || "",
+    image: ""
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -148,10 +150,16 @@ export const InventoryItemForm = ({ item, onClose, onSuccess }: InventoryItemFor
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Image Upload */}
+        <ImageUpload
+          value={formData.image}
+          onChange={(value) => handleInputChange("image", value)}
+        />
+
         {/* Basic Information */}
         <Card>
           <CardHeader className="pb-4">
-            <CardTitle className="text-base flex items-center gap-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Package className="h-4 w-4" />
               Basic Information
             </CardTitle>
@@ -207,7 +215,7 @@ export const InventoryItemForm = ({ item, onClose, onSuccess }: InventoryItemFor
         {/* Pricing */}
         <Card>
           <CardHeader className="pb-4">
-            <CardTitle className="text-base flex items-center gap-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
               <DollarSign className="h-4 w-4" />
               Pricing
             </CardTitle>
@@ -268,7 +276,7 @@ export const InventoryItemForm = ({ item, onClose, onSuccess }: InventoryItemFor
         {/* Stock Management */}
         <Card>
           <CardHeader className="pb-4">
-            <CardTitle className="text-base flex items-center gap-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
               Stock Management
             </CardTitle>

@@ -1,3 +1,4 @@
+
 import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
@@ -6,10 +7,10 @@ import { cn } from "@/lib/utils";
 interface MobileBottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  title?: string; // Make title optional
+  title?: string;
   children: ReactNode;
   className?: string;
-  showHeader?: boolean; // Add option to hide header completely
+  showHeader?: boolean;
 }
 
 export const MobileBottomSheet = ({ 

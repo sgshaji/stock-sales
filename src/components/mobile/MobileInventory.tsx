@@ -88,7 +88,7 @@ export const MobileInventory = () => {
       <MobileBottomSheet
         isOpen={showAddItem}
         onClose={handleCloseAddForm}
-        title="Add New Item"
+        showHeader={false}
         className="h-[90vh]"
       >
         <InventoryItemForm
