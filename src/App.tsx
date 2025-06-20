@@ -10,7 +10,7 @@ import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
 import Inventory from "@/pages/Inventory";
 import Sales from "@/pages/Sales";
-import Analytics from "@/pages/Analytics";
+import Vendor from "@/pages/Vendor";
 import Settings from "@/pages/Settings";
 import NotFound from "@/pages/NotFound";
 import "./App.css";
@@ -42,9 +42,9 @@ function App() {
                       <Sales />
                     </ProtectedRoute>
                   } />
-                  <Route path="/analytics" element={
+                  <Route path="/vendor" element={
                     <ProtectedRoute>
-                      <Analytics />
+                      <Vendor />
                     </ProtectedRoute>
                   } />
                   <Route path="/settings" element={
