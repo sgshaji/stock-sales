@@ -22,6 +22,18 @@ const timezones = [
   { value: "Asia/Kolkata", label: "India (IST)" },
 ];
 
+interface ProfileWithNotifications {
+  id: string;
+  email: string;
+  full_name?: string;
+  business_name?: string;
+  timezone?: string;
+  currency?: string;
+  notification_email?: string;
+  reminder_time?: string;
+  email_notifications_enabled?: boolean;
+}
+
 export const ConfigurationSettings = () => {
   const { toast } = useToast();
   const { selectedCurrency, setCurrency } = useCurrency();
@@ -49,10 +61,11 @@ export const ConfigurationSettings = () => {
         .single();
 
       if (profile) {
-        setSelectedTimezone(profile.timezone || 'UTC');
-        setNotificationEmail(profile.notification_email || profile.email || '');
-        setReminderTime(profile.reminder_time || '18:00');
-        setEmailNotificationsEnabled(profile.email_notifications_enabled || false);
+        const profileWithNotifications = profile as ProfileWithNotifications;
+        setSelectedTimezone(profileWithNotifications.timezone || 'UTC');
+        setNotificationEmail(profileWithNotifications.notification_email || profileWithNotifications.email || '');
+        setReminderTime(profileWithNotifications.reminder_time || '18:00');
+        setEmailNotificationsEnabled(profileWithNotifications.email_notifications_enabled || false);
       }
     } catch (error) {
       console.error('Error loading user settings:', error);
