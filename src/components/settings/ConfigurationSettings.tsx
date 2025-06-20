@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -56,11 +55,11 @@ export const ConfigurationSettings = () => {
   return (
     <Card className="card-elevated">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-warning/10">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="p-2 rounded-xl bg-warning/10 flex-shrink-0">
             <Settings className="h-5 w-5 text-warning-600" />
           </div>
-          <div>
+          <div className="min-w-0">
             <CardTitle className="text-xl font-semibold">App Configuration</CardTitle>
             <p className="text-sm text-muted-foreground mt-1">
               Regional settings and app preferences
@@ -70,27 +69,25 @@ export const ConfigurationSettings = () => {
         {!isEditing ? (
           <Button
             variant="ghost"
-            size="sm"
+            size="icon-sm"
             onClick={() => setIsEditing(true)}
-            className="h-9 w-9 p-0 rounded-xl"
+            className="flex-shrink-0"
           >
             <Edit className="h-4 w-4" />
           </Button>
         ) : (
-          <div className="flex gap-2">
+          <div className="flex gap-1 flex-shrink-0">
             <Button
               variant="ghost"
-              size="sm"
+              size="icon-sm"
               onClick={handleCancel}
-              className="h-9 w-9 p-0 rounded-xl"
             >
               <X className="h-4 w-4" />
             </Button>
             <Button
               variant="ghost"
-              size="sm"
+              size="icon-sm"
               onClick={handleSave}
-              className="h-9 w-9 p-0 rounded-xl"
             >
               <Check className="h-4 w-4" />
             </Button>
