@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SignInForm } from "./SignInForm";
 import { SignUpForm } from "./SignUpForm";
 import { ResetPasswordForm } from "./ResetPasswordForm";
+import { UpdatePasswordForm } from "./UpdatePasswordForm";
 
 interface AuthTabsProps {
   defaultTab?: string;
@@ -11,6 +12,15 @@ interface AuthTabsProps {
 
 export const AuthTabs = ({ defaultTab = "signin" }: AuthTabsProps) => {
   const [activeTab, setActiveTab] = useState(defaultTab);
+
+  // If user is coming from password reset email, show update password form
+  if (activeTab === "update-password") {
+    return (
+      <div className="w-full max-w-md mx-auto">
+        <UpdatePasswordForm />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md mx-auto">
