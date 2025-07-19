@@ -7,6 +7,8 @@ import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { ThemeProvider } from "next-themes";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "@/pages/Index";
+import Landing from "@/pages/Landing";
+import LandingOrDashboard from "@/components/LandingOrDashboard";
 import Auth from "@/pages/Auth";
 import Inventory from "@/pages/Inventory";
 import Sales from "@/pages/Sales";
@@ -27,7 +29,8 @@ function App() {
               <div className="App">
                 <Routes>
                   <Route path="/auth" element={<Auth />} />
-                  <Route path="/" element={
+                  <Route path="/" element={<LandingOrDashboard />} />
+                  <Route path="/dashboard" element={
                     <ProtectedRoute>
                       <Index />
                     </ProtectedRoute>
